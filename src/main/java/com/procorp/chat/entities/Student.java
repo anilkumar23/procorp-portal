@@ -7,6 +7,7 @@ import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -20,24 +21,27 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long studentId;
 
-    private String studentName;
+    private String fullName;
+
+    private LocalDate dateOfBirth;
+
+    private String gender;
 
     private String mobileNumber;
-
-    private String address;
-
-    private String username;
 
     private String email;
 
     private String password;
 
-    public Student(String studentName, String mobileNumber, String address, String username, String email, String password) {
-        this.studentName = studentName;
+    private LocalDate registrationDate;
+
+    public Student(String fullName, String mobileNumber, String gender, String email, String password, LocalDate dateOfBirth,LocalDate registrationDate) {
+        this.fullName = fullName;
         this.mobileNumber = mobileNumber;
-        this.address = address;
-        this.username = username;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
         this.email = email;
         this.password = password;
+        this.registrationDate = registrationDate;
     }
 }

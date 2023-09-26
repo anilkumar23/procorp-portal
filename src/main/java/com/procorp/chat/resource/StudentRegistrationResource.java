@@ -22,9 +22,9 @@ public class StudentRegistrationResource {
 
     @PostMapping("/student")
     public String addStudent(@Valid @RequestBody StudentDTO student) {
-        LOG.info("Student :: Student Name {}", student.getStudentName());
+        LOG.info("Student :: Student Name {}", student.getFullName());
         studentService.addStudent(student);
-        return "Student with Name:" + student.getStudentName() + " has been Added.";
+        return "Student with Name:" + student.getFullName() + " has been Added.";
     }
 
 

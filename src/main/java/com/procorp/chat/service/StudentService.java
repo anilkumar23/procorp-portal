@@ -20,7 +20,7 @@ public class StudentService {
     private StudentDao studentDao;
 
     public Long addStudent(StudentDTO studentDTO) {
-        Student student = new Student(studentDTO.getStudentName(), studentDTO.getMobileNumber(), studentDTO.getAddress(), studentDTO.getUsername(), studentDTO.getEmail(), studentDTO.getPassword());
+        Student student = new Student(studentDTO.getFullName(), studentDTO.getMobileNumber(), studentDTO.getGender(), studentDTO.getEmail(), studentDTO.getPassword(),studentDTO.getDateOfBirth(),studentDTO.getRegistrationDate());
         studentDao.save(student);
         LOG.info("Student {} Successfully added", student.getStudentId());
         return student.getStudentId();
@@ -35,7 +35,7 @@ public class StudentService {
     }
 
     public Long updateStudent(StudentDTO studentDTO) {
-        Student student = new Student(studentDTO.getStudentName(), studentDTO.getMobileNumber(), studentDTO.getAddress(), studentDTO.getUsername(), studentDTO.getEmail(), studentDTO.getPassword());
+        Student student = new Student(studentDTO.getFullName(), studentDTO.getMobileNumber(), studentDTO.getGender(), studentDTO.getEmail(), studentDTO.getPassword(),studentDTO.getDateOfBirth(),studentDTO.getRegistrationDate());
         studentDao.save(student);
         LOG.info("Student {} Successfully updated", student.getStudentId());
         return student.getStudentId();
