@@ -40,8 +40,9 @@ public class StudentRegistrationResource {
     }
 
     @GetMapping("/getAllStudents")
-    public List<Student> getAllStudents() {
-        return studentService.getAllStudents();
+    public List<Student> getAllStudents(Long memberId) {
+        return studentService.getAllStudents(memberId);
+
     }
 
 //	@PutMapping("/student")

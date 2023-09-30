@@ -1,5 +1,6 @@
 package com.procorp.chat.service;
 
+import com.procorp.chat.dao.FriendRequestDao;
 import com.procorp.chat.dao.StudentDao;
 import com.procorp.chat.entities.Student;
 import com.procorp.chat.dtos.StudentDTO;
@@ -19,6 +20,9 @@ public class StudentService {
     @Autowired
     private StudentDao studentDao;
 
+    @Autowired
+    private FriendRequestDao friendRequestDao;
+
     public Long addStudent(StudentDTO studentDTO) {
         Student student = new Student(studentDTO.getFullName(), studentDTO.getMobileNumber(), studentDTO.getGender(), studentDTO.getEmail(), studentDTO.getPassword(),studentDTO.getDateOfBirth(),studentDTO.getRegistrationDate());
         studentDao.save(student);
@@ -30,7 +34,12 @@ public class StudentService {
         return studentDao.findById(studentId).get();
     }
 
-    public List<Student> getAllStudents() {
+    public List<Student> getAllStudents(Long memberId) {
+//        friendRequestDao.findByRequestFrom(memberId).isPresent();
+//        friendRequestDao.findByRequestTo(memberId).isPresent();
+//
+//        if(friendRequestDao.findByRequestTo(memberId).isPresent();)
+
         return studentDao.findAll();
     }
 
