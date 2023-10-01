@@ -2,17 +2,14 @@ package com.procorp.chat.service;
 
 import com.procorp.chat.dao.FriendRequestDao;
 import com.procorp.chat.dao.StudentDao;
+import com.procorp.chat.dtos.FriendRequestDTO;
 import com.procorp.chat.entities.FriendRequest;
-import com.procorp.chat.exception.StudentCourseIllegalStateException;
-import lombok.extern.java.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.module.FindException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class FriendService {
@@ -48,18 +45,24 @@ public class FriendService {
         return "request sent,Waiting for approval";
     }
 
-    public List<FriendRequest> getFriendRequestsSent(Long requestFrom) {
-        return friendRequestDao.findByRequestFrom(requestFrom);
+    public List<FriendRequestDTO> getFriendRequestsSent(Long requestFrom) {
+        List<FriendRequest> friendRequests = friendRequestDao.findByRequestFrom(requestFrom);
+        return mapEntityToDTO(friendRequests);
     }
-
-    public List<FriendRequest> getFriendRequestsReceived(Long requestTo) {
-        return friendRequestDao.findByRequestTo(requestTo);
+    private List<FriendRequestDTO> mapEntityToDTO(List<FriendRequest> friendRequests){
+        List<FriendRequestDTO> friendRequestDTOList = new ArrayList<>();
+        friendRequests.forEach(n-> friendRequestDTOList.add(new FriendRequestDTO(n.getId(), n.getRequestFrom(), n.getRequestTo(), n.getFriendRequestStatus(), n.getBlockedBy())));
+        return friendRequestDTOList;
+    }
+    public List<FriendRequestDTO> getFriendRequestsReceived(Long requestTo) {
+        List<FriendRequest> friendRequests =  friendRequestDao.findByRequestTo(requestTo);
+        return mapEntityToDTO(friendRequests);
     }
 
     public String cancelFriendRequest(Long requestFrom, Long requestTo) {
         Optional<FriendRequest> requestDetails = friendRequestDao.findByRequestFromAndRequestTo(requestFrom,requestTo);
         System.out.println(requestDetails);
-        if (!requestDetails.isPresent()) {
+        if (requestDetails.isEmpty()) {
 //            throw new FindException("Failed to cancel request. Invalid requestFrom :: " + requestFrom);
             return "Friend's request doesn't exist";
         }
@@ -72,7 +75,7 @@ public class FriendService {
     public String acceptFriendRequest(Long requestFrom, Long requestTo) {
         Optional<FriendRequest> requestDetails = friendRequestDao.findByRequestFromAndRequestTo(requestFrom,requestTo);
         LOG.info("Abhi"+String.valueOf(requestDetails));
-        if (requestDetails.isPresent()) {
+        if (requestDetails.isEmpty()) {
             return "Friend's request doesn't exist";
 //            throw new FindException("Failed to cancel request. Invalid requestFrom :: " + requestFrom);
         }
@@ -125,7 +128,7 @@ public class FriendService {
         List<FriendRequest> request = friendRequestDao.findByBlockedBy(blockedBy);
         List<Long> ids = request.stream()
                 .filter(r -> r.getFriendRequestStatus().equalsIgnoreCase("Blocked"))
-                .map(FriendRequest::getRequestTo).collect(Collectors.toList());
+                .map(FriendRequest::getRequestTo).toList();
         LOG.info("ids"+ids);
         return "IDs are : "+ids;
     }

@@ -1,6 +1,6 @@
 package com.procorp.chat.resource;
 
-import com.procorp.chat.entities.FriendRequest;
+import com.procorp.chat.dtos.FriendRequestDTO;
 import com.procorp.chat.service.FriendService;
 import com.procorp.chat.service.StudentService;
 import jakarta.validation.Valid;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("friend-service")
@@ -33,13 +32,13 @@ public class FriendResource {
     }
 
     @GetMapping("/getFriendRequestsSent")
-    public List<FriendRequest> getFriendRequestsSent(@Valid @RequestParam Long requestFrom) {
+    public List<FriendRequestDTO> getFriendRequestsSent(@Valid @RequestParam Long requestFrom) {
 //        LOG.info("Student :: Student Name {}", student.getFullName());
         return friendsService.getFriendRequestsSent(requestFrom);
     }
 
     @GetMapping("/getFriendRequestsReceived")
-    public List<FriendRequest> getFriendRequestsReceived(@Valid @RequestParam Long requestFrom) {
+    public List<FriendRequestDTO> getFriendRequestsReceived(@Valid @RequestParam Long requestFrom) {
 //        LOG.info("Student :: Student Name {}", student.getFullName());
         return friendsService.getFriendRequestsReceived(requestFrom);
     }
