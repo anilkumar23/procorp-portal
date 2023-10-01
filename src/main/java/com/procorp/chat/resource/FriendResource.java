@@ -69,6 +69,14 @@ public class FriendResource {
         return response;
     }
 
+    @GetMapping("/blockList")
+    public String blockList(@Valid @RequestParam Long requestFrom) {
+//        LOG.info("Student :: Student Name {}", student.getFullName());
+        String response =friendsService.getBlockList(requestFrom);
+        LOG.info( "Member :" + requestFrom + " block list.");
+        return response;
+    }
+
 
 
 

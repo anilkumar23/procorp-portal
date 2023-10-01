@@ -4,6 +4,7 @@ import com.procorp.chat.dao.FriendRequestDao;
 import com.procorp.chat.dao.StudentDao;
 import com.procorp.chat.entities.FriendRequest;
 import com.procorp.chat.exception.StudentCourseIllegalStateException;
+import lombok.extern.java.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.module.FindException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class FriendService {
@@ -69,12 +71,13 @@ public class FriendService {
 
     public String acceptFriendRequest(Long requestFrom, Long requestTo) {
         Optional<FriendRequest> requestDetails = friendRequestDao.findByRequestFromAndRequestTo(requestFrom,requestTo);
-        if (!requestDetails.isPresent()) {
+        LOG.info("Abhi"+String.valueOf(requestDetails));
+        if (requestDetails.isPresent()) {
             return "Friend's request doesn't exist";
 //            throw new FindException("Failed to cancel request. Invalid requestFrom :: " + requestFrom);
         }
         if(requestDetails.get().getFriendRequestStatus().equalsIgnoreCase("Waiting")) {
-            FriendRequest acceptRequest = new FriendRequest(requestDetails.get().getRequestFrom(),requestDetails.get().getRequestTo(),"Accepted");
+            FriendRequest acceptRequest = new FriendRequest(requestDetails.get().getRequestFrom(),requestDetails.get().getRequestTo(),"Accepted",null);
             friendRequestDao.save(acceptRequest);
             return "Friend's request Accepted";
         }
@@ -82,9 +85,41 @@ public class FriendService {
     }
 
     public String blockFriend(Long requestFrom, Long requestTo) {
-            FriendRequest acceptRequest = new FriendRequest(requestFrom,requestTo,"Blocked");
-            friendRequestDao.save(acceptRequest);
-            return "Member is Blocked";
+        Set<Long> memberIds = new HashSet<>();
+        memberIds.add(requestFrom);
+        memberIds.add(requestTo);
+        if(!studentDao.existsMembersAllByStudentId(memberIds)) {
+            return "Member ID doesn't exist";
+        }
+        List<FriendRequest> requestFromObject = friendRequestDao.findByRequestFrom(requestFrom);
+        List<FriendRequest> requestToObject = friendRequestDao.findByRequestTo(requestFrom);
+        LOG.info("findByRequestFrom"+requestFromObject);
+        LOG.info("findByRequestTo"+requestToObject);
+
+        if (!requestToObject.isEmpty()) {
+            //            Optional<s> motor = friendRequestDao.
+//                    findById(friendRequestDao.findByRequestTo(requestFrom).get(0).getId());
+            System.out.println("case1");
+            FriendRequest updateRequest = requestToObject.get(0);
+            updateRequest.setFriendRequestStatus("Blocked");
+            updateRequest.setBlockedBy(requestFrom);
+            System.out.println(updateRequest);
+            friendRequestDao.save(updateRequest);
+        } else {
+            FriendRequest updateRequest;
+            System.out.println("case2");
+            if(requestFromObject.isEmpty()) {
+                updateRequest = new FriendRequest(requestFrom,requestTo,"Blocked",requestFrom);
+            } else {
+                System.out.println("case3");
+                updateRequest = requestFromObject.get(0);
+                updateRequest.setFriendRequestStatus("Blocked");
+                updateRequest.setBlockedBy(requestFrom);
+            }
+            System.out.println(updateRequest);
+            friendRequestDao.save(updateRequest);
+        }
+        return "Member is Blocked";
     }
 
     public String unblockFriend(Long requestFrom, Long requestTo) {
@@ -93,5 +128,45 @@ public class FriendService {
     }
 
 //    get block list
+    public String getBlockList(Long blockedBy) {
+
+        List<FriendRequest> request = friendRequestDao.findByBlockedBy(blockedBy);
+        List<Long> ids = request.stream()
+                .filter(r -> r.getFriendRequestStatus().equalsIgnoreCase("Blocked"))
+                .map(FriendRequest::getRequestTo).collect(Collectors.toList());
+        LOG.info("ids"+ids);
+//
+//        List<Long> ids = null;
+//        List<FriendRequest> request;
+//        LOG.info("findByRequestFrom"+friendRequestDao.findByRequestFrom(memberId));
+//        LOG.info("findByRequestTo"+friendRequestDao.findByRequestTo(memberId));
+//
+//        Set<Long> memberIds = new HashSet<>();
+//        ids.add(memberId);
+//        if(!studentDao.existsMembersAllByStudentId(memberIds)) {
+//            return "Member ID doesn't exist";
+//        }
+//
+//        if(!friendRequestDao.findByRequestFrom(memberId).isEmpty()) {
+//            LOG.info("findByRequestFrom"+friendRequestDao.findByRequestFrom(memberId));
+//            request = friendRequestDao.findByRequestFrom(memberId);
+////            request = request.stream().filter(r -> r.getFriendRequestStatus().equals("blocked"))
+////                    .collect(Collectors.toList());
+//            ids = request.stream()
+//                    .filter(r -> r.getFriendRequestStatus().equalsIgnoreCase("Blocked"))
+//                    .map(FriendRequest::getRequestTo).collect(Collectors.toList());
+//            LOG.info("ids"+ids);
+//
+//        } else if(!friendRequestDao.findByRequestTo(memberId).isEmpty()) {
+//            LOG.info("findByRequestFrom"+friendRequestDao.findByRequestTo(memberId));
+//            request = friendRequestDao.findByRequestTo(memberId);
+//            ids = request.stream()
+//                    .filter(r -> r.getFriendRequestStatus().equalsIgnoreCase("Blocked"))
+//                    .map(FriendRequest::getRequestTo).collect(Collectors.toList());
+//            LOG.info("ids"+ids);
+//        }
+
+        return "IDs are : "+ids;
+    }
 
 }

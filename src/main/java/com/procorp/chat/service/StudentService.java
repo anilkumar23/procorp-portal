@@ -2,6 +2,7 @@ package com.procorp.chat.service;
 
 import com.procorp.chat.dao.FriendRequestDao;
 import com.procorp.chat.dao.StudentDao;
+import com.procorp.chat.entities.FriendRequest;
 import com.procorp.chat.entities.Student;
 import com.procorp.chat.dtos.StudentDTO;
 import com.procorp.chat.exception.StudentCourseIllegalStateException;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
@@ -35,11 +37,17 @@ public class StudentService {
     }
 
     public List<Student> getAllStudents(Long memberId) {
-//        friendRequestDao.findByRequestFrom(memberId).isPresent();
-//        friendRequestDao.findByRequestTo(memberId).isPresent();
-//
-//        if(friendRequestDao.findByRequestTo(memberId).isPresent();)
-
+//        List<FriendRequest> request = null;
+//        if(friendRequestDao.findByRequestFrom(memberId).isEmpty()) {
+//            request = friendRequestDao.findByRequestFrom(memberId);
+//            request = request.stream().filter(r -> r.getFriendRequestStatus().equals("blocked"))
+//                    .collect(Collectors.toList());
+//            request.get
+//        } else if(friendRequestDao.findByRequestTo(memberId).isEmpty()) {
+//            request = friendRequestDao.findByRequestTo(memberId);
+//            request = request.stream().filter(r -> r.getFriendRequestStatus().equals("blocked"))
+//                    .collect(Collectors.toList());
+//        }
         return studentDao.findAll();
     }
 
