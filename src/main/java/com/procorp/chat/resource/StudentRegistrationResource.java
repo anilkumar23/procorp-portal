@@ -4,6 +4,7 @@ import com.procorp.chat.dtos.StudentDTO;
 import com.procorp.chat.entities.Student;
 import com.procorp.chat.service.StudentService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("member-service")
+@SecurityRequirement(name = "bearerAuth")
 public class StudentRegistrationResource {
     private final static Logger LOG = LoggerFactory.getLogger(StudentRegistrationResource.class);
     @Autowired
