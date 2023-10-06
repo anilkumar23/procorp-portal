@@ -2,7 +2,7 @@ package com.procorp.chat.resource;
 
 import com.procorp.chat.dtos.FriendRequestDTO;
 import com.procorp.chat.service.FriendService;
-import com.procorp.chat.service.StudentService;
+import com.procorp.chat.service.MemberService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,7 @@ public class FriendResource {
     private FriendService friendsService;
 
     @Autowired
-    private StudentService studentService;
+    private MemberService memberService;
 
     @PostMapping("/sendFriendRequest")
     public String sendFriendRequest(@Valid @RequestParam Long requestFrom,@RequestParam Long requestTo) {

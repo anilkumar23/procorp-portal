@@ -1,6 +1,5 @@
 package com.procorp.chat.dtos;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -9,7 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 @Data
-public class StudentDTO {
+public class MemberDTO {
 
     @NotEmpty(message = "The full name is required.")
     @Size(min = 10, max = 100, message = "The length of full name must be between 2 and 100 characters.")

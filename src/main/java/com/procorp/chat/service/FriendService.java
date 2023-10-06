@@ -1,7 +1,7 @@
 package com.procorp.chat.service;
 
 import com.procorp.chat.dao.FriendRequestDao;
-import com.procorp.chat.dao.StudentDao;
+import com.procorp.chat.dao.MemberDao;
 import com.procorp.chat.dtos.FriendRequestDTO;
 import com.procorp.chat.entities.FriendRequest;
 import org.slf4j.Logger;
@@ -19,13 +19,13 @@ public class FriendService {
     private FriendRequestDao friendRequestDao;
 
     @Autowired
-    private StudentDao studentDao;
+    private MemberDao studentDao;
 
     public String sendFriendRequest(Long requestFrom, Long requestTo) {
         Set<Long> ids = new HashSet<>();
         ids.add(requestFrom);
         ids.add(requestTo);
-        if(!studentDao.existsMembersAllByStudentId(ids)) {
+        if(!studentDao.existsMembersAllByMemberId(ids)) {
             return "Member IDS sent doesn't exist";
         }
 
@@ -80,8 +80,9 @@ public class FriendService {
 //            throw new FindException("Failed to cancel request. Invalid requestFrom :: " + requestFrom);
         }
         if(requestDetails.get().getFriendRequestStatus().equalsIgnoreCase("Waiting")) {
-            FriendRequest acceptRequest = new FriendRequest(requestDetails.get().getRequestFrom(),requestDetails.get().getRequestTo(),"Accepted",null);
-            friendRequestDao.save(acceptRequest);
+            requestDetails.get().setFriendRequestStatus("Accepted");
+//            FriendRequest acceptRequest = new FriendRequest(requestDetails.get().getRequestFrom(),requestDetails.get().getRequestTo(),"Accepted",null);
+            friendRequestDao.save(requestDetails.get());
             return "Friend's request Accepted";
         }
         return "Member : "+requestFrom+" is already a Friend of "+"Member : "+requestTo;
@@ -91,7 +92,7 @@ public class FriendService {
         Set<Long> memberIds = new HashSet<>();
         memberIds.add(requestFrom);
         memberIds.add(requestTo);
-        if(!studentDao.existsMembersAllByStudentId(memberIds)) {
+        if(!studentDao.existsMembersAllByMemberId(memberIds)) {
             return "Member ID doesn't exist";
         }
 

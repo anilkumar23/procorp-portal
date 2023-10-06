@@ -5,8 +5,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 
-import javax.validation.constraints.NotEmpty;
-import java.sql.Date;
 import java.time.LocalDate;
 
 @Entity
@@ -16,10 +14,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @ToString
 @Data
-public class Student {
+public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long studentId;
+    private Long memberId;
 
     private String fullName;
 
@@ -35,7 +33,7 @@ public class Student {
 
     private LocalDate registrationDate;
 
-    public Student(String fullName, String mobileNumber, String gender, String email, String password, LocalDate dateOfBirth,LocalDate registrationDate) {
+    public Member(String fullName, String mobileNumber, String gender, String email, String password, LocalDate dateOfBirth, LocalDate registrationDate) {
         this.fullName = fullName;
         this.mobileNumber = mobileNumber;
         this.gender = gender;
