@@ -8,13 +8,16 @@ import com.procorp.chat.dtos.ChatHistoryDeserializer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @PropertySource("classpath:application.properties")
-public class Main {
+
+public class ChatApplication {
     public static void main(String[] args) {
-        SpringApplication.run(Main.class, args);
+        SpringApplication.run(ChatApplication.class, args);
     }
     @Bean
     ObjectMapper customizejacksonconfiguration() {

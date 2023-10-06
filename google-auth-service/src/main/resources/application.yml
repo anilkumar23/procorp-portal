@@ -1,0 +1,29 @@
+c3reate-drop: ''
+server:
+    port: 8089
+spring:
+    datasource:
+        password: 'Password@123'
+        url: jdbc:postgresql://localhost:5432/procorp
+        username: 'postgres'
+
+    jpa:
+        hibernate:
+            ddl-auto: create
+        show-sql: true
+    security:
+        oauth2:
+            client:
+                registration:
+                    google:
+                        clientId: 645895054298-hjr0cpl1tf0gsffnp3f1mi7vm3gjrp3j.apps.googleusercontent.com
+                        clientSecret: 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
+                        scope:
+                         - email
+                         - profile
+authservice:
+    base:
+        url: http://localhost:8092
+
+#for calling google service url : http://localhost:8089/oauth2/authorization/google
+#for h2 data base : http://localhost:8089/h2/login.do?jsessionid=132f85a3d724c0156759ce608ce07887

@@ -4,21 +4,25 @@ import com.google.common.collect.Multimap;
 import com.procorp.chat.dtos.ChatDTO;
 import com.procorp.chat.dtos.ChatHistoryDTO;
 import com.procorp.chat.service.ChatService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 @RequestMapping("chat-service")
+@SecurityRequirement(name = "bearerAuth")
 public class ChatResource {
     @Autowired
     private ChatService service;
 
     @PostMapping(value = "/insertChat", consumes = MediaType.APPLICATION_JSON_VALUE)
-    private String insertChat(@Valid @RequestBody ChatDTO chatDTO){
+    private ResponseEntity<Object> insertChat(@Valid @RequestBody ChatDTO chatDTO){
         return service.insertChat(chatDTO);
     }
 
@@ -35,9 +39,5 @@ public class ChatResource {
     private CopyOnWriteArrayList<Multimap<String, ChatHistoryDTO>> findChatByDate(@PathVariable Long studentId, Long chatPersonId, String date){
         return service.findChatByDate(studentId, chatPersonId, date);
     }
-    //    @PutMapping(value = "/updateChat", consumes = MediaType.APPLICATION_JSON_VALUE)
-//    private String updateChat(@Valid @RequestBody ChatDTO chatDTO){
-//        return service.updateChat(chatDTO);
-//    }
 
 }

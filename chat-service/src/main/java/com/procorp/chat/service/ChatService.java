@@ -1,21 +1,26 @@
 package com.procorp.chat.service;
 
 import com.google.common.collect.Multimap;
+import com.procorp.chat.config.FeignClientInterceptor;
 import com.procorp.chat.dao.ChatDao;
 import com.procorp.chat.dtos.ChatDTO;
 import com.procorp.chat.dtos.ChatHistoryDTO;
 import com.procorp.chat.dtos.FriendRequestDTO;
 import com.procorp.chat.entities.Chat;
 import com.procorp.chat.exception.ChatIllegalStateException;
+import com.procorp.chat.exception.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -25,19 +30,21 @@ public class ChatService {
 
     @Autowired
     private ChatDao chatDao;
+
     @Autowired
     private WebClient webClient;
-    public String insertChat(ChatDTO chatDTO) {
 
+    public ResponseEntity<Object> insertChat(ChatDTO chatDTO) {
         Mono<List<FriendRequestDTO>> getFriendRequestSentResponse = webClient.get().uri("/getFriendRequestsSent?requestFrom=" + chatDTO.getStudentId())
                 .accept(MediaType.APPLICATION_JSON)
+                .header("Authorization", FeignClientInterceptor.getBearerTokenHeader())
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<>() {});
         Mono<List<FriendRequestDTO>> getFriendRequestReceivedResponse = webClient.get().uri("/getFriendRequestsReceived?requestFrom=" + chatDTO.getStudentId())
                 .accept(MediaType.APPLICATION_JSON)
+                .header("Authorization", FeignClientInterceptor.getBearerTokenHeader())
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<>() {});
-
         List<FriendRequestDTO> friendRequestDTOS = getFriendRequestSentResponse.block();
         Objects.requireNonNull(friendRequestDTOS).addAll(Objects.requireNonNull(getFriendRequestReceivedResponse.block()));
 
@@ -45,16 +52,28 @@ public class ChatService {
         if(flag) {
             String chatId = prepareChatId(chatDTO.getStudentId(), chatDTO.getChatPersonId(), chatDTO.getDate());
             chatDao.save(new Chat(chatId, chatDTO.getStudentId(), chatDTO.getChatPersonId(), chatDTO.getDate(),
-                    chatDTO.getChatHistory()));
+                    insertTimeStampToEachMsg(chatDTO.getChatHistory())));
             LOG.info("Chat has been successfully created between " + chatDTO.getStudentId() + " and " +
                     chatDTO.getChatPersonId() + " with chatId => " + chatId);
-            return "Chat has been created between " + chatDTO.getStudentId() + " and " +
-                    chatDTO.getChatPersonId() + " with chatId => " + chatId;
+            return ResponseEntity.ok("Chat has been created between " + chatDTO.getStudentId() + " and " +
+                    chatDTO.getChatPersonId() + " with chatId => " + chatId);
         }
-        return "Chat has not created between " + chatDTO.getStudentId() + " and " +
-                chatDTO.getChatPersonId() + " as friend request is not approved";
+        return ResponseEntity.ok("Chat has not created between " + chatDTO.getStudentId() + " and " +
+                chatDTO.getChatPersonId() + " as friend request is not approved");
     }
-
+    private static final SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private CopyOnWriteArrayList<Multimap<String, ChatHistoryDTO>> insertTimeStampToEachMsg(CopyOnWriteArrayList<Multimap<String, ChatHistoryDTO>> chatHistory){
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        for (Multimap<String, ChatHistoryDTO> hist: chatHistory) {
+            for (String chat: hist.keySet()) {
+                for (ChatHistoryDTO s: hist.get(chat)) {
+                    s.setTimestamp(sdf3.format(timestamp));
+                    System.out.println(s);
+                }
+            }
+        }
+        return chatHistory;
+    }
     public String deleteChatByMessages(ChatDTO chatDTO){
         Chat chat = validateChat(chatDTO);
         if(chat.getStudentId() == chatDTO.getStudentId()) {
@@ -102,7 +121,13 @@ public class ChatService {
             CopyOnWriteArrayList<Multimap<String, ChatHistoryDTO>> chatHistory = chat.getChatHistory();
             for (Multimap<String, ChatHistoryDTO> i : chatHistory) {
                 for (Multimap<String, ChatHistoryDTO> m : chatDTO.getChatHistory()) {
+                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                     for (String n : m.keySet()) {
+                        //TODO need to enhance inner for loops
+                        for (ChatHistoryDTO s: m.get(n)) {
+                            s.setTimestamp(sdf3.format(timestamp));
+                            System.out.println(s);
+                        }
                         for (String a : i.keySet()) {
                             if (a.equalsIgnoreCase(n)) {
                                 i.get(n).addAll(m.get(n));
@@ -126,7 +151,7 @@ public class ChatService {
             chatDTO.setChatHistory(chatHistory);
         }else {
             chatDao.save(new Chat(chatId, chatDTO.getStudentId(), chatDTO.getChatPersonId(), chatDTO.getDate(),
-                    chatDTO.getChatHistory()));
+                    insertTimeStampToEachMsg(chatDTO.getChatHistory())));
         }
         return chatDTO;
     }
