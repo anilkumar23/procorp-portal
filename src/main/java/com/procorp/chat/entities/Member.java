@@ -1,8 +1,5 @@
 package com.procorp.chat.entities;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -14,6 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @ToString
 @Data
+@Builder
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,13 +31,13 @@ public class Member {
 
     private LocalDate registrationDate;
 
-    public Member(String fullName, String mobileNumber, String gender, String email, String password, LocalDate dateOfBirth, LocalDate registrationDate) {
-        this.fullName = fullName;
-        this.mobileNumber = mobileNumber;
-        this.gender = gender;
-        this.dateOfBirth = dateOfBirth;
-        this.email = email;
-        this.password = password;
-        this.registrationDate = registrationDate;
-    }
+    private String collegeName;
+
+    private String companyName;
+
+    private String schoolName;
+
+    @Lob
+    @Column(name = "imagedata", length = 1000)
+    private byte[] imageData;
 }

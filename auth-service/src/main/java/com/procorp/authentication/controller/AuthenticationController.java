@@ -3,9 +3,7 @@ package com.procorp.authentication.controller;
 
 import com.procorp.authentication.config.CustomUserDetailsService;
 import com.procorp.authentication.config.JwtUtil;
-import com.procorp.authentication.model.AuthenticationRequest;
 import com.procorp.authentication.model.AuthenticationResponse;
-import com.procorp.authentication.model.StudentDTO;
 import io.jsonwebtoken.impl.DefaultClaims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

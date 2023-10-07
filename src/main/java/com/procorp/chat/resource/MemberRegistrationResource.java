@@ -1,19 +1,27 @@
 package com.procorp.chat.resource;
 
+import com.procorp.chat.dtos.FilterDTO;
 import com.procorp.chat.dtos.MemberDTO;
+import com.procorp.chat.dtos.MemberResponseDTO;
 import com.procorp.chat.entities.Member;
 import com.procorp.chat.service.MemberService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("member-service")
+@SecurityRequirement(name = "bearerAuth")
 public class MemberRegistrationResource {
     private final static Logger LOG = LoggerFactory.getLogger(MemberRegistrationResource.class);
     @Autowired
@@ -44,14 +52,25 @@ public class MemberRegistrationResource {
 
     }
 
-//	@PutMapping("/student")
-//	public List<Student> updateStudent(@Valid @RequestBody Student student) {
-//		return studentService.updateStudent();
-//	}
-
     @PutMapping("/member")
     public Long updateStudent(@javax.validation.Valid @RequestBody MemberDTO member) {
         return memberService.updateMember(member);
+    }
+
+    @PostMapping("/getAllMembersByPartialSearch")
+    public List<MemberResponseDTO> getMembersWithPartialSearch(@Valid @RequestBody FilterDTO filterDTO) {
+        LOG.info("Fetching members based on following criteria", filterDTO.toString());
+        return memberService.findMembersWithPartialSearch(filterDTO);
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "/uploadImage",
+            consumes= MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file, @RequestParam("memberId") long memberId) throws IOException {
+        return memberService.uploadImage(file, memberId);
+    }
+    @GetMapping("/getProfileImage")
+    public ResponseEntity<?> getProfileImageById(@RequestParam("memberId") long memberId) {
+        return memberService.getImage(memberId);
     }
 }
 
