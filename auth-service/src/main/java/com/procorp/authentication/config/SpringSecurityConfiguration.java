@@ -50,7 +50,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable()
 				.authorizeRequests()
-				.antMatchers("/generateAuthToken", "/register", "/procorp").permitAll().anyRequest().authenticated()
+				.antMatchers("/generateAuthToken", "/register", "/procorp","/getAuthToken").permitAll().anyRequest().authenticated()
 				.and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).
 				and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
 				and().addFilterBefore(customJwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

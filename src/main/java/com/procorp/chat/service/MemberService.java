@@ -2,10 +2,8 @@ package com.procorp.chat.service;
 
 import com.procorp.chat.dao.FriendRequestDao;
 import com.procorp.chat.dao.MemberDao;
-import com.procorp.chat.dtos.FilterDTO;
-import com.procorp.chat.dtos.MemberResponseDTO;
+import com.procorp.chat.dtos.*;
 import com.procorp.chat.entities.Member;
-import com.procorp.chat.dtos.MemberDTO;
 import com.procorp.chat.exception.StudentCourseIllegalStateException;
 import com.procorp.chat.util.ImageUtil;
 import jakarta.transaction.Transactional;
@@ -20,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,7 +77,7 @@ public class MemberService {
     }
 
     @Transactional
-    public List<MemberResponseDTO> findMembersWithPartialSearch(FilterDTO filterDTO){
+    public ResponseEntity<?> findMembersWithPartialSearch(FilterDTO filterDTO){
         Optional<Member> member = memberDao.findById(filterDTO.getMemberId());
         if (member.isPresent()) {
             List<Member> members = memberDao.findByFullNameStartsWith(filterDTO.getUserSearchKey());
@@ -91,11 +90,23 @@ public class MemberService {
                 }else if (filterDTO.isSchoolName()) {
                     tmpList.addAll(members.stream().filter(n -> !n.getSchoolName().equalsIgnoreCase(member.get().getSchoolName())).toList());
                 }
+                tmpList.add(member.get());
                 members.removeAll(tmpList);
-                return mapEntityToDTO(members);
+//                OTPValidationDTO temp = new OTPValidationDTO();
+//                temp.setMemberResponseDTO();
+//                for (int i=0; i<1; i++){
+//                    Member member1 = members.get(0);
+//                    CustomMultipartFile file = new CustomMultipartFile(ImageUtil.decompressImage(member1.getImageData()));
+//                    temp.setImageData(file);
+//                }
+
+                return ResponseEntity.status(HttpStatus.OK)
+//                        .contentType(MediaType.valueOf("image/png"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(mapEntityToDTO(members));
             }
         }
-        return new ArrayList<>();
+        return null;
     }
 
     private List<MemberResponseDTO> mapEntityToDTO(List<Member> members) {
@@ -110,7 +121,7 @@ public class MemberService {
                         .email(n.getEmail())
                         .password(n.getPassword())
                         .registrationDate(n.getRegistrationDate())
-//                        .imageData(n.getImageData())
+//                        .imageData(Base64.getEncoder().encodeToString(ImageUtil.decompressImage(n.getImageData())))//handle null case when no image
                         .collegeName(n.getCollegeName())
                         .companyName(n.getCompanyName())
                         .build()));
@@ -134,4 +145,20 @@ public class MemberService {
                 .contentType(MediaType.valueOf("image/png"))
                 .body(image);
     }
+
+    @Transactional
+    public ResponseEntity<ArrayList<Member>> getSuggestions(long memberId) {
+        Optional<Member> optionalMember = memberDao.findById(memberId);
+        if (optionalMember.isPresent()) {
+            Member member = optionalMember.get();
+            ArrayList<Member> members = memberDao.findByCollegeNameAndSchoolNameAndCompanyName(member.getCollegeName(), member.getSchoolName(), member.getCompanyName());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(members);
+        }
+//        return ResponseEntity.status(HttpStatus.NO_CONTENT).body();
+        return null;
+    }
+
+
 }

@@ -2,7 +2,6 @@ package com.procorp.chat.resource;
 
 import com.procorp.chat.dtos.FilterDTO;
 import com.procorp.chat.dtos.MemberDTO;
-import com.procorp.chat.dtos.MemberResponseDTO;
 import com.procorp.chat.entities.Member;
 import com.procorp.chat.service.MemberService;
 
@@ -23,7 +22,9 @@ import java.util.List;
 @RequestMapping("member-service")
 @SecurityRequirement(name = "bearerAuth")
 public class MemberRegistrationResource {
+
     private final static Logger LOG = LoggerFactory.getLogger(MemberRegistrationResource.class);
+
     @Autowired
     private MemberService memberService;
 
@@ -33,7 +34,6 @@ public class MemberRegistrationResource {
         memberService.addMember(member);
         return "member with Name:" + member.getFullName() + " has been Added.";
     }
-
 
     @DeleteMapping("/member/{memberId}")
     public String removeStudent(Long memberId) {
@@ -57,8 +57,8 @@ public class MemberRegistrationResource {
         return memberService.updateMember(member);
     }
 
-    @PostMapping("/getAllMembersByPartialSearch")
-    public List<MemberResponseDTO> getMembersWithPartialSearch(@Valid @RequestBody FilterDTO filterDTO) {
+    @PostMapping(value = "/getAllMembersByPartialSearch", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getMembersWithPartialSearch(@Valid @RequestBody FilterDTO filterDTO) {
         LOG.info("Fetching members based on following criteria", filterDTO.toString());
         return memberService.findMembersWithPartialSearch(filterDTO);
     }
@@ -71,6 +71,11 @@ public class MemberRegistrationResource {
     @GetMapping("/getProfileImage")
     public ResponseEntity<?> getProfileImageById(@RequestParam("memberId") long memberId) {
         return memberService.getImage(memberId);
+    }
+
+    @GetMapping("/getSuggestions")
+    public ResponseEntity<?> getSuggestions(@RequestParam("memberId") long memberId) {
+        return memberService.getSuggestions(memberId);
     }
 }
 

@@ -29,7 +29,7 @@ public class MemberResponseDTO {
 
     private LocalDate registrationDate;
 
-    private byte[] imageData;
+
 
     private String collegeName;
 
