@@ -18,7 +18,7 @@ public class OrderManagementApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(OrderManagementApplication.class, args);
 	}
-
+/*
 	@Bean
 	CommandLineRunner init(UserRepository userRepository) {
 		return args -> {
@@ -41,5 +41,5 @@ public class OrderManagementApplication {
 			productService.save(new Product(6L, "Phone", 500.00, 10.0,"http://placehold.it/200x100","shirts","Kids"));
 			productService.save(new Product(7L, "Watch", 30.00, 10.0,"http://placehold.it/200x100","Saree","Female"));
 		};
-	}
+	}*/
 }
