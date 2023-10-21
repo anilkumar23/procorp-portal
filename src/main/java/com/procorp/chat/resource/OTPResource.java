@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 public class OTPResource {
 
     @Autowired

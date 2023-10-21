@@ -23,26 +23,29 @@ public class UserService {
 	private WebClient authClient;
 	
 	public String processOAuthPostLogin(String username) {
+		Mono<Object> flag = authClient.get().uri("/generateAuthToken?email=" + username)
+				.accept(MediaType.APPLICATION_JSON)
+				.retrieve()
+				.bodyToMono(new ParameterizedTypeReference<Object>() {});
+		String token = Objects.requireNonNull(flag.block()).toString().replace("{","").replace("}","").replace("token=","");
+
 		User existUser = repo.getUserByUsername(username);
 		if (existUser == null) {
 			User newUser = new User();
 			newUser.setUsername(username);
 			newUser.setProvider(Provider.GOOGLE);
 			newUser.setEnabled(true);
-
-			Mono<Object> flag = authClient.get().uri("/generateAuthToken?email=" + username)
-					.accept(MediaType.APPLICATION_JSON)
-					.retrieve()
-					.bodyToMono(new ParameterizedTypeReference<Object>() {});
-				String token = Objects.requireNonNull(flag.block()).toString().replace("{","").replace("}","").replace("token=","");
-				newUser.setToken(token);
+			newUser.setToken(token);
 
 			repo.save(newUser);
-			
+
 			System.out.println("Created new user: " + username);
-			return token;
+		}else {
+			existUser.setToken(token);
+			repo.save(existUser);
+			System.out.println("Updated existing user token: " + username);
 		}
-		return "";
+		return token;
 	}
 
 	public String getAuthToken(String userName){

@@ -15,7 +15,8 @@ public class MemberResponseDTO {
 
     private long memberId;
 
-    private String fullName;
+    private String firstName;
+    private String lastName;
 
     private LocalDate dateOfBirth;
 
@@ -28,8 +29,6 @@ public class MemberResponseDTO {
     private String password;
 
     private LocalDate registrationDate;
-
-
 
     private String collegeName;
 

@@ -10,10 +10,12 @@ import java.time.LocalDate;
 @Data
 public class MemberDTO {
 
-    @NotEmpty(message = "The full name is required.")
-    @Size(min = 10, max = 100, message = "The length of full name must be between 2 and 100 characters.")
-    private String fullName;
-
+    @NotEmpty(message = "The first name is required.")
+    @Size(min = 1, max = 20, message = "The length of first name must be at least 1 character")
+    private String firstName;
+    @NotEmpty(message = "The last name is required.")
+    @Size(min = 1, max = 20, message = "The length of last name must be at least 1 character")
+    private String lastName;
 //    @NotEmpty(message = "The date Of Birth is required.")
     private LocalDate dateOfBirth;
 

@@ -17,7 +17,7 @@ public interface MemberDao extends JpaRepository<Member, Long> {
         return countAllByMemberIdIn(ids).equals(ids.size());
     }
 //    Optional<Student> findByIds(Long requestFrom, Long requestTo);
-    List<Member> findByFullNameStartsWith(String partialKey);
+    List<Member> findByFirstNameStartsWith(String partialKey);
     ArrayList<Member> findByCollegeNameAndSchoolNameAndCompanyName(String collegeName, String schoolName, String companyName);
 
     /*@Query("SELECT * FROM Employee EMP WHERE EMP.officeId= :officeId AND (:floorId is null OR EMP.floorId = :floorId)")

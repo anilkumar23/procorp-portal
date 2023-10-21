@@ -1,6 +1,7 @@
 package com.procorp.chat.resource;
 
 import com.procorp.chat.dtos.FilterDTO;
+import com.procorp.chat.dtos.GlobalResponseDTO;
 import com.procorp.chat.dtos.MemberDTO;
 import com.procorp.chat.entities.Member;
 import com.procorp.chat.service.MemberService;
@@ -29,10 +30,9 @@ public class MemberRegistrationResource {
     private MemberService memberService;
 
     @PostMapping("/member")
-    public String addStudent(@Valid @RequestBody MemberDTO member) {
-        LOG.info("member :: member Name {}", member.getFullName());
-        memberService.addMember(member);
-        return "member with Name:" + member.getFullName() + " has been Added.";
+    public ResponseEntity<GlobalResponseDTO> addStudent(@Valid @RequestBody MemberDTO member) {
+        LOG.info("member :: member Name {} {}", member.getFirstName(), member.getLastName());
+        return memberService.addMember(member);
     }
 
     @DeleteMapping("/member/{memberId}")
@@ -42,18 +42,18 @@ public class MemberRegistrationResource {
     }
 
     @GetMapping("/getMemberById/{memberId}")
-    public Member getMemberById(@PathVariable Long memberId) {
+    public GlobalResponseDTO getMemberById(@PathVariable Long memberId) {
         return memberService.getMemberById(memberId);
     }
 
     @GetMapping("/getAllMembers")
-    public List<Member> getAllStudents(Long memberId) {
+    public List<Member> getAllMembers(Long memberId) {
         return memberService.getAllMembers(memberId);
 
     }
 
     @PutMapping("/member")
-    public Long updateStudent(@javax.validation.Valid @RequestBody MemberDTO member) {
+    public Long updateMember(@javax.validation.Valid @RequestBody MemberDTO member) {
         return memberService.updateMember(member);
     }
 
