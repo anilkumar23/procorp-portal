@@ -3,6 +3,7 @@ package com.procorp.ordermanagement.controller;
 
 
 import com.procorp.ordermanagement.dto.OrderProductDto;
+import com.procorp.ordermanagement.dto.UpdateOrderForm;
 import com.procorp.ordermanagement.entities.Order;
 import com.procorp.ordermanagement.entities.OrderProduct;
 import com.procorp.ordermanagement.entities.OrderStatus;
@@ -55,12 +56,28 @@ public class OrderController {
 
     }
 
+    @PutMapping(path = "/update/{orderID}")
+    @ResponseStatus(HttpStatus.OK)
+   public @NotNull ResponseEntity<?> updateOrderById(@PathVariable(name = "orderID") Long orderID,
+                                                     @RequestBody UpdateOrderForm updatedForm) {
+               Optional<Order> updatedOrder= this.orderService.updateOrderById(orderID, updatedForm);
+                if(updatedOrder.isPresent()){
+                        return new ResponseEntity<>(updatedOrder.get(), HttpStatus.OK);
+                    }else{
+                       return new ResponseEntity<>("order not found ", HttpStatus.NO_CONTENT);
+                   }
+
+    }
+
     @PostMapping
     public ResponseEntity<Order> create(@RequestBody OrderForm form) {
         List<OrderProductDto> formDtos = form.getProductOrders();
         validateProductsExistence(formDtos);
         Order order = new Order();
         order.setStatus(OrderStatus.CHECKOUT.name());
+        order.setUserId(String.valueOf(form.getUserId()));
+        order.setPaymentMode("Not-Yet-Selected");
+        order.setAddressId(null);
         order = this.orderService.create(order);
 
         List<OrderProduct> orderProducts = new ArrayList<>();
@@ -99,6 +116,16 @@ public class OrderController {
     }
 
     public static class OrderForm {
+
+        private Long userId;
+
+        public Long getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Long userId) {
+            this.userId = userId;
+        }
 
         private List<OrderProductDto> productOrders;
 

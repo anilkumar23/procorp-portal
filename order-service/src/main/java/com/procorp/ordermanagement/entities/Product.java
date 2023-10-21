@@ -22,19 +22,21 @@ public class Product {
 
     private String pictureUrl;
 
-    private String dressType;
+    private String productType;
 
     private String sex;
 
+    private String status;
 
-    public Product(Long id, String name, Double price, Double quantity, String pictureUrl, String dressType, String sex) {
+    public Product(Long id, String name, Double price, Double quantity, String pictureUrl, String productType, String sex, String status) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
         this.pictureUrl = pictureUrl;
-        this.dressType = dressType;
+        this.productType = productType;
         this.sex = sex;
+        this.status=status;
     }
 
     public Product() {
@@ -72,12 +74,20 @@ public class Product {
         this.pictureUrl = pictureUrl;
     }
 
-    public String getDressType() {
-        return dressType;
+    public String getProductType() {
+        return productType;
     }
 
-    public void setDressType(String dressType) {
-        this.dressType = dressType;
+    public void setProductType(String productType) {
+        this.productType = productType;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getSex() {
@@ -104,8 +114,9 @@ public class Product {
                 ", price=" + price +
                 ", quantity=" + quantity +
                 ", pictureUrl='" + pictureUrl + '\'' +
-                ", dressType='" + dressType + '\'' +
+                ", productType='" + productType + '\'' +
                 ", sex='" + sex + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 }

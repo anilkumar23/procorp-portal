@@ -18,7 +18,7 @@ public class OrderManagementApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(OrderManagementApplication.class, args);
 	}
-/*
+
 	@Bean
 	CommandLineRunner init(UserRepository userRepository) {
 		return args -> {
@@ -33,13 +33,13 @@ public class OrderManagementApplication {
 	@Bean
 	CommandLineRunner runner(ProductService productService) {
 		return args -> {
-			productService.save(new Product(1L, "TV Set", 300.00,10.0, "http://placehold.it/200x100","Jeans","Male"));
-			productService.save(new Product(2L, "Game Console", 200.00,10.0, "http://placehold.it/200x100","Jeans","Female"));
-			productService.save(new Product(3L, "Sofa", 100.00, 10.0,"http://placehold.it/200x100","tshirts","Male"));
-			productService.save(new Product(4L, "Icecream", 5.00, 10.0,"http://placehold.it/200x100","Jeans","Female"));
-			productService.save(new Product(5L, "Beer", 3.00, 10.0,"http://placehold.it/200x100","Chudidhars","Female"));
-			productService.save(new Product(6L, "Phone", 500.00, 10.0,"http://placehold.it/200x100","shirts","Kids"));
-			productService.save(new Product(7L, "Watch", 30.00, 10.0,"http://placehold.it/200x100","Saree","Female"));
+			productService.save(new Product(1L, "TV Set", 300.00,10.0, "http://placehold.it/200x100","Jeans","Male","Active"));
+			productService.save(new Product(2L, "Game Console", 200.00,10.0, "http://placehold.it/200x100","Jeans","Female","Active"));
+			productService.save(new Product(3L, "Sofa", 100.00, 10.0,"http://placehold.it/200x100","tshirts","Male","Active"));
+			productService.save(new Product(4L, "Icecream", 5.00, 10.0,"http://placehold.it/200x100","Jeans","Female","Active"));
+			productService.save(new Product(5L, "Beer", 3.00, 10.0,"http://placehold.it/200x100","Chudidhars","Female","Active"));
+			productService.save(new Product(6L, "Phone", 500.00, 10.0,"http://placehold.it/200x100","shirts","Kids","Active"));
+			productService.save(new Product(7L, "Watch", 30.00, 10.0,"http://placehold.it/200x100","Saree","Female","Active"));
 		};
-	}*/
+	}
 }

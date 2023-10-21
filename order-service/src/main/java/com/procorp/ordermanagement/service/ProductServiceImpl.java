@@ -50,7 +50,7 @@ public class ProductServiceImpl implements ProductService {
          Product product=existingProduct.get();
          product.setName(dto.getName());
          product.setSex(dto.getSex());
-         product.setDressType(dto.getDressType());
+         product.setProductType(dto.getProductType());
          product.setPrice(dto.getPrice());
          product.setPictureUrl(dto.getPictureUrl());
           return productRepository.save(product);

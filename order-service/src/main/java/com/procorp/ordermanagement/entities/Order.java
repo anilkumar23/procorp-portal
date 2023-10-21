@@ -23,13 +23,24 @@ public class Order {
 
     @JsonFormat(pattern = "dd/MM/yyyy") private LocalDate dateCreated;
 
+    @Column(name = "status")
     private String status;
+
+    @Column(name = "userId")
+    private String userId;
+
+    @Column(name = "addressId")
+    private String addressId;
+
+    @Column(name = "paymentMode")
+    private String paymentMode;
 
     @OneToMany(mappedBy = "pk.order")
     @Valid
     private List<OrderProduct> orderProducts = new ArrayList<>();
 
-    @Transient
+  //  @Transient
+    @Column(name = "totalPrice")
     public Double getTotalOrderPrice() {
         double sum = 0D;
         List<OrderProduct> orderProducts = getOrderProducts();
@@ -72,8 +83,33 @@ public class Order {
         this.orderProducts = orderProducts;
     }
 
-    @Transient
+   // @Transient
+    @Column(name = "numberOfProducts")
     public int getNumberOfProducts() {
         return this.orderProducts.size();
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
+    }
+
+    public String getPaymentMode() {
+        return paymentMode;
+    }
+
+    public void setPaymentMode(String paymentMode) {
+        this.paymentMode = paymentMode;
     }
 }

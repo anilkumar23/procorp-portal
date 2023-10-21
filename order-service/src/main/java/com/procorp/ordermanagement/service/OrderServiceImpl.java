@@ -1,6 +1,8 @@
 package com.procorp.ordermanagement.service;
 
+import com.procorp.ordermanagement.dto.UpdateOrderForm;
 import com.procorp.ordermanagement.entities.Order;
+import com.procorp.ordermanagement.exception.ResourceNotFoundException;
 import com.procorp.ordermanagement.repositories.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,4 +41,25 @@ public class OrderServiceImpl implements OrderService {
     public Optional<Order> getOrderById(Long id){
         return Optional.of(this.orderRepository.findById(id).get());
     }
+
+
+    @Override
+    public  Optional<Order> updateOrderById(Long id,UpdateOrderForm updatedForm){
+                Order existingOrder = this.orderRepository.findById(id).get();
+                if(existingOrder!=null){
+                     if(updatedForm!=null && updatedForm.getAddressId()!=null){
+                               existingOrder.setAddressId(updatedForm.getAddressId());
+                           }
+                        if(updatedForm!=null && updatedForm.getPaymentMode()!=null){
+                                existingOrder.setPaymentMode(updatedForm.getPaymentMode());
+                           }
+                       if(updatedForm!=null && updatedForm.getOrderStatus()!=null){
+                                existingOrder.setStatus(updatedForm.getOrderStatus());
+                           }
+                        Optional<Order>  updateOrder= Optional.of(orderRepository.save(existingOrder));
+                        return updateOrder;
+                    }else{
+                       throw  new ResourceNotFoundException("Order not found");
+                    }
+            }
 }

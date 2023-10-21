@@ -9,9 +9,11 @@ public class ProductDto {
 
     private String pictureUrl;
 
-    private String dressType;
+    private String productType;
 
     private String sex;
+    private String status;
+
 
     public String getName() {
         return name;
@@ -37,13 +39,7 @@ public class ProductDto {
         this.pictureUrl = pictureUrl;
     }
 
-    public String getDressType() {
-        return dressType;
-    }
 
-    public void setDressType(String dressType) {
-        this.dressType = dressType;
-    }
 
     public String getSex() {
         return sex;
@@ -61,15 +57,19 @@ public class ProductDto {
         this.quantity = quantity;
     }
 
-    @Override
-    public String toString() {
-        return "ProductDto{" +
-                "name='" + name + '\'' +
-                ", price=" + price +
-                ", quantity=" + quantity +
-                ", pictureUrl='" + pictureUrl + '\'' +
-                ", dressType='" + dressType + '\'' +
-                ", sex='" + sex + '\'' +
-                '}';
+    public String getProductType() {
+        return productType;
+    }
+
+    public void setProductType(String productType) {
+        this.productType = productType;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

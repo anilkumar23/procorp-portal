@@ -22,6 +22,7 @@ public class ApiExceptionHandler {
             ErrorItem error = new ErrorItem();
             error.setCode(violation.getMessageTemplate());
             error.setMessage(violation.getMessage());
+            error.setService("order-service");
             errors.addError(error);
         }
 
@@ -33,15 +34,34 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErrorItem> handle(ResourceNotFoundException e) {
         ErrorItem error = new ErrorItem();
         error.setMessage(e.getMessage());
+        error.setService("order-service");
 
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorItem> handleGlobalException(Exception e) {
+                ErrorItem error = new ErrorItem();
+                error.setMessage(e.getMessage());
+                error.setService("order-service");
+
+                return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
 
     public static class ErrorItem {
 
         @JsonInclude(JsonInclude.Include.NON_NULL) private String code;
 
         private String message;
+        private String service;
+
+        public String getService() {
+            return service;
+        }
+
+        public void setService(String service) {
+            this.service = service;
+        }
 
         public String getCode() {
             return code;

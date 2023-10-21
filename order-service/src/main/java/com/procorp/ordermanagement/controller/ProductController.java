@@ -37,7 +37,8 @@ public class ProductController {
         p.setPrice(dto.getPrice());
         p.setPictureUrl(dto.getPictureUrl());
         p.setSex(dto.getSex());
-        p.setDressType(dto.getDressType());
+        p.setProductType(dto.getProductType());
+        p.setStatus(dto.getStatus());
         p.setQuantity(dto.getQuantity());
         return new ResponseEntity<>(productService.save(p), HttpStatus.CREATED);
     }

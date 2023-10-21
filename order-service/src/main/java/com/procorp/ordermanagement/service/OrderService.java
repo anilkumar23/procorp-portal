@@ -1,5 +1,6 @@
 package com.procorp.ordermanagement.service;
 
+import com.procorp.ordermanagement.dto.UpdateOrderForm;
 import com.procorp.ordermanagement.entities.Order;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -17,4 +18,7 @@ public interface OrderService {
     void update(@NotNull(message = "The order cannot be null.") @Valid Order order);
 
     Optional<Order> getOrderById(@NotNull(message = "Order id cannot be null.") @Valid Long id);
+
+    Optional<Order> updateOrderById(@NotNull(message = "Order id cannot be null.") @Valid Long id,
+                                    UpdateOrderForm updatedForm);
 }
