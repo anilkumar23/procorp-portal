@@ -3,6 +3,7 @@ package com.procorp.chat.resource;
 import com.procorp.chat.dtos.FriendRequestDTO;
 import com.procorp.chat.service.FriendService;
 import com.procorp.chat.service.MemberService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("friend-service")
+@SecurityRequirement(name = "bearerAuth")
 public class FriendResource {
     private final static Logger LOG = LoggerFactory.getLogger(FriendResource.class);
     @Autowired
@@ -35,6 +37,11 @@ public class FriendResource {
     public List<FriendRequestDTO> getFriendRequestsSent(@Valid @RequestParam Long requestFrom) {
 //        LOG.info("Student :: Student Name {}", student.getFullName());
         return friendsService.getFriendRequestsSent(requestFrom);
+    }
+
+    @GetMapping("/getFriendRequests")
+    public List<FriendRequestDTO> getFriendRequests(@Valid @RequestParam Long requestFrom) {
+        return friendsService.getFriendRequests(requestFrom);
     }
 
     @GetMapping("/getFriendRequestsReceived")

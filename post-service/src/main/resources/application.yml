@@ -1,0 +1,43 @@
+cloud:
+  aws:
+    credentials:
+      access-key: <Provide ur access key>
+      secret-key: <provide ur secret key>
+    region:
+      static: us-east-1
+    stack:
+      auto: false
+
+application:
+  bucket:
+    name: procorp-assets
+
+
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 10MB
+      max-file-size: 10MB
+      max-request-size: 10MB
+  datasource:
+    password: 'root1234'
+    url: jdbc:postgresql://database-1.cgozpwe8t4p9.us-east-1.rds.amazonaws.com:5432/postgres
+    username: 'postgres'
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+springdoc:
+  api-docs:
+    version: "openapi_3_0"
+server:
+  port: 8093
+
+friendsService:
+  base:
+    url: http://localhost:8090/friend-service
+authService:
+  base:
+    url: http://localhost:8092/auth-service/isAuthenticated
+

@@ -16,5 +16,4 @@ public class TokenController {
 	public String getAuthToken(@RequestParam String email){
 		return repo.getTokenByUsername(email);
 	}
-
 }

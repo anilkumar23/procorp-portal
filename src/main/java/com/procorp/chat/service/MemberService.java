@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,21 +32,54 @@ public class MemberService {
     private FriendRequestDao friendRequestDao;
 
     @Transactional
-    public Long addMember(MemberDTO memberDTO) {
-        Member member = Member.builder().fullName(memberDTO.getFullName()).mobileNumber(memberDTO.getMobileNumber())
+    public ResponseEntity<GlobalResponseDTO> addMember(MemberDTO memberDTO) {
+        Member member = Member.builder().firstName(memberDTO.getFirstName())
+                .lastName(memberDTO.getLastName()).mobileNumber(memberDTO.getMobileNumber())
                 .gender(memberDTO.getGender()).email(memberDTO.getEmail()).password(memberDTO.getPassword())
                 .dateOfBirth(memberDTO.getDateOfBirth()).registrationDate(memberDTO.getRegistrationDate())
                 .schoolName(memberDTO.getEducationDetails().getSchool()).collegeName(memberDTO.getEducationDetails()
                         .getCollege()).companyName(memberDTO.getWorkDetailsDTO().getCompanyName())
                 .build();
-        memberDao.save(member);
-        LOG.info("Student {} Successfully added", member.getMemberId());
-        return member.getMemberId();
+        try {
+            MemberResponseDTO dto = mapEntityToDTO(memberDao.save(member));
+
+            LOG.info("Member {} Successfully created", member.getMemberId());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                             .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Member "+dto.getMemberId()+" Successfully created")
+                            .responseObj(dto)
+                            .build());
+        }catch (Exception ex){
+            LOG.info("Member {} creation was unSuccessFull", member.getMemberId());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                            .status(HttpStatus.INTERNAL_SERVER_ERROR.name())
+                            .msg("Member "+member.getMemberId()+" creation was UnSuccessful")
+                            .responseObj(null)
+                            .build());
+        }
+
     }
 
     @Transactional
-    public Member getMemberById(Long memberId) {
-        return memberDao.findById(memberId).get();
+    public GlobalResponseDTO getMemberById(Long memberId) {
+        Optional<Member> member = memberDao.findById(memberId);
+        if (member.isPresent())
+            return GlobalResponseDTO.builder()
+                    .statusCode(HttpStatus.OK.value())
+                    .status(HttpStatus.OK.name())
+                    .responseObj(mapEntityToDTO(member.get()))
+                    .build();
+        return  GlobalResponseDTO.builder()
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.name())
+                .responseObj(null)
+                .build();
     }
 
     @Transactional
@@ -57,7 +89,8 @@ public class MemberService {
 
     @Transactional
     public Long updateMember(MemberDTO memberDTO) {
-        Member member = Member.builder().fullName(memberDTO.getFullName()).mobileNumber(memberDTO.getMobileNumber())
+        Member member = Member.builder().firstName(memberDTO.getFirstName())
+                .lastName(memberDTO.getLastName()).mobileNumber(memberDTO.getMobileNumber())
                 .gender(memberDTO.getGender()).email(memberDTO.getEmail()).password(memberDTO.getPassword())
                 .dateOfBirth(memberDTO.getDateOfBirth()).registrationDate(memberDTO.getRegistrationDate())
                 .schoolName(memberDTO.getEducationDetails().getSchool()).collegeName(memberDTO.getEducationDetails().getCollege())
@@ -80,7 +113,7 @@ public class MemberService {
     public ResponseEntity<?> findMembersWithPartialSearch(FilterDTO filterDTO){
         Optional<Member> member = memberDao.findById(filterDTO.getMemberId());
         if (member.isPresent()) {
-            List<Member> members = memberDao.findByFullNameStartsWith(filterDTO.getUserSearchKey());
+            List<Member> members = memberDao.findByFirstNameStartsWith(filterDTO.getUserSearchKey());
             ArrayList<Member> tmpList = new ArrayList<>();
             if (members != null && !members.isEmpty()) {
                 if (filterDTO.isCollegeName()) {
@@ -92,18 +125,13 @@ public class MemberService {
                 }
                 tmpList.add(member.get());
                 members.removeAll(tmpList);
-//                OTPValidationDTO temp = new OTPValidationDTO();
-//                temp.setMemberResponseDTO();
-//                for (int i=0; i<1; i++){
-//                    Member member1 = members.get(0);
-//                    CustomMultipartFile file = new CustomMultipartFile(ImageUtil.decompressImage(member1.getImageData()));
-//                    temp.setImageData(file);
-//                }
-
                 return ResponseEntity.status(HttpStatus.OK)
-//                        .contentType(MediaType.valueOf("image/png"))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(mapEntityToDTO(members));
+                        .body(GlobalResponseDTO.builder()
+                                        .statusCode(HttpStatus.OK.value())
+                                        .status(HttpStatus.OK.name())
+                                        .responseObj(mapEntityToDTO(members))
+                                        .build());
             }
         }
         return null;
@@ -114,7 +142,8 @@ public class MemberService {
         members.forEach(n ->
                 membersDTO.add(MemberResponseDTO.builder()
                         .memberId(n.getMemberId())
-                        .fullName(n.getFullName())
+                        .firstName(n.getFirstName())
+                        .lastName(n.getLastName())
                         .dateOfBirth(n.getDateOfBirth())
                         .gender(n.getGender())
                         .mobileNumber(n.getMobileNumber())
@@ -126,6 +155,21 @@ public class MemberService {
                         .companyName(n.getCompanyName())
                         .build()));
         return membersDTO;
+    }
+    private MemberResponseDTO mapEntityToDTO(Member n) {
+                return MemberResponseDTO.builder()
+                        .memberId(n.getMemberId())
+                        .firstName(n.getFirstName())
+                        .lastName(n.getLastName())
+                        .dateOfBirth(n.getDateOfBirth())
+                        .gender(n.getGender())
+                        .mobileNumber(n.getMobileNumber())
+                        .email(n.getEmail())
+                        .password(n.getPassword())
+                        .registrationDate(n.getRegistrationDate())
+                        .collegeName(n.getCollegeName())
+                        .companyName(n.getCompanyName())
+                        .build();
     }
     @Transactional
     public ResponseEntity<?> uploadImage(MultipartFile file, long memberId) throws IOException {

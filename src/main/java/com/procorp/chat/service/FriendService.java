@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class FriendService {
@@ -46,12 +47,21 @@ public class FriendService {
     }
 
     public List<FriendRequestDTO> getFriendRequestsSent(Long requestFrom) {
-        List<FriendRequest> friendRequests = friendRequestDao.findByRequestFrom(requestFrom);
+       List<FriendRequest> friendRequests = friendRequestDao.findByRequestFrom(requestFrom);
         return mapEntityToDTO(friendRequests);
+    }
+
+    public List<FriendRequestDTO> getFriendRequests(Long requestFrom) {
+        List<FriendRequest> friendRequestList =
+                friendRequestDao.findAllByRequestFromOrRequestTo(requestFrom, requestFrom);
+        ArrayList<FriendRequest> approvedList = new ArrayList<>(friendRequestList.stream()
+                .filter(n -> n.getFriendRequestStatus().equalsIgnoreCase("Accepted")).toList());
+        return mapEntityToDTO(approvedList);
     }
     private List<FriendRequestDTO> mapEntityToDTO(List<FriendRequest> friendRequests){
         List<FriendRequestDTO> friendRequestDTOList = new ArrayList<>();
-        friendRequests.forEach(n-> friendRequestDTOList.add(new FriendRequestDTO(n.getId(), n.getRequestFrom(), n.getRequestTo(), n.getFriendRequestStatus(), n.getBlockedBy())));
+        friendRequests.forEach(n-> friendRequestDTOList.add(new FriendRequestDTO(n.getId(), n.getRequestFrom(),
+                n.getRequestTo(), n.getFriendRequestStatus(), n.getBlockedBy())));
         return friendRequestDTOList;
     }
     public List<FriendRequestDTO> getFriendRequestsReceived(Long requestTo) {

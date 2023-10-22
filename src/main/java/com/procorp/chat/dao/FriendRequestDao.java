@@ -16,5 +16,6 @@ public interface FriendRequestDao extends JpaRepository<FriendRequest, Long> {
     public List<FriendRequest> findByRequestTo(Long requestTo);
 
     public List<FriendRequest> findByBlockedBy(Long blockedBy);
+    List<FriendRequest> findAllByRequestFromOrRequestTo(long requestFrom, long requestTo);
 
 }
