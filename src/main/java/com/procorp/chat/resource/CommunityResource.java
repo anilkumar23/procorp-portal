@@ -49,15 +49,14 @@ public class CommunityResource {
 
 
     @PutMapping("/joinCommunity")
-    public String joinCommunity(@Valid @RequestParam Long commId ,@RequestParam Long memberID) {
-        communnityService.joinCommunity(commId,memberID);
+    public String joinCommunity(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
+        communnityService.joinCommunity(commId,memberId);
         return "community request submitted";
     }
 
     @PutMapping("/acceptCommunityJoinRequest")
-    public String acceptCommunityJoinRequest(@Valid @RequestParam Long commId ,@RequestParam Long memberID) {
-        communnityService.acceptCommunityJoinRequest(commId,memberID);
-        return "community request submitted";
+    public String acceptCommunityJoinRequest(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
+        return communnityService.acceptCommunityJoinRequest(commId,memberId);
     }
 
     @GetMapping("/communityMembersList")
@@ -69,6 +68,20 @@ public class CommunityResource {
     public List<CommunityMember> getCommunityMembersRequests(@Valid @RequestParam Long commId) {
         return communnityService.getCommunityMembersRequests(commId);
     }
+
+
+    // APIS to manage communities by Admins
+
+    //approve communiity
+
+    @PutMapping("/approveCommunity")
+    public String approveCommunity(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
+        communnityService.approveCommunity(commId,memberId);
+        return "community request approved";
+    }
+
+
+
 //
 //    @PutMapping("/inviteToCommunity")
 //    public String inviteToCommunity(@Valid @RequestParam Long commId ,@RequestBody Community community) {
