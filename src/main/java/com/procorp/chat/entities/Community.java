@@ -27,6 +27,8 @@ public class Community {
 
     String groupPhoto;
 
+    String communityStatus;
+
     //comm privacy settinsg
 
 }
