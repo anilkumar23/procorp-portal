@@ -2,6 +2,7 @@ package com.procorp.chat.resource;
 
 import com.procorp.chat.dtos.CommunityDTO;
 import com.procorp.chat.dtos.FriendRequestDTO;
+import com.procorp.chat.dtos.GlobalResponseDTO;
 import com.procorp.chat.entities.Community;
 import com.procorp.chat.entities.CommunityMember;
 import com.procorp.chat.entities.Member;
@@ -12,8 +13,12 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -31,42 +36,125 @@ public class CommunityResource {
     private MemberService memberService;
 
     @PostMapping("/community")
-    public String createCommunity(@Valid @RequestBody CommunityDTO community) {
+    public ResponseEntity<?> createCommunity(@Valid @RequestBody CommunityDTO community) {
         communnityService.createCommunity(community);
-        return "community created";
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("community created")
+                        .responseObj("community created")
+                        .build());
+        //return "community created";
     }
 
     @PutMapping("/community")
-    public String updateCommunity(@Valid @RequestParam Long commId ,@RequestBody CommunityDTO community) {
+    public ResponseEntity<?> updateCommunity(@Valid @RequestParam Long commId ,@RequestBody CommunityDTO community) {
         communnityService.updateCommunity(commId,community);
-        return "community details updated";
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("community details updated")
+                        .responseObj("community details updated")
+                        .build());
+       // return "community details updated";
     }
 
     @GetMapping("/communities")
-    public List<Community>  getAllCommunities() {
-        return communnityService.getAllCommunities();
+    public ResponseEntity<?>  getAllCommunities() {
+
+        List<Community> communities = communnityService.getAllCommunities();
+      //  return communnityService.getAllCommunities();
+        if(communities!=null && !communities.isEmpty()){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Got the community details List")
+                            .responseObj(communities)
+                            .build());
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.NO_CONTENT.value())
+                        .status(HttpStatus.NO_CONTENT.name())
+                        .msg("community details are empty")
+                        .responseObj(new ArrayList<>())
+                        .build());
     }
 
 
     @PutMapping("/joinCommunity")
-    public String joinCommunity(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
+    public ResponseEntity<?> joinCommunity(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
         communnityService.joinCommunity(commId,memberId);
-        return "community request submitted";
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("community request submitted")
+                        .responseObj("community request submitted")
+                        .build());
+       // return "community request submitted";
     }
 
     @PutMapping("/acceptCommunityJoinRequest")
-    public String acceptCommunityJoinRequest(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
+    public ResponseEntity<?> acceptCommunityJoinRequest(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
         return communnityService.acceptCommunityJoinRequest(commId,memberId);
     }
 
     @GetMapping("/communityMembersList")
-    public List<CommunityMember> getCommunityMembersList(@Valid @RequestParam Long commId) {
-        return communnityService.getCommunityMembersList(commId);
+    public ResponseEntity<?> getCommunityMembersList(@Valid @RequestParam Long commId) {
+        List<CommunityMember> communityMembersList = communnityService.getCommunityMembersList(commId);
+        //return communnityService.getCommunityMembersList(commId);
+        if(communityMembersList!=null && !communityMembersList.isEmpty()){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Got the community member List")
+                            .responseObj(communityMembersList)
+                            .build());
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.NO_CONTENT.value())
+                        .status(HttpStatus.NO_CONTENT.name())
+                        .msg("community member list details are empty")
+                        .responseObj(new ArrayList<>())
+                        .build());
     }
 
     @GetMapping("/getCommunityMembersRequests")
-    public List<CommunityMember> getCommunityMembersRequests(@Valid @RequestParam Long commId) {
-        return communnityService.getCommunityMembersRequests(commId);
+    public ResponseEntity<?> getCommunityMembersRequests(@Valid @RequestParam Long commId) {
+      //  return communnityService.getCommunityMembersRequests(commId);
+        List<CommunityMember> communityMembersRequest = communnityService.getCommunityMembersRequests(commId);
+        if(communityMembersRequest!=null && !communityMembersRequest.isEmpty()){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Got the community member Request List")
+                            .responseObj(communityMembersRequest)
+                            .build());
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.NO_CONTENT.value())
+                        .status(HttpStatus.NO_CONTENT.name())
+                        .msg("community member request details are empty")
+                        .responseObj(new ArrayList<>())
+                        .build());
     }
 
 
@@ -75,9 +163,17 @@ public class CommunityResource {
     //approve communiity
 
     @PutMapping("/approveCommunity")
-    public String approveCommunity(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
+    public ResponseEntity<?> approveCommunity(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
         communnityService.approveCommunity(commId,memberId);
-        return "community request approved";
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("community request approved")
+                        .responseObj("community request approved")
+                        .build());
+       // return "community request approved";
     }
 
 

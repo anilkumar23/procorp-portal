@@ -3,10 +3,14 @@ package com.procorp.chat.service;
 import com.procorp.chat.dao.CommunityDao;
 import com.procorp.chat.dao.CommunityMemberDao;
 import com.procorp.chat.dtos.CommunityDTO;
+import com.procorp.chat.dtos.GlobalResponseDTO;
 import com.procorp.chat.entities.Community;
 import com.procorp.chat.entities.CommunityMember;
 import com.procorp.chat.entities.FriendRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -65,15 +69,31 @@ public class CommunnityService {
 
     }
 
-    public String acceptCommunityJoinRequest(Long commId, Long memberId) {
+    public ResponseEntity<?> acceptCommunityJoinRequest(Long commId, Long memberId) {
         CommunityMember member = communityMemberDao.findBymemberId(memberId);
         if(member!= null) {
             member.setStatus("accepted");
             communityMemberDao.save(member);
         } else {
-            return "member or community don't exist";
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("member or community don't exist")
+                            .responseObj("member or community don't exist")
+                            .build());
+            //return "member or community don't exist";
         }
-        return "community request accepted";
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("community request accepted")
+                        .responseObj("community request accepted")
+                        .build());
+        //return "community request accepted";
     }
 
     public List<CommunityMember> getCommunityMembersList(Long commId) {
