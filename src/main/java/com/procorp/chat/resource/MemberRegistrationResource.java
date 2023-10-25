@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,25 +37,50 @@ public class MemberRegistrationResource {
     }
 
     @DeleteMapping("/member/{memberId}")
-    public String removeStudent(Long memberId) {
+    public ResponseEntity<GlobalResponseDTO> removeStudent(Long memberId) {
         memberService.removeMember(memberId);
-        return "member with Id:" + memberId + " has been removed.";
+        LOG.info("member with Id:" + memberId + " has been removed.");
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("member with Id:" + memberId + " has been removed.")
+                        .responseObj("member with Id:" + memberId + " has been removed.")
+                        .build());
+      //  return "member with Id:" + memberId + " has been removed.";
     }
 
     @GetMapping("/getMemberById/{memberId}")
-    public GlobalResponseDTO getMemberById(@PathVariable Long memberId) {
+    public ResponseEntity<GlobalResponseDTO> getMemberById(@PathVariable Long memberId) {
         return memberService.getMemberById(memberId);
     }
 
     @GetMapping("/getAllMembers")
-    public List<Member> getAllMembers(Long memberId) {
-        return memberService.getAllMembers(memberId);
+    public ResponseEntity<?> getAllMembers(Long memberId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Got all members list with Id:" + memberId)
+                        .responseObj(memberService.getAllMembers(memberId))
+                        .build());
+      //  return memberService.getAllMembers(memberId);
 
     }
 
     @PutMapping("/member")
-    public Long updateMember(@javax.validation.Valid @RequestBody MemberDTO member) {
-        return memberService.updateMember(member);
+    public  ResponseEntity<?> updateMember(@javax.validation.Valid @RequestBody MemberDTO member) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Successfully updated the member object")
+                        .responseObj(memberService.updateMember(member))
+                        .build());
+      //  return memberService.updateMember(member);
     }
 
     @PostMapping(value = "/getAllMembersByPartialSearch", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -67,19 +67,23 @@ public class MemberService {
     }
 
     @Transactional
-    public GlobalResponseDTO getMemberById(Long memberId) {
+    public ResponseEntity<GlobalResponseDTO> getMemberById(Long memberId) {
         Optional<Member> member = memberDao.findById(memberId);
         if (member.isPresent())
-            return GlobalResponseDTO.builder()
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
                     .statusCode(HttpStatus.OK.value())
                     .status(HttpStatus.OK.name())
                     .responseObj(mapEntityToDTO(member.get()))
-                    .build();
-        return  GlobalResponseDTO.builder()
+                    .build());
+        return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
                 .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.name())
                 .responseObj(null)
-                .build();
+                .build());
     }
 
     @Transactional
@@ -134,7 +138,14 @@ public class MemberService {
                                         .build());
             }
         }
-        return null;
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.NO_CONTENT.value())
+                        .status(HttpStatus.NO_CONTENT.name())
+                        .msg("Member object was not found with ID: "+filterDTO.getMemberId())
+                        .responseObj(null)
+                        .build());
     }
 
     private List<MemberResponseDTO> mapEntityToDTO(List<Member> members) {
@@ -178,7 +189,13 @@ public class MemberService {
         memberDao.save(member);
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("image/png"))
-                .body("Image uploaded successfully");
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Image uploaded successfully with Member ID "+memberId)
+                        .responseObj("Image uploaded successfully with Member ID "+memberId)
+                        .build());
+               // .body("Image uploaded successfully");
     }
 
     @Transactional
@@ -187,21 +204,40 @@ public class MemberService {
         byte[] image = ImageUtil.decompressImage(member.getImageData());
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("image/png"))
-                .body(image);
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Got the uploaded Image successfully with Member ID "+memberId)
+                        .responseObj(image)
+                        .build());
+               // .body(image);
     }
 
     @Transactional
-    public ResponseEntity<ArrayList<Member>> getSuggestions(long memberId) {
+    public ResponseEntity<?> getSuggestions(long memberId) {
         Optional<Member> optionalMember = memberDao.findById(memberId);
         if (optionalMember.isPresent()) {
             Member member = optionalMember.get();
             ArrayList<Member> members = memberDao.findByCollegeNameAndSchoolNameAndCompanyName(member.getCollegeName(), member.getSchoolName(), member.getCompanyName());
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(members);
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Got the member list successfully with Member ID "+memberId)
+                            .responseObj(members)
+                            .build());
         }
 //        return ResponseEntity.status(HttpStatus.NO_CONTENT).body();
-        return null;
+       // return null;
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.NO_CONTENT.value())
+                        .status(HttpStatus.NO_CONTENT.name())
+                        .msg("No member list found with Member ID "+memberId)
+                        .responseObj(null)
+                        .build());
     }
 
 

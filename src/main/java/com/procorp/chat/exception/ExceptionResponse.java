@@ -3,6 +3,8 @@ package com.procorp.chat.exception;
 public class ExceptionResponse {
     private String errorMessage;
     private String errorCode;
+
+    private String service;
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
 //    private LocalDateTime timestamp;
 

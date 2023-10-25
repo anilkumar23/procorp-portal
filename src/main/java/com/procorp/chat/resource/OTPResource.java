@@ -1,10 +1,12 @@
 package com.procorp.chat.resource;
 
+import com.procorp.chat.dtos.GlobalResponseDTO;
 import com.procorp.chat.dtos.OTPValidationDTO;
 import com.procorp.chat.service.OTPService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +29,15 @@ public class OTPResource {
 
         String message = service.sendMobileOtp(request);
 
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg(message)
+                        .responseObj(message)
+                        .build());
+        //return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @PostMapping("/sendEmailOtp")
@@ -41,7 +51,15 @@ public class OTPResource {
 
         String message = service.senEmailOtp(request);
 
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg(message)
+                        .responseObj(message)
+                        .build());
+       // return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @PostMapping("/verifyMobileOtp")
