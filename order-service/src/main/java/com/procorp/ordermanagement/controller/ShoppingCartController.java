@@ -2,6 +2,7 @@ package com.procorp.ordermanagement.controller;
 
 
 import com.procorp.ordermanagement.dto.CartProductDto;
+import com.procorp.ordermanagement.dto.GlobalResponseDTO;
 import com.procorp.ordermanagement.entities.CartProduct;
 import com.procorp.ordermanagement.entities.CartProductPK;
 import com.procorp.ordermanagement.entities.ShoppingCart;
@@ -11,6 +12,7 @@ import com.procorp.ordermanagement.service.ShoppingCartProductService;
 import com.procorp.ordermanagement.service.ShoppingCartService;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -33,18 +35,43 @@ public class ShoppingCartController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public @NotNull Iterable<ShoppingCart> list() {
-        return this.shoppingCartService.getAllCartDetails();
+    public @NotNull ResponseEntity<?> getCartList() {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Got the cart list")
+                        .responseObj(this.shoppingCartService.getAllCartDetails())
+                        .build());
+        //return this.shoppingCartService.getAllCartDetails();
     }
 
     @GetMapping(path = "/{cartID}")
     @ResponseStatus(HttpStatus.OK)
-    public @NotNull ResponseEntity<?> getOrderById(@PathVariable(name = "cartID") Long cartID) {
+    public @NotNull ResponseEntity<?> getCartItemById(@PathVariable(name = "cartID") Long cartID) {
         Optional<ShoppingCart> cart= this.shoppingCartService.getOrderById(cartID);
         if(cart.isPresent()){
-            return new ResponseEntity<>(cart.get(), HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Got the Cart Item by ID")
+                            .responseObj(cart.get())
+                            .build());
+           // return new ResponseEntity<>(cart.get(), HttpStatus.OK);
         }else{
-            return new ResponseEntity<>("order not found ", HttpStatus.NO_CONTENT);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.NO_CONTENT.value())
+                            .status(HttpStatus.NO_CONTENT.name())
+                            .msg("Cart was not found")
+                            .responseObj("Cart was not found")
+                            .build());
+           // return new ResponseEntity<>("order not found ", HttpStatus.NO_CONTENT);
         }
 
     }
@@ -53,9 +80,25 @@ public class ShoppingCartController {
     public @NotNull ResponseEntity<?> getCartDetailsByUserId(@PathVariable(name = "userID") String userID) {
         Optional<ShoppingCart> cart= this.shoppingCartService.getCartDetailsByUSerId(userID);
         if(cart.isPresent()){
-            return new ResponseEntity<>(cart.get(), HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Got the Cart Item by userID")
+                            .responseObj(cart.get())
+                            .build());
+            //return new ResponseEntity<>(cart.get(), HttpStatus.OK);
         }else{
-            return new ResponseEntity<>("Cart Details was not found ", HttpStatus.NO_CONTENT);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.NO_CONTENT.value())
+                            .status(HttpStatus.NO_CONTENT.name())
+                            .msg("Cart Details was not found")
+                            .responseObj("Cart Details was not found")
+                            .build());
+            //return new ResponseEntity<>("Cart Details was not found ", HttpStatus.NO_CONTENT);
         }
 
     }
@@ -65,9 +108,25 @@ public class ShoppingCartController {
     public @NotNull ResponseEntity<?> getAllCartDetailsByUserId(@PathVariable(name = "userID") String userID) {
         List<ShoppingCart> cart= this.shoppingCartService.getAllCartDetailsByUSerId(userID);
         if(cart != null && !cart.isEmpty()){
-            return new ResponseEntity<>(cart, HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Got the Cart List By userID")
+                            .responseObj(cart)
+                            .build());
+            //return new ResponseEntity<>(cart, HttpStatus.OK);
         }else{
-            return new ResponseEntity<>("Cart details was not found ", HttpStatus.NO_CONTENT);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.NO_CONTENT.value())
+                            .status(HttpStatus.NO_CONTENT.name())
+                            .msg("Cart Details was not found")
+                            .responseObj("Cart Details was not found")
+                            .build());
+           // return new ResponseEntity<>("Cart details was not found ", HttpStatus.NO_CONTENT);
         }
 
     }
@@ -91,7 +150,15 @@ public class ShoppingCartController {
         cart.setCartProducts(cartProducts);
 
         this.shoppingCartService.update(cart);
-        return new ResponseEntity<>(cart, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.CREATED.value())
+                        .status(HttpStatus.CREATED.name())
+                        .msg("ShoppingCart created successfully")
+                        .responseObj(cart)
+                        .build());
+      //  return new ResponseEntity<>(cart, HttpStatus.CREATED);
     }
 
 
@@ -176,11 +243,27 @@ public class ShoppingCartController {
             this.shoppingCartService.update(updatedCart.get());
 
         }else{
-            return new ResponseEntity<>("No Data found", HttpStatus.NO_CONTENT);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.NO_CONTENT.value())
+                            .status(HttpStatus.NO_CONTENT.name())
+                            .msg("Cart Details was not found")
+                            .responseObj("Cart Details was not found")
+                            .build());
+           // return new ResponseEntity<>("No Data found", HttpStatus.NO_CONTENT);
         }
 
 
-        return new ResponseEntity<>(updatedCart, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Updated Cart successfully")
+                        .responseObj(updatedCart)
+                        .build());
+       // return new ResponseEntity<>(updatedCart, HttpStatus.OK);
     }
 
     private void validateProductsExistence(List<CartProductDto> cartProducts) {

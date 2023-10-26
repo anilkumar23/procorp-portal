@@ -2,11 +2,13 @@ package com.procorp.ordermanagement.controller;
 
 
 
+import com.procorp.ordermanagement.dto.GlobalResponseDTO;
 import com.procorp.ordermanagement.dto.OrderProductDto;
 import com.procorp.ordermanagement.dto.UpdateOrderForm;
 import com.procorp.ordermanagement.entities.Order;
 import com.procorp.ordermanagement.entities.OrderProduct;
 import com.procorp.ordermanagement.entities.OrderStatus;
+import com.procorp.ordermanagement.entities.ShoppingCart;
 import com.procorp.ordermanagement.exception.ResourceNotFoundException;
 import com.procorp.ordermanagement.service.OrderProductService;
 import com.procorp.ordermanagement.service.OrderService;
@@ -14,6 +16,7 @@ import com.procorp.ordermanagement.service.ProductService;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +43,17 @@ public class OrderController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public @NotNull Iterable<Order> list() {
-        return this.orderService.getAllOrders();
+    public @NotNull ResponseEntity<?> getOrderList() {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Got the order list")
+                        .responseObj(this.orderService.getAllOrders())
+                        .build());
+        //return this.orderService.getAllOrders();
     }
 
     @GetMapping(path = "/{orderID}")
@@ -49,9 +61,53 @@ public class OrderController {
     public @NotNull ResponseEntity<?> getOrderById(@PathVariable(name = "orderID") Long orderID) {
         Optional<Order> order= this.orderService.getOrderById(orderID);
         if(order.isPresent()){
-            return new ResponseEntity<>(order.get(), HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Got the order by orderID")
+                            .responseObj(order.get())
+                            .build());
+            //return new ResponseEntity<>(order.get(), HttpStatus.OK);
         }else{
-            return new ResponseEntity<>("order not found ", HttpStatus.NO_CONTENT);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.NO_CONTENT.value())
+                            .status(HttpStatus.NO_CONTENT.name())
+                            .msg("order was not found")
+                            .responseObj("order was not found")
+                            .build());
+         //   return new ResponseEntity<>("order not found ", HttpStatus.NO_CONTENT);
+        }
+
+    }
+
+    @GetMapping(path = "/order/{userID}")
+    @ResponseStatus(HttpStatus.OK)
+    public @NotNull ResponseEntity<?> getAllCartDetailsByUserId(@PathVariable(name = "userID") String userID) {
+        List<Order> orders= this.orderService.getAllOrderDetailsByUSerId(userID);
+        if(orders != null && !orders.isEmpty()){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Got the Order List By userID")
+                            .responseObj(orders)
+                            .build());
+            //return new ResponseEntity<>(cart, HttpStatus.OK);
+        }else{
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.NO_CONTENT.value())
+                            .status(HttpStatus.NO_CONTENT.name())
+                            .msg("Cart Details was not found")
+                            .responseObj("Cart Details was not found")
+                            .build());
+            // return new ResponseEntity<>("Cart details was not found ", HttpStatus.NO_CONTENT);
         }
 
     }
@@ -62,15 +118,31 @@ public class OrderController {
                                                      @RequestBody UpdateOrderForm updatedForm) {
                Optional<Order> updatedOrder= this.orderService.updateOrderById(orderID, updatedForm);
                 if(updatedOrder.isPresent()){
-                        return new ResponseEntity<>(updatedOrder.get(), HttpStatus.OK);
+                    return ResponseEntity.status(HttpStatus.OK)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body(GlobalResponseDTO.builder()
+                                    .statusCode(HttpStatus.OK.value())
+                                    .status(HttpStatus.OK.name())
+                                    .msg("Updated order successfully")
+                                    .responseObj(updatedOrder.get())
+                                    .build());
+                      //  return new ResponseEntity<>(updatedOrder.get(), HttpStatus.OK);
                     }else{
-                       return new ResponseEntity<>("order not found ", HttpStatus.NO_CONTENT);
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body(GlobalResponseDTO.builder()
+                                    .statusCode(HttpStatus.NO_CONTENT.value())
+                                    .status(HttpStatus.NO_CONTENT.name())
+                                    .msg("order was not found")
+                                    .responseObj("order was not found")
+                                    .build());
+                      // return new ResponseEntity<>("order not found ", HttpStatus.NO_CONTENT);
                    }
 
     }
 
     @PostMapping
-    public ResponseEntity<Order> create(@RequestBody OrderForm form) {
+    public ResponseEntity<?> create(@RequestBody OrderForm form) {
         List<OrderProductDto> formDtos = form.getProductOrders();
         validateProductsExistence(formDtos);
         Order order = new Order();
@@ -99,7 +171,15 @@ public class OrderController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", uri);
 
-        return new ResponseEntity<>(order, headers, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.CREATED.value())
+                        .status(HttpStatus.CREATED.name())
+                        .msg("Order created successfully")
+                        .responseObj(order)
+                        .build());
+      //  return new ResponseEntity<>(order, headers, HttpStatus.CREATED);
     }
 
     private void validateProductsExistence(List<OrderProductDto> orderProducts) {

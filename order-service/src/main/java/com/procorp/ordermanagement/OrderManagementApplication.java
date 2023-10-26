@@ -33,13 +33,13 @@ public class OrderManagementApplication {
 	@Bean
 	CommandLineRunner runner(ProductService productService) {
 		return args -> {
-			productService.save(new Product(1L, "TV Set", 300.00,10.0, "http://placehold.it/200x100","Jeans","Male","Active"));
-			productService.save(new Product(2L, "Game Console", 200.00,10.0, "http://placehold.it/200x100","Jeans","Female","Active"));
-			productService.save(new Product(3L, "Sofa", 100.00, 10.0,"http://placehold.it/200x100","tshirts","Male","Active"));
-			productService.save(new Product(4L, "Icecream", 5.00, 10.0,"http://placehold.it/200x100","Jeans","Female","Active"));
-			productService.save(new Product(5L, "Beer", 3.00, 10.0,"http://placehold.it/200x100","Chudidhars","Female","Active"));
-			productService.save(new Product(6L, "Phone", 500.00, 10.0,"http://placehold.it/200x100","shirts","Kids","Active"));
-			productService.save(new Product(7L, "Watch", 30.00, 10.0,"http://placehold.it/200x100","Saree","Female","Active"));
+			productService.save(new Product(1L, "TV Set", 300.00,10.0, "http://placehold.it/200x100","Jeans","Male","Instock"));
+			productService.save(new Product(2L, "Game Console", 200.00,10.0, "http://placehold.it/200x100","Jeans","Female","Instock"));
+			productService.save(new Product(3L, "Sofa", 100.00, 10.0,"http://placehold.it/200x100","tshirts","Male","Instock"));
+			productService.save(new Product(4L, "Icecream", 5.00, 10.0,"http://placehold.it/200x100","Jeans","Female","Instock"));
+			productService.save(new Product(5L, "Beer", 3.00, 10.0,"http://placehold.it/200x100","Chudidhars","Female","Instock"));
+			productService.save(new Product(6L, "Phone", 500.00, 10.0,"http://placehold.it/200x100","shirts","Kids","Instock"));
+			productService.save(new Product(7L, "Watch", 30.00, 10.0,"http://placehold.it/200x100","Saree","Female","Instock"));
 		};
 	}
 }

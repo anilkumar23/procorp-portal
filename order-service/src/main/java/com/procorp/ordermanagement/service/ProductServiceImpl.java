@@ -60,5 +60,19 @@ public class ProductServiceImpl implements ProductService {
         return null;
     }
 
+    @Override
+    public Product updateProductStatus(Long id){
+
+        Optional<Product> existingProduct= productRepository.findById(id);
+        if(existingProduct.isPresent()){
+            Product product=existingProduct.get();
+            product.setStatus("OutOfStock");
+            return productRepository.save(product);
+        }else {
+            new ResourceNotFoundException("Product not found");
+        }
+        return null;
+    }
+
 
 }

@@ -2,12 +2,14 @@ package com.procorp.ordermanagement.service;
 
 import com.procorp.ordermanagement.dto.UpdateOrderForm;
 import com.procorp.ordermanagement.entities.Order;
+import com.procorp.ordermanagement.entities.ShoppingCart;
 import com.procorp.ordermanagement.exception.ResourceNotFoundException;
 import com.procorp.ordermanagement.repositories.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -62,4 +64,9 @@ public class OrderServiceImpl implements OrderService {
                        throw  new ResourceNotFoundException("Order not found");
                     }
             }
+
+    @Override
+    public List<Order> getAllOrderDetailsByUSerId(String userID){
+        return  this.orderRepository.findAllTheOrderDetailsByUserId(userID);
+    }
 }

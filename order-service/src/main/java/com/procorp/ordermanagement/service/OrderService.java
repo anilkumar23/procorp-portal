@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
 import java.util.Optional;
 
 @Validated
@@ -21,4 +22,6 @@ public interface OrderService {
 
     Optional<Order> updateOrderById(@NotNull(message = "Order id cannot be null.") @Valid Long id,
                                     UpdateOrderForm updatedForm);
+
+    List<Order> getAllOrderDetailsByUSerId(String userID);
 }
