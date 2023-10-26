@@ -32,9 +32,11 @@ public class PostResource {
     public ResponseEntity<String> uploadFile(@RequestBody PostShareDetailsRequestDto requestDto) {
         return new ResponseEntity<>(service.reSharePost(requestDto), HttpStatus.OK);
     }
-    @GetMapping(value = "/getPostsByMemberId/{memberId}")
-    public ResponseEntity<ArrayList<PostResponseDTO>> getPostsByMemberId(@PathVariable long memberId) {
-        return new ResponseEntity<>(service.getPosts(memberId), HttpStatus.OK);
+    @GetMapping(value = "/getPostsByMemberId")
+    public  ResponseEntity<?> getPostsByMemberId(@RequestParam long memberId,
+     @RequestParam(defaultValue = "0") final Integer pageNumber,
+    @RequestParam(defaultValue = "5") final Integer size) {
+        return service.getPosts(memberId, pageNumber, size);
     }
 
     @GetMapping("/download/{fileName}")

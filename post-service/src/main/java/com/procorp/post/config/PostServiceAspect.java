@@ -37,7 +37,7 @@ public class PostServiceAspect {
 
             ResponseEntity<Boolean> response = null;
 
-            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(authServiceBaseUrl);
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(authServiceBaseUrl+"?token=" + accessToken);
 
             response = restTemplate.exchange(builder.toUriString(),
                     HttpMethod.GET,
