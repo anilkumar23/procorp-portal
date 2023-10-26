@@ -1,10 +1,10 @@
-package com.procorp.chat;
+package com.procorp.community;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
-import com.procorp.chat.dtos.ChatHistoryDTO;
-import com.procorp.chat.dtos.ChatHistoryDeserializer;
+import com.procorp.community.dtos.CommunityChatHistoryDeserializer;
+import com.procorp.community.dtos.CommunityChatHistoryDto;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -14,9 +14,9 @@ import org.springframework.context.annotation.PropertySource;
 @SpringBootApplication
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @PropertySource("classpath:application.properties")
-public class ChatApplication {
+public class CommunityChatApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ChatApplication.class, args);
+        SpringApplication.run(CommunityChatApplication.class, args);
     }
     @Bean
     ObjectMapper customizejacksonconfiguration() {
@@ -26,9 +26,9 @@ public class ChatApplication {
     }
 
     @Bean
-    public SimpleModule chatHistoryDeserializer() {
+    public SimpleModule communityChatHistoryDeserializer() {
         SimpleModule module = new SimpleModule();
-        module.addDeserializer(ChatHistoryDTO.class, new ChatHistoryDeserializer());
+        module.addDeserializer(CommunityChatHistoryDto.class, new CommunityChatHistoryDeserializer());
         return module;
     }
 }

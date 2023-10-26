@@ -36,8 +36,8 @@ public class ChatResource {
         return service.deleteChatByMessages(chatDTO);
     }
     @GetMapping(value = "/findChatByDate/{studentId}/{chatPersonId}/{date}", produces = MediaType.APPLICATION_JSON_VALUE)
-    private CopyOnWriteArrayList<Multimap<String, ChatHistoryDTO>> findChatByDate(@PathVariable Long studentId, Long chatPersonId, String date){
-        return service.findChatByDate(studentId, chatPersonId, date);
+    private CopyOnWriteArrayList<Multimap<String, ChatHistoryDTO>> findChat(@PathVariable Long studentId, @PathVariable Long chatPersonId, @PathVariable String date){
+        return service.findChat(studentId, chatPersonId, date);
     }
 
 }

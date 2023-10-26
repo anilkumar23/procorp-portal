@@ -13,8 +13,8 @@ public class ResourceController {
 	@Autowired
 	UserRepository repo;
 	@RequestMapping("/isAuthenticated")
-	public boolean isAuthenticated(@RequestParam String email){
-	 	return StringUtils.hasText(repo.getTokenByUsername(email));
+	public boolean isAuthenticated(@RequestParam String token){
+	 	return repo.findByToken(token).isPresent();
 	}
 	@RequestMapping("/getAuthToken")
 	public String getAuthToken(@RequestParam String email){
