@@ -36,19 +36,18 @@ public class PostServiceAspect {
             HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(headers);
 
             ResponseEntity<Boolean> response = null;
+            String[] tokenFields = accessToken.split(" ");
 
-            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(authServiceBaseUrl+"?token=" + accessToken);
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(authServiceBaseUrl+"?token=" + tokenFields[1]);
 
             response = restTemplate.exchange(builder.toUriString(),
                     HttpMethod.GET,
                     entity, Boolean.class);
-            if (response.getBody() != null)
-                return response.getBody();
+            if (response.getBody() == null || !response.getBody())
+                throw new UnauthorizedException("Invalid Bearer token or token has expired, please refresh token and give a try!!");;
         }catch (Exception authenticationException) {
-            if(authenticationException.toString().contains("401")){
-                throw new UnauthorizedException("Invalid Bearer token or token has expired, please refresh token and give a try!!");
-            }
+            throw new UnauthorizedException("Invalid Bearer token or token has expired, please refresh token and give a try!!");
         }
-        return false;
+        return true;
     }
 }

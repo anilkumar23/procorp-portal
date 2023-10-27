@@ -24,14 +24,14 @@ public class PostResource {
     private PostService service;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadFile(@ModelAttribute PostRequestDto requestDto) {
+    public ResponseEntity<?> uploadFile(@ModelAttribute PostRequestDto requestDto) {
         return new ResponseEntity<>(service.uploadFile(requestDto), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/reSharePost")
+  /*  @PostMapping(value = "/reSharePost")
     public ResponseEntity<String> uploadFile(@RequestBody PostShareDetailsRequestDto requestDto) {
         return new ResponseEntity<>(service.reSharePost(requestDto), HttpStatus.OK);
-    }
+    }*/
     @GetMapping(value = "/getPostsByMemberId")
     public  ResponseEntity<?> getPostsByMemberId(@RequestParam long memberId,
      @RequestParam(defaultValue = "0") final Integer pageNumber,
@@ -39,7 +39,7 @@ public class PostResource {
         return service.getPosts(memberId, pageNumber, size);
     }
 
-    @GetMapping("/download/{fileName}")
+  /*  @GetMapping("/download/{fileName}")
     public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName) {
         byte[] data = service.downloadFile(fileName);
         ByteArrayResource resource = new ByteArrayResource(data);
@@ -50,7 +50,7 @@ public class PostResource {
                 .header("Content-disposition", "attachment; filename=\"" + fileName + "\"")
                 .body(resource);
     }
-
+*/
     @DeleteMapping("/delete/{fileName}")
     public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
         return new ResponseEntity<>(service.deleteFile(fileName), HttpStatus.OK);
