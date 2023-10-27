@@ -1,6 +1,5 @@
 package com.procorp.community.dtos;
 
-import com.google.common.collect.Multimap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,9 +11,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommunityChatDto {
+public class CommunityChatDeleteDto {
     Long communityId;
-    Long memberId;
     private String date;
-    private CommunityChatHistoryDto communityChatHistory;
+    private CommunityChatHistoryResponseDto communityChatHistory;
 }

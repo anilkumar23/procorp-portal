@@ -12,21 +12,23 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommunityChatHistoryDto {
-    private long memberId;
     private String msg;
-    private String timestamp;
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (!(o instanceof CommunityChatHistoryDto that)) return false;
-
-        return new EqualsBuilder().append(getMemberId(), that.getMemberId()).append(getMsg(), that.getMsg()).append(getTimestamp(), that.getTimestamp()).isEquals();
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CommunityChatHistoryDto other = (CommunityChatHistoryDto) obj;
+        return Objects.equals(this.msg, other.msg);
     }
-
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(getMemberId()).append(getMsg()).append(getTimestamp()).toHashCode();
+        int hash = 17;
+        hash = 37 * hash + (msg == null ? 0 : msg.hashCode());
+        return hash;
     }
 }

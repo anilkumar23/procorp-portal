@@ -1,20 +1,20 @@
 package com.procorp.community.dtos;
 
-import com.google.common.collect.Multimap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommunityChatDto {
+public class CommunityChatResponseDto {
     Long communityId;
     Long memberId;
     private String date;
-    private CommunityChatHistoryDto communityChatHistory;
+    private CopyOnWriteArrayList<CommunityChatHistoryResponseDto> communityChatHistory;
 }

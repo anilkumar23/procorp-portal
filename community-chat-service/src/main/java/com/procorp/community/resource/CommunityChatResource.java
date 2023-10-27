@@ -1,6 +1,7 @@
 package com.procorp.community.resource;
 
 import com.google.common.collect.Multimap;
+import com.procorp.community.dtos.CommunityChatDeleteDto;
 import com.procorp.community.dtos.CommunityChatDto;
 import com.procorp.community.dtos.CommunityChatHistoryDto;
 import com.procorp.community.service.CommunityChatService;
@@ -31,7 +32,7 @@ public class CommunityChatResource {
     }
 
     @DeleteMapping(value = "/deleteChatMessages")
-    private String deleteChatMessages(@Valid @RequestBody CommunityChatDto chatDTO){
+    private String deleteChatMessages(@Valid @RequestBody CommunityChatDeleteDto chatDTO){
         return service.deleteChatMessages(chatDTO);
     }
     @GetMapping(value = "/findChatByDate/{communityId}/{date}", produces = MediaType.APPLICATION_JSON_VALUE)

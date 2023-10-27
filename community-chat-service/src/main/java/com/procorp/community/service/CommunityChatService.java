@@ -2,9 +2,7 @@ package com.procorp.community.service;
 
 
 import com.google.common.collect.Multimap;
-import com.procorp.community.dtos.CommunityChatDto;
-import com.procorp.community.dtos.CommunityChatHistoryDto;
-import com.procorp.community.dtos.GlobalResponseDTO;
+import com.procorp.community.dtos.*;
 import com.procorp.community.entities.CommunityChat;
 import com.procorp.community.entities.CommunityMember;
 import com.procorp.community.exception.ChatIllegalStateException;
@@ -15,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -30,7 +29,7 @@ public class CommunityChatService {
 
     @Autowired
     private CommunityChatDao communityChatDao;
-
+    @Transactional
     public ResponseEntity<?> createCommunityChat(CommunityChatDto dto) {
         CommunityMember member = communityMemberDao.findByCommIdAndMemberId(dto.getCommunityId(), dto.getMemberId());
         if (null != member && (member.getStatus().equalsIgnoreCase("accepted") ||
@@ -42,18 +41,15 @@ public class CommunityChatService {
                     .communityId(dto.getCommunityId())
                     .memberId(dto.getMemberId())
                     .date(dto.getDate())
-                    .communityChatHistory(insertTimeStampToEachMsg(dto.getCommunityChatHistory()))
+                    .communityChatHistory(insertTimeStampToMsg(dto.getCommunityChatHistory(), dto.getMemberId()))
                     .build();
-            communityChatDao.save(chat);
-//            CopyOnWriteArrayList<Multimap<String, CommunityChatHistoryDto>> chatHistory = chat1.getCommunityChatHistory();
-//            dto.setCommunityChatHistory(chatHistory);
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.OK.value())
                             .status(HttpStatus.OK.name())
                             .msg("Chat has been Successfully created")
-                            .responseObj(dto)
+                            .responseObj(communityChatDao.save(chat))
                             .build());
         } else {
             return ResponseEntity.status(HttpStatus.OK)
@@ -67,36 +63,29 @@ public class CommunityChatService {
         }
     }
 
-    private CommunityChatDto mapEntityToDto(CommunityChat chat) {
-        return CommunityChatDto.builder()
-                .communityId(chat.getCommunityId())
-                .memberId(chat.getMemberId())
-                .date(chat.getDate())
-                .communityChatHistory(chat.getCommunityChatHistory())
-                .build();
-    }
-
     private String prepareChatId(long communityId, String date) {
         return communityId + "_" + date;
     }
 
     private static final SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    private CopyOnWriteArrayList<Multimap<String, CommunityChatHistoryDto>> insertTimeStampToEachMsg(CopyOnWriteArrayList<Multimap<String, CommunityChatHistoryDto>> chatHistory) {
+    private CopyOnWriteArrayList<CommunityChatHistoryResponseDto> insertTimeStampToMsg(CommunityChatHistoryDto chatHistory, long memberId) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        for (Multimap<String, CommunityChatHistoryDto> hist : chatHistory) {
-            for (String chat : hist.keySet()) {
-                for (CommunityChatHistoryDto s : hist.get(chat)) {
-                    s.setTimestamp(sdf3.format(timestamp));
-                    System.out.println(s);
-                }
-            }
-        }
-        return chatHistory;
+        CopyOnWriteArrayList<CommunityChatHistoryResponseDto> list = new CopyOnWriteArrayList<>();
+        list.add(prepareCommunityChatHistoryResponse(chatHistory, memberId, sdf3.format(timestamp)));
+        return list;
     }
-
-
+    private CommunityChatHistoryResponseDto prepareCommunityChatHistoryResponse(CommunityChatHistoryDto dto, long memberId, String timestamp){
+        return CommunityChatHistoryResponseDto.builder()
+                .memberId(memberId)
+                .msg(dto.getMsg())
+                .timestamp(timestamp)
+                .build();
+    }
+    @Transactional
     public ResponseEntity<?> updateLatestChat(CommunityChatDto chatDTO) {
+        CopyOnWriteArrayList<CommunityChatHistoryResponseDto> chatHistory = new CopyOnWriteArrayList<>();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         CommunityMember member = communityMemberDao.findByCommIdAndMemberId(chatDTO.getCommunityId(), chatDTO.getMemberId());
         if (null != member && (member.getStatus().equalsIgnoreCase("accepted") ||
                 member.getStatus().equalsIgnoreCase("approved"))) {
@@ -104,39 +93,17 @@ public class CommunityChatService {
             Optional<CommunityChat> optionalChat = communityChatDao.findById(chatId);
             if (optionalChat.isPresent()) {
                 CommunityChat chat = optionalChat.get();
-                CopyOnWriteArrayList<Multimap<String, CommunityChatHistoryDto>> chatHistory = chat.getCommunityChatHistory();
-                for (Multimap<String, CommunityChatHistoryDto> i : chatHistory) {
-                    for (Multimap<String, CommunityChatHistoryDto> m : chatDTO.getCommunityChatHistory()) {
-                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        for (String n : m.keySet()) {
-                            //TODO need to enhance inner for loops
-                            for (CommunityChatHistoryDto s : m.get(n)) {
-                                s.setTimestamp(sdf3.format(timestamp));
-                                System.out.println(s);
-                            }
-                            for (String a : i.keySet()) {
-                                if (a.equalsIgnoreCase(n)) {
-                                    i.get(n).addAll(m.get(n));
-                                } else {
-                                    Collection<CommunityChatHistoryDto> s = m.get(n);
-                                    s.forEach(b -> i.put(n, b));
-                                }
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
+                chatHistory = chat.getCommunityChatHistory();
+
+                chatHistory.add(prepareCommunityChatHistoryResponse(chatDTO.getCommunityChatHistory(),chatDTO.getMemberId(), sdf3.format(timestamp)));
                 CommunityChat newChat = new CommunityChat(prepareChatId(chatDTO.getCommunityId(),
                         chatDTO.getDate()), chatDTO.getCommunityId(), chatDTO.getMemberId(), chatDTO.getDate(),
                         chatHistory);
                 communityChatDao.save(newChat);
-
-                chatDTO.setCommunityChatHistory(chatHistory);
-
             } else {
                 communityChatDao.save(new CommunityChat(chatId, chatDTO.getCommunityId(), chatDTO.getMemberId(), chatDTO.getDate(),
-                        insertTimeStampToEachMsg(chatDTO.getCommunityChatHistory())));
+                        insertTimeStampToMsg(chatDTO.getCommunityChatHistory(), chatDTO.getMemberId())));
+                chatHistory.add(prepareCommunityChatHistoryResponse(chatDTO.getCommunityChatHistory(), chatDTO.getMemberId(), sdf3.format(timestamp)));
             }
         } else {
             return ResponseEntity.status(HttpStatus.OK)
@@ -154,7 +121,12 @@ public class CommunityChatService {
                         .statusCode(HttpStatus.OK.value())
                         .status(HttpStatus.OK.name())
                         .msg("Chat has updated Successfully")
-                        .responseObj(chatDTO)
+                        .responseObj( CommunityChatResponseDto.builder()
+                                .memberId(chatDTO.getMemberId())
+                                .communityId(chatDTO.getCommunityId())
+                                .date(chatDTO.getDate())
+                                .communityChatHistory(chatHistory)
+                                .build())
                         .build());
     }
 
@@ -173,20 +145,20 @@ public class CommunityChatService {
                         .build());
     }
 
-    public String deleteChatMessages(CommunityChatDto chatDTO) {
+    @Transactional
+    public String deleteChatMessages(CommunityChatDeleteDto chatDTO) {
         String chatId = prepareChatId(chatDTO.getCommunityId(), chatDTO.getDate());
         Optional<CommunityChat> optionalChat = communityChatDao.findById(chatId);
+        CommunityChatHistoryResponseDto communityChatHistoryResponseDto = chatDTO.getCommunityChatHistory();
         if (optionalChat.isPresent()) {
             CommunityChat chat = optionalChat.get();
             chat.getCommunityChatHistory().
-                    forEach(n -> n.entries().
-                            forEach(j -> chatDTO.getCommunityChatHistory().
-                                    forEach(p -> p.entries().
-                                            forEach(h ->
-                                            {
-                                              if (j.getValue().equals(h.getValue())) n.remove(h.getKey(), h.getValue());
-                                            }
-            ))));
+                    forEach(n -> {
+                        if (n.getMsg().equalsIgnoreCase(communityChatHistoryResponseDto.getMsg()) &&
+                        n.getMemberId() == communityChatHistoryResponseDto.getMemberId() &&
+                        n.getTimestamp().equalsIgnoreCase(communityChatHistoryResponseDto.getTimestamp()))
+                            chat.getCommunityChatHistory().remove(n);
+                    });
             communityChatDao.save(chat);
 
             return "Messages have been successfully deleted";

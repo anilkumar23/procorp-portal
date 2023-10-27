@@ -3,6 +3,7 @@ package com.procorp.community.entities;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Multimap;
 import com.procorp.community.dtos.CommunityChatHistoryDto;
+import com.procorp.community.dtos.CommunityChatHistoryResponseDto;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,6 +28,6 @@ public class CommunityChat {
     @Column(columnDefinition = "jsonb", nullable = false, name = "communityChatHistory")
     @Type(JsonBinaryType.class)
     @JsonProperty("multimap_test")
-    private CopyOnWriteArrayList<Multimap<String, CommunityChatHistoryDto>> communityChatHistory;
+    private CopyOnWriteArrayList<CommunityChatHistoryResponseDto> communityChatHistory;
 
 }
