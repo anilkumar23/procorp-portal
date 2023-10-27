@@ -77,30 +77,54 @@ public class FriendService {
 
     public ResponseEntity<?> getFriendRequestsSent(Long requestFrom) {
        List<FriendRequest> friendRequests = friendRequestDao.findByRequestFrom(requestFrom);
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(GlobalResponseDTO.builder()
-                        .statusCode(HttpStatus.OK.value())
-                        .status(HttpStatus.OK.name())
-                        .msg("Got the list of friend requests sent from "+requestFrom)
-                        .responseObj(mapEntityToDTO(friendRequests))
-                        .build());
+       if(friendRequests!=null && !friendRequests.isEmpty()){
+           return ResponseEntity.status(HttpStatus.OK)
+                   .contentType(MediaType.APPLICATION_JSON)
+                   .body(GlobalResponseDTO.builder()
+                           .statusCode(HttpStatus.OK.value())
+                           .status(HttpStatus.OK.name())
+                           .msg("Got the list of friend requests sent from "+requestFrom)
+                           .responseObj(mapEntityToDTO(friendRequests))
+                           .build());
+       }else{
+           return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                   .contentType(MediaType.APPLICATION_JSON)
+                   .body(GlobalResponseDTO.builder()
+                           .statusCode(HttpStatus.NO_CONTENT.value())
+                           .status(HttpStatus.NO_CONTENT.name())
+                           .msg("friend requests sent from "+requestFrom+ " are empty")
+                           .responseObj(new ArrayList<>())
+                           .build());
+       }
+
        // return mapEntityToDTO(friendRequests);
     }
 
     public ResponseEntity<?> getFriendRequests(Long requestFrom) {
         List<FriendRequest> friendRequestList =
                 friendRequestDao.findAllByRequestFromOrRequestTo(requestFrom, requestFrom);
-        ArrayList<FriendRequest> approvedList = new ArrayList<>(friendRequestList.stream()
-                .filter(n -> n.getFriendRequestStatus().equalsIgnoreCase("Accepted")).toList());
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(GlobalResponseDTO.builder()
-                        .statusCode(HttpStatus.OK.value())
-                        .status(HttpStatus.OK.name())
-                        .msg("Got the list of friend requests of member ID "+requestFrom)
-                        .responseObj(mapEntityToDTO(approvedList))
-                        .build());
+        if(friendRequestList!=null && !friendRequestList.isEmpty()){
+            ArrayList<FriendRequest> approvedList = new ArrayList<>(friendRequestList.stream()
+                    .filter(n -> n.getFriendRequestStatus().equalsIgnoreCase("Accepted")).toList());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Got the list of friend requests of member ID "+requestFrom)
+                            .responseObj(mapEntityToDTO(approvedList))
+                            .build());
+        }else{
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.NO_CONTENT.value())
+                            .status(HttpStatus.NO_CONTENT.name())
+                            .msg("friend requests are empty with member ID "+requestFrom)
+                            .responseObj(new ArrayList<>())
+                            .build());
+        }
+
         //return mapEntityToDTO(approvedList);
     }
     private List<FriendRequestDTO> mapEntityToDTO(List<FriendRequest> friendRequests){
@@ -111,14 +135,25 @@ public class FriendService {
     }
     public ResponseEntity<?> getFriendRequestsReceived(Long requestTo) {
         List<FriendRequest> friendRequests =  friendRequestDao.findByRequestTo(requestTo);
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(GlobalResponseDTO.builder()
-                        .statusCode(HttpStatus.OK.value())
-                        .status(HttpStatus.OK.name())
-                        .msg("Got the list of friend requests received for member ID "+requestTo)
-                        .responseObj(mapEntityToDTO(friendRequests))
-                        .build());
+        if(friendRequests!=null && !friendRequests.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Got the list of friend requests received for member ID " + requestTo)
+                            .responseObj(mapEntityToDTO(friendRequests))
+                            .build());
+        }else{
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.NO_CONTENT.value())
+                            .status(HttpStatus.NO_CONTENT.name())
+                            .msg("friend requests received are empty with member ID "+requestTo)
+                            .responseObj(new ArrayList<>())
+                            .build());
+        }
        // return mapEntityToDTO(friendRequests);
     }
 
@@ -246,18 +281,29 @@ public class FriendService {
     public ResponseEntity<?> getBlockList(Long blockedBy) {
 
         List<FriendRequest> request = friendRequestDao.findByBlockedBy(blockedBy);
-        List<Long> ids = request.stream()
-                .filter(r -> r.getFriendRequestStatus().equalsIgnoreCase("Blocked"))
-                .map(FriendRequest::getRequestTo).toList();
-        LOG.info("ids"+ids);
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(GlobalResponseDTO.builder()
-                        .statusCode(HttpStatus.OK.value())
-                        .status(HttpStatus.OK.name())
-                        .msg("IDs are : "+ids)
-                        .responseObj("IDs are : "+ids)
-                        .build());
+        if(request!=null&& !request.isEmpty()) {
+            List<Long> ids = request.stream()
+                    .filter(r -> r.getFriendRequestStatus().equalsIgnoreCase("Blocked"))
+                    .map(FriendRequest::getRequestTo).toList();
+            LOG.info("ids" + ids);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("IDs are : " + ids)
+                            .responseObj("IDs are : " + ids)
+                            .build());
+        }else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.NO_CONTENT.value())
+                            .status(HttpStatus.NO_CONTENT.name())
+                            .msg("block list are empty with member ID "+blockedBy)
+                            .responseObj(new ArrayList<>())
+                            .build());
+        }
         //return "IDs are : "+ids;
     }
 

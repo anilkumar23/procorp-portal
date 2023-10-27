@@ -23,7 +23,7 @@ public class OTPResource {
 
         if(request==null){
             return new ResponseEntity<>("input cannot be null ", HttpStatus.BAD_REQUEST);
-        }else if(!StringUtils.hasText(request.getSource())){
+        }else if(request.getSource()==null || !StringUtils.hasText(request.getSource())){
             return new ResponseEntity<>("Phone number cannot be null ", HttpStatus.BAD_REQUEST);
         }
 
@@ -45,7 +45,7 @@ public class OTPResource {
 
         if(request==null){
             return new ResponseEntity<>("input cannot be null ", HttpStatus.BAD_REQUEST);
-        }else if(!StringUtils.hasText(request.getSource())){
+        }else if(request.getSource()==null || !StringUtils.hasText(request.getSource())){
             return new ResponseEntity<>("Email cannot be null ", HttpStatus.BAD_REQUEST);
         }
 
@@ -65,8 +65,14 @@ public class OTPResource {
     @PostMapping("/verifyMobileOtp")
     public ResponseEntity<?> verifyMobileOtp(@RequestBody OTPValidationDTO dto){
 
-        if(!StringUtils.hasText(dto.getOtp())) {
-            return new ResponseEntity<>("Mobile OTP cannot be blank ", HttpStatus.BAD_REQUEST);
+        if(dto==null) {
+            return new ResponseEntity<>("input cannot be null ", HttpStatus.BAD_REQUEST);
+        }
+        if(dto.getOtp()==null || !StringUtils.hasText(dto.getOtp())) {
+            return new ResponseEntity<>("Mobile OTP cannot be null OR blank ", HttpStatus.BAD_REQUEST);
+        }
+        if(dto.getSource()==null || !StringUtils.hasText(dto.getSource())) {
+            return new ResponseEntity<>("Mobile number cannot be null OR blank ", HttpStatus.BAD_REQUEST);
         }
 
         return service.verifyMobileOTP(dto);
@@ -75,8 +81,14 @@ public class OTPResource {
     @GetMapping("/verifyEmailOtp")
     public ResponseEntity<?> verifyEmailOtp(@RequestParam OTPValidationDTO dto){
 
-        if(!StringUtils.hasText(dto.getOtp())) {
+        if(dto==null) {
+            return new ResponseEntity<>("input cannot be null ", HttpStatus.BAD_REQUEST);
+        }
+        if(dto.getOtp()==null || !StringUtils.hasText(dto.getOtp())) {
             return new ResponseEntity<>("Email OTP cannot be blank ", HttpStatus.BAD_REQUEST);
+        }
+        if(dto.getSource()==null || !StringUtils.hasText(dto.getSource())) {
+            return new ResponseEntity<>("Email cannot be blank ", HttpStatus.BAD_REQUEST);
         }
 
         return service.verifyEmailOTP(dto);
