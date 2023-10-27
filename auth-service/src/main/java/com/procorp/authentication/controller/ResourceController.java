@@ -18,17 +18,21 @@ public class ResourceController {
 	@Autowired
 	UserRepository repo;
 	@RequestMapping("/isAuthenticated")
-	public ResponseEntity<?> isAuthenticated(@RequestParam String email){
+	public ResponseEntity<?> isAuthenticated(@RequestParam String token){
 		return ResponseEntity.status(HttpStatus.OK)
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(GlobalResponseDTO.builder()
 						.statusCode(HttpStatus.OK.value())
 						.status(HttpStatus.OK.name())
 						.msg("User Authenticated successfully")
-						.responseObj(StringUtils.hasText(repo.getTokenByUsername(email)))
+						.responseObj(repo.findByToken(token).isPresent())
 						.build());
 	 //	return StringUtils.hasText(repo.getTokenByUsername(email));
 	}
+
+	/*public boolean isAuthenticated(@RequestParam String token) {
+		return repo.findByToken(token).isPresent();
+	}*/
 	@RequestMapping("/getAuthToken")
 	public ResponseEntity<?> getAuthToken(@RequestParam String email){
 

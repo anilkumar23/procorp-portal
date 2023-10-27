@@ -49,18 +49,27 @@ public class PostResource {
                         .build());
         //return new ResponseEntity<>(service.reSharePost(requestDto), HttpStatus.OK);
     }
-    @GetMapping(value = "/getPostsByMemberId/{memberId}")
-    public ResponseEntity<?> getPostsByMemberId(@PathVariable long memberId) {
+
+    @GetMapping(value = "/getPostsByMemberId")
+    public ResponseEntity<?> getPostsByMemberId(@RequestParam long memberId,
+                                                @RequestParam(defaultValue = "0") final Integer pageNumber,
+                                                @RequestParam(defaultValue = "5") final Integer size) {
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(GlobalResponseDTO.builder()
                         .statusCode(HttpStatus.OK.value())
                         .status(HttpStatus.OK.name())
                         .msg("Got the posts Successfully by memberID")
-                        .responseObj(service.getPosts(memberId))
+                        .responseObj(service.getPosts(memberId, pageNumber, size))
                         .build());
        // return new ResponseEntity<>(service.getPosts(memberId), HttpStatus.OK);
     }
+
+/*    @GetMapping(value = "/getPostsByMemberId")
+    public  ResponseEntity<?> getPostsByMemberId(@RequestParam long memberId,
+                                                 @RequestParam(defaultValue = "0") final Integer pageNumber,
+                                                 @RequestParam(defaultValue = "5") final Integer size) {
+        return service.getPosts(memberId, pageNumber, size);*/
 
     @GetMapping("/download/{fileName}")
     public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName) {

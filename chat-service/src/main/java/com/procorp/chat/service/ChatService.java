@@ -108,7 +108,7 @@ public class ChatService {
         }
     }
 
-    public CopyOnWriteArrayList<Multimap<String, ChatHistoryDTO>> findChatByDate(long studentId, long chatPersonId, String date){
+    public CopyOnWriteArrayList<Multimap<String, ChatHistoryDTO>> findChat(long studentId, long chatPersonId, String date){
         String chatId = prepareChatId(studentId, chatPersonId, date);
         Optional<Chat> chat = chatDao.findById(chatId);
         if(chat.isEmpty()){

@@ -55,7 +55,7 @@ public class ChatResource {
        // return service.deleteChatByMessages(chatDTO);
     }
     @GetMapping(value = "/findChatByDate/{studentId}/{chatPersonId}/{date}", produces = MediaType.APPLICATION_JSON_VALUE)
-    private ResponseEntity<?> findChatByDate(@PathVariable Long studentId, Long chatPersonId, String date){
+    private ResponseEntity<?> findChatByDate(@PathVariable Long studentId, @PathVariable Long chatPersonId, @PathVariable String date){
 
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -63,9 +63,16 @@ public class ChatResource {
                         .statusCode(HttpStatus.OK.value())
                         .status(HttpStatus.OK.name())
                         .msg("Got the Chat Message By date Successfully")
-                        .responseObj(service.findChatByDate(studentId, chatPersonId, date))
+                        .responseObj(service.findChat(studentId, chatPersonId, date))
                         .build());
         // return service.findChatByDate(studentId, chatPersonId, date);
+
+
+
     }
+
+   /* private CopyOnWriteArrayList<Multimap<String, ChatHistoryDTO>> findChat(@PathVariable Long studentId, @PathVariable Long chatPersonId, @PathVariable String date) {
+        return service.findChat(studentId, chatPersonId, date);
+    }*/
 
 }

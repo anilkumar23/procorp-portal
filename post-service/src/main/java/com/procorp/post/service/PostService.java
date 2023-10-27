@@ -9,17 +9,19 @@ import com.amazonaws.util.IOUtils;
 import com.procorp.post.config.FeignClientInterceptor;
 import com.procorp.post.dao.PostDao;
 import com.procorp.post.dao.PostShareDetailsDao;
-import com.procorp.post.dto.FriendRequestDTO;
-import com.procorp.post.dto.PostRequestDto;
-import com.procorp.post.dto.PostResponseDTO;
-import com.procorp.post.dto.PostShareDetailsRequestDto;
+import com.procorp.post.dto.*;
 import com.procorp.post.entity.Post;
 import com.procorp.post.entity.PostShareDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -30,10 +32,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,8 +93,7 @@ public class PostService {
         return "Post Re-shared Successfully..";
     }
 
-    public ArrayList<PostResponseDTO> getPosts(long memberId){
-        ArrayList<Post> posts = dao.getByPostOwner(memberId);
+    public ResponseEntity<?> getPosts(long memberId, int pageNo, int pageSize){
         Mono<List<FriendRequestDTO>> getFriendRequestSentResponse = webClient.get().uri("/getFriendRequests?requestFrom=" + memberId)
                 .accept(MediaType.APPLICATION_JSON)
                 .header("Authorization", FeignClientInterceptor.getBearerTokenHeader())
@@ -104,11 +102,30 @@ public class PostService {
         List<FriendRequestDTO> friendRequestDTOS = getFriendRequestSentResponse.block();
         Set<Long> set = Objects.requireNonNull(friendRequestDTOS).stream().map(FriendRequestDTO::getRequestTo).collect(Collectors.toSet());
         set.addAll(Objects.requireNonNull(friendRequestDTOS).stream().map(FriendRequestDTO::getRequestFrom).collect(Collectors.toSet()));
-        set.remove(memberId);
-        posts.addAll(dao.findByPostOwnerIn(set));
-        posts.addAll(dao.findAllById(Objects.requireNonNull(postShareDetailsDao.findByMemberIdIn(set)).stream()
-                .map(PostShareDetails::getPostId).collect(Collectors.toSet())));
-        return mapEntitiesToDTO(posts);
+//        set.remove(memberId);
+        Page<ArrayList<Post>> posts = dao.findByPostOwnerIn(set, PageRequest.of(pageNo, pageSize));
+
+        /*Find mutual friends posts*/ //Once the requirement comes from UI then uncomment this
+//        posts.addAll(dao.findAllById(Objects.requireNonNull(postShareDetailsDao.findByMemberIdIn(set)).stream()
+//                .map(PostShareDetails::getPostId).collect(Collectors.toSet())));
+//        ArrayList<PostResponseDTO> responseDTOS = mapEntitiesToDTO(dao.findByPostOwnerIn(set, PageRequest.of(pageNo, pageSize)));
+        Map<String, Object> response = convertToResponse(posts);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Following posts have been retrieved for member " + memberId)
+                        .responseObj(response)
+                        .build());
+    }
+    private Map<String, Object> convertToResponse(final Page<ArrayList<Post>> pagePersons) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("posts", pagePersons.getContent());
+        response.put("current-page", pagePersons.getNumber());
+        response.put("total-items", pagePersons.getTotalElements());
+        response.put("total-pages", pagePersons.getTotalPages());
+        return response;
     }
     private ArrayList<PostResponseDTO> mapEntitiesToDTO(ArrayList<Post> posts){
         return (ArrayList<PostResponseDTO>) posts.stream().map(n->{
