@@ -99,25 +99,36 @@ public class PostService {
                 .header("Authorization", FeignClientInterceptor.getBearerTokenHeader())
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<>() {});
-        List<FriendRequestDTO> friendRequestDTOS = getFriendRequestSentResponse.block();
-        Set<Long> set = Objects.requireNonNull(friendRequestDTOS).stream().map(FriendRequestDTO::getRequestTo).collect(Collectors.toSet());
-        set.addAll(Objects.requireNonNull(friendRequestDTOS).stream().map(FriendRequestDTO::getRequestFrom).collect(Collectors.toSet()));
+        if(getFriendRequestSentResponse!=null&&!getFriendRequestSentResponse.block().isEmpty()) {
+            List<FriendRequestDTO> friendRequestDTOS = getFriendRequestSentResponse.block();
+            Set<Long> set = Objects.requireNonNull(friendRequestDTOS).stream().map(FriendRequestDTO::getRequestTo).collect(Collectors.toSet());
+            set.addAll(Objects.requireNonNull(friendRequestDTOS).stream().map(FriendRequestDTO::getRequestFrom).collect(Collectors.toSet()));
 //        set.remove(memberId);
-        Page<ArrayList<Post>> posts = dao.findByPostOwnerIn(set, PageRequest.of(pageNo, pageSize));
+            Page<ArrayList<Post>> posts = dao.findByPostOwnerIn(set, PageRequest.of(pageNo, pageSize));
 
-        /*Find mutual friends posts*/ //Once the requirement comes from UI then uncomment this
+            /*Find mutual friends posts*/ //Once the requirement comes from UI then uncomment this
 //        posts.addAll(dao.findAllById(Objects.requireNonNull(postShareDetailsDao.findByMemberIdIn(set)).stream()
 //                .map(PostShareDetails::getPostId).collect(Collectors.toSet())));
 //        ArrayList<PostResponseDTO> responseDTOS = mapEntitiesToDTO(dao.findByPostOwnerIn(set, PageRequest.of(pageNo, pageSize)));
-        Map<String, Object> response = convertToResponse(posts);
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(GlobalResponseDTO.builder()
-                        .statusCode(HttpStatus.OK.value())
-                        .status(HttpStatus.OK.name())
-                        .msg("Following posts have been retrieved for member " + memberId)
-                        .responseObj(response)
-                        .build());
+            Map<String, Object> response = convertToResponse(posts);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Following posts have been retrieved for member " + memberId)
+                            .responseObj(response)
+                            .build());
+        }else{
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.NO_CONTENT.value())
+                            .status(HttpStatus.NO_CONTENT.name())
+                            .msg("Following posts are empty")
+                            .responseObj(null)
+                            .build());
+        }
     }
     private Map<String, Object> convertToResponse(final Page<ArrayList<Post>> pagePersons) {
         Map<String, Object> response = new HashMap<>();

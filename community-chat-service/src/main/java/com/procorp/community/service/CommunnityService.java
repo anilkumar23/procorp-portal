@@ -21,10 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -81,15 +78,23 @@ public class CommunnityService {
 
     public List<CommunityMember> getCommunityMembersList(Long commId) {
        List<CommunityMember> list = communityMemberDao.findAll();
-        return list.stream()
-                .filter(r -> r.getStatus().equalsIgnoreCase("accepted"))
-                                    .collect(Collectors.toList());
+       if(list!=null&&!list.isEmpty()) {
+           return list.stream()
+                   .filter(r -> r.getStatus().equalsIgnoreCase("accepted"))
+                   .collect(Collectors.toList());
+       }else{
+           return new ArrayList<>();
+       }
     }
 
     public List<CommunityMember> getCommunityMembersRequests(Long commId) {
         List<CommunityMember> list = communityMemberDao.findAll();
-        return list.stream()
-                .filter(r -> r.getStatus().equalsIgnoreCase("waiting"))
-                .collect(Collectors.toList());
+        if(list!=null&&!list.isEmpty()) {
+            return list.stream()
+                    .filter(r -> r.getStatus().equalsIgnoreCase("waiting"))
+                    .collect(Collectors.toList());
+        }else {
+            return new ArrayList<>();
+        }
     }
 }
