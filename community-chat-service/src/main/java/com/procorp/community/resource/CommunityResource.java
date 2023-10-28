@@ -22,7 +22,7 @@ public class CommunityResource {
 
 
     @PostMapping("/community")
-    public String createCommunity(@Valid @RequestBody CommunityDTO community) throws Exception {
+    public String createCommunity(@Valid @RequestBody CommunityDTO community){
         return communityService.createCommunity(community);
     }
 
