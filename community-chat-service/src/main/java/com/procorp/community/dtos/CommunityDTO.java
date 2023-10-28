@@ -9,7 +9,7 @@ public class CommunityDTO {
 
     String commName;
 
-    String commDescription;;
+    String commDescription;
 
     String groupPhoto;
 

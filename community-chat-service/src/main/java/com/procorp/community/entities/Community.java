@@ -23,7 +23,7 @@ public class Community {
 
     String commName;
 
-    String commDescription;;
+    String commDescription;
 
     String groupPhoto;
 

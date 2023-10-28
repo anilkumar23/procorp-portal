@@ -21,7 +21,7 @@ public class CommunityService {
     @Autowired
     private CommunityMemberDao communityMemberDao;
 
-    public String createCommunity(CommunityDTO communityDto) throws Exception {
+    public String createCommunity(CommunityDTO communityDto) {
         Optional<Community> communityDetails = communityDao.findByCommName(communityDto.getCommName());
         if(communityDetails.isPresent()) {
             return"community name already exist,Please try with new name";
