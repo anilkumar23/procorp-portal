@@ -38,56 +38,61 @@ public class CommunityResource {
     }
 
     @GetMapping("/community")
-    public Community  getCommunityById(@Valid @RequestParam Long commId ) {
+    public Community  getCommunityById(@Valid @RequestParam Long commId) {
         return communityService.getCommunityById(commId);
     }
 
+    @GetMapping("/communitiesByOwner")
+    public List<Community>  getCommunityByOwner(@Valid @RequestParam Long memberId) {
+        return communityService.getCommunitiesByOwner(memberId);
+    }
 
     @PutMapping("/joinCommunity")
     public String joinCommunity(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
         return communityService.joinCommunity(commId,memberId);
     }
 
-    @PutMapping("/acceptCommunityJoinRequest")
-    public String acceptCommunityJoinRequest(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
-        return communityService.acceptCommunityJoinRequest(commId,memberId);
+    @PutMapping("/acceptCommunityMemberRequest")
+    public String acceptCommunityMemberRequest(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
+        return communityService.acceptCommunityMemberRequest(commId,memberId);
     }
 
     @GetMapping("/communityMembersList")
     public List<CommunityMember> getCommunityMembersList(@Valid @RequestParam Long commId) {
         return communityService.getCommunityMembersList(commId);
     }
+//PHASE-2
+//    @GetMapping("/getCommunityMembersRequests")
+//    public List<CommunityMember> getCommunityMembersRequests(@Valid @RequestParam Long commId) {
+//        return communityService.getCommunityMembersRequests(commId);
+//    }
 
-    @GetMapping("/getCommunityMembersRequests")
-    public List<CommunityMember> getCommunityMembersRequests(@Valid @RequestParam Long commId) {
-        return communityService.getCommunityMembersRequests(commId);
-    }
 
+    //PHASE-2 This API can be used for rejecting member join request,comm invite request
+//    @DeleteMapping("/rejectCommunityJoinRequest")
+//    public String rejectCommunityJoinRequest(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
+//        return communityService.rejectCommunityJoinRequest(commId,memberId);
+//    }
 
-    //This API can be used for rejecting member join request,comm invite request
-    @DeleteMapping("/rejectCommunityJoinRequest")
-    public String rejectCommunityJoinRequest(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
-        return communityService.rejectCommunityJoinRequest(commId,memberId);
-    }
-
-    @PutMapping("/inviteMemberToCommunityRequest")
-    public String inviteMemberToCommunityRequest(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
-        return communityService.inviteMemberToCommunityRequest(commId,memberId);
-    }
+    //PHASE-2
+//    @PutMapping("/inviteMemberToCommunityRequest")
+//    public String inviteMemberToCommunityRequest(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
+//        return communityService.inviteMemberToCommunityRequest(commId,memberId);
+//    }
 
 
     //reject APIs and delete APIs are pending
 
     // APIS to manage communities by Admins
 
-    //approve communiity
+    //approve community
 
     //get comm by ID
     //get community request for member
 
     @PutMapping("/approveCommunity")
-    public String approveCommunity(@Valid @RequestParam Long commId ,@RequestParam Long memberId) {
-        return communityService.approveCommunity(commId,memberId);
+    public String approveCommunity(@Valid @RequestParam Long commId) {
+        return communityService.approveCommunity(commId);
     }
 
     @DeleteMapping("/rejectCommunityCreationRequest")
@@ -96,7 +101,7 @@ public class CommunityResource {
     }
 
     @GetMapping("/communityCreationRequestsList")
-    public List<Community> getCommunityCreationRequestsList(@Valid @RequestParam Long commId ) {
+    public List<Community> getCommunityCreationRequestsList() {
         return communityService.getCommunityCreationRequestsList();
     }
 
@@ -109,11 +114,11 @@ public class CommunityResource {
 //    create community chat ,read only ,ban member
 //
 //
-//    approve coummunity creation
+//    approve community creation
 //
 //    leave community
 //
-//    delete communitu
+//    delete community
 //            \
 //    add community post
 //    delete post
@@ -121,8 +126,8 @@ public class CommunityResource {
 //
 //1. community management
 //            member management
-//                    privacy managment
-//                            post managment
+//                    privacy management
+//                            post management
 //                                    chat management
 //
 }

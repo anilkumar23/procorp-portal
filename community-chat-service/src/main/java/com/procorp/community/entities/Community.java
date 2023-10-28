@@ -29,6 +29,10 @@ public class Community {
 
     String communityStatus;
 
+    String coverPhoto;
+
+    String objective;
+
     //comm privacy settinsg
 
 }

@@ -30,6 +30,7 @@ public class CommunityService {
             community.setMemberId(communityDto.getMemberId());
             community.setCommName(communityDto.getCommName());
             community.setCommDescription(communityDto.getCommDescription());
+            community.setObjective(communityDto.getObjective());
             community.setCommunityStatus("pending-for-approval");
 
             Community record = communityDao.save(community);
@@ -68,16 +69,17 @@ public class CommunityService {
             member.setMemberId(memberId);
             member.setCommId(commId);
             member.setStatus("waiting");
-            member.setRole("member");
+            member.setRole("follower");
             communityMemberDao.save(member);
             return "community request submitted";
         }
     }
 
-    public String acceptCommunityJoinRequest(Long commId, Long memberId) {
+    public String acceptCommunityMemberRequest(Long commId, Long memberId) {
         CommunityMember member = communityMemberDao.findByCommIdAndMemberId(commId,memberId);
         if(member!= null) {
             member.setStatus("accepted");
+            member.setRole("member");
             communityMemberDao.save(member);
         } else {
             return "member or community don't exist";
@@ -86,10 +88,11 @@ public class CommunityService {
     }
 
     public List<CommunityMember> getCommunityMembersList(Long commId) {
-        List<CommunityMember> list = communityMemberDao.findByCommId(commId);
-        return list.stream()
-                .filter(r -> r.getStatus().equalsIgnoreCase("accepted"))
-                .collect(Collectors.toList());
+//        List<CommunityMember> list = communityMemberDao.findByCommId(commId);
+        //        return list.stream()
+//                .filter(r -> r.getStatus().equalsIgnoreCase("accepted"))
+//                .collect(Collectors.toList());
+        return communityMemberDao.findByCommId(commId);
     }
 
     public List<CommunityMember> getCommunityMembersRequests(Long commId) {
@@ -99,12 +102,12 @@ public class CommunityService {
                 .collect(Collectors.toList());
     }
 
-    public String approveCommunity(Long commId, Long memberId) {
+    public String approveCommunity(Long commId) {
         Optional<Community> community = communityDao.findById(commId);
         if(community.isPresent()) {
             community.get().setCommunityStatus("approved-by-admin");
             communityDao.save(community.get());
-            CommunityMember member = communityMemberDao.findByCommIdAndMemberId(commId, memberId);
+            CommunityMember member = communityMemberDao.findByCommIdAndMemberId(commId, community.get().getMemberId());
             if (member != null) {
                 member.setStatus("approved");
                 communityMemberDao.save(member);
@@ -156,7 +159,16 @@ public class CommunityService {
     public List<Community> getCommunityCreationRequestsList() {
         List<Community> commList = communityDao.findAll();
         return commList.stream()
-                .filter(r -> r.getCommunityStatus().equalsIgnoreCase("waiting"))
+                .filter(r -> r.getCommunityStatus().equalsIgnoreCase("pending-for-approval"))
                 .collect(Collectors.toList());
     }
+
+    public List<Community> getCommunitiesByOwner(Long memberId) {
+
+        List<Community> commList = communityDao.findAll();
+        return commList.stream()
+                .filter(r -> r.getMemberId().equals(memberId))
+                .collect(Collectors.toList());
+    }
+
 }

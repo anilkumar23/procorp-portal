@@ -13,6 +13,10 @@ public class CommunityDTO {
 
     String groupPhoto;
 
+    String coverPhoto;
+
+    String objective;
+
     //comm privacy settinsg
 
 }
