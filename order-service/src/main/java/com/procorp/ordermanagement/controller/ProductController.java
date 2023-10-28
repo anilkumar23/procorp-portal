@@ -1,23 +1,36 @@
 package com.procorp.ordermanagement.controller;
 
 import com.procorp.ordermanagement.dto.GlobalResponseDTO;
+import com.procorp.ordermanagement.dto.OrderProductDto;
 import com.procorp.ordermanagement.dto.ProductDto;
+import com.procorp.ordermanagement.entities.Category;
 import com.procorp.ordermanagement.entities.Product;
+import com.procorp.ordermanagement.exception.ResourceNotFoundException;
+import com.procorp.ordermanagement.service.CategoryService;
 import com.procorp.ordermanagement.service.ProductService;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
 
     private ProductService productService;
+    private CategoryService categoryService;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService,CategoryService categoryService) {
+
         this.productService = productService;
+        this.categoryService=categoryService;
     }
 
     @GetMapping(value = { "", "/" })
@@ -62,15 +75,75 @@ public class ProductController {
     @PostMapping(value = { "","/" })
     public @NotNull ResponseEntity<?> saveProduct(@RequestBody ProductDto dto) {
 
+        if(dto==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.BAD_REQUEST.value())
+                            .status(HttpStatus.BAD_REQUEST.name())
+                            .msg("Product input cannot be null")
+                            .responseObj("Product input cannot be null")
+                            .build());
+        }
+
+        if(dto!=null && (dto.getName()==null || dto.getName().isBlank())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.BAD_REQUEST.value())
+                            .status(HttpStatus.BAD_REQUEST.name())
+                            .msg("Product Name cannot be null")
+                            .responseObj("Product Name cannot be null")
+                            .build());
+        }
+        if(dto!=null && (dto.getPrice()==null || dto.getPrice()==0L)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.BAD_REQUEST.value())
+                            .status(HttpStatus.BAD_REQUEST.name())
+                            .msg("Price cannot be null")
+                            .responseObj("Price Name cannot be null")
+                            .build());
+        }
+
+        if(dto!=null && (dto.getCategoryTypeId()==null || dto.getCategoryTypeId()==0L)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.BAD_REQUEST.value())
+                            .status(HttpStatus.BAD_REQUEST.name())
+                            .msg("CategoryTypeId cannot be null")
+                            .responseObj("CategoryTypeId cannot be null")
+                            .build());
+        }
+
+        if(dto!=null && (dto.getUom()==null || dto.getUom().isBlank())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.BAD_REQUEST.value())
+                            .status(HttpStatus.BAD_REQUEST.name())
+                            .msg("Product UOM cannot be null")
+                            .responseObj("Product UOM cannot be null")
+                            .build());
+        }
+
+
+        Category category=validateCategoryExistence(dto);
         Product p = new Product();
         p.setName(dto.getName());
         p.setPrice(dto.getPrice());
         p.setPictureUrl(dto.getPictureUrl());
         p.setSex(dto.getSex());
-        p.setProductType(dto.getProductType());
-        p.setStatus(dto.getStatus());
-        p.setQuantity(dto.getQuantity());
-
+        p.setUom(dto.getUom());
+        p.setCategory(category);
+       /* Optional<Category> category= this.categoryService.getCategoryById(dto.getCategoryTypeId());
+        if(category.isPresent()){
+            p.setCategory(category.get());
+        }else{
+            throw new ResourceNotFoundException("Category not found for given ID: "+dto.getCategoryTypeId());
+        }*/
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(GlobalResponseDTO.builder()
@@ -80,6 +153,15 @@ public class ProductController {
                         .responseObj(productService.save(p))
                         .build());
        // return new ResponseEntity<>(productService.save(p), HttpStatus.CREATED);
+    }
+
+    private Category validateCategoryExistence(ProductDto dto) {
+        Optional<Category> category= this.categoryService.getCategoryById(dto.getCategoryTypeId());
+
+        if (!category.isPresent()) {
+            new ResourceNotFoundException("Category not found");
+        }
+        return category.get();
     }
 
     @PutMapping(value = { "/{productId}" })

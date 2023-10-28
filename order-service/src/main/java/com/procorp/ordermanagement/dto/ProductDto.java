@@ -4,15 +4,12 @@ public class ProductDto {
 
     private String name;
     private Double price;
-
-    private Double quantity;
-
     private String pictureUrl;
 
-    private String productType;
-
+    private Long categoryTypeId;
     private String sex;
-    private String status;
+
+    private String uom;
 
 
     public String getName() {
@@ -49,27 +46,19 @@ public class ProductDto {
         this.sex = sex;
     }
 
-    public Double getQuantity() {
-        return quantity;
+    public Long getCategoryTypeId() {
+        return categoryTypeId;
     }
 
-    public void setQuantity(Double quantity) {
-        this.quantity = quantity;
+    public void setCategoryTypeId(Long categoryTypeId) {
+        this.categoryTypeId = categoryTypeId;
     }
 
-    public String getProductType() {
-        return productType;
+    public String getUom() {
+        return uom;
     }
 
-    public void setProductType(String productType) {
-        this.productType = productType;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    public void setUom(String uom) {
+        this.uom = uom;
     }
 }

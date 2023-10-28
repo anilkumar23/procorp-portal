@@ -2,8 +2,10 @@ package com.procorp.ordermanagement.service;
 
 
 import com.procorp.ordermanagement.dto.ProductDto;
+import com.procorp.ordermanagement.entities.Category;
 import com.procorp.ordermanagement.entities.Product;
 import com.procorp.ordermanagement.exception.ResourceNotFoundException;
+import com.procorp.ordermanagement.repositories.CategoryRepository;
 import com.procorp.ordermanagement.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,9 +17,12 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService {
 
     private ProductRepository productRepository;
+    private CategoryRepository categoryRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository,CategoryRepository categoryRepository) {
+
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -50,9 +55,15 @@ public class ProductServiceImpl implements ProductService {
          Product product=existingProduct.get();
          product.setName(dto.getName());
          product.setSex(dto.getSex());
-         product.setProductType(dto.getProductType());
          product.setPrice(dto.getPrice());
          product.setPictureUrl(dto.getPictureUrl());
+         product.setUom(dto.getUom());
+         Optional<Category> category= this.categoryRepository.findById(dto.getCategoryTypeId());
+         if(category.isPresent()){
+             product.setCategory(category.get());
+         }else{
+             new ResourceNotFoundException("Category not found");
+         }
           return productRepository.save(product);
      }else {
          new ResourceNotFoundException("Product not found");
@@ -66,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> existingProduct= productRepository.findById(id);
         if(existingProduct.isPresent()){
             Product product=existingProduct.get();
-            product.setStatus("OutOfStock");
+           // product.setStatus("OutOfStock");
             return productRepository.save(product);
         }else {
             new ResourceNotFoundException("Product not found");

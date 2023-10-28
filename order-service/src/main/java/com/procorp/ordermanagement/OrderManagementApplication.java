@@ -1,9 +1,12 @@
 package com.procorp.ordermanagement;
 
 
+import com.procorp.ordermanagement.dto.CategoryDto;
+import com.procorp.ordermanagement.entities.Category;
 import com.procorp.ordermanagement.entities.Product;
 import com.procorp.ordermanagement.entities.User;
 import com.procorp.ordermanagement.repositories.UserRepository;
+import com.procorp.ordermanagement.service.CategoryService;
 import com.procorp.ordermanagement.service.ProductService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -31,15 +34,19 @@ public class OrderManagementApplication {
 	}
 
 	@Bean
-	CommandLineRunner runner(ProductService productService) {
+	CommandLineRunner runner(ProductService productService, CategoryService categoryService) {
 		return args -> {
-			productService.save(new Product(1L, "TV Set", 300.00,10.0, "http://placehold.it/200x100","Jeans","Male","Instock"));
-			productService.save(new Product(2L, "Game Console", 200.00,10.0, "http://placehold.it/200x100","Jeans","Female","Instock"));
-			productService.save(new Product(3L, "Sofa", 100.00, 10.0,"http://placehold.it/200x100","tshirts","Male","Instock"));
-			productService.save(new Product(4L, "Icecream", 5.00, 10.0,"http://placehold.it/200x100","Jeans","Female","Instock"));
-			productService.save(new Product(5L, "Beer", 3.00, 10.0,"http://placehold.it/200x100","Chudidhars","Female","Instock"));
-			productService.save(new Product(6L, "Phone", 500.00, 10.0,"http://placehold.it/200x100","shirts","Kids","Instock"));
-			productService.save(new Product(7L, "Watch", 30.00, 10.0,"http://placehold.it/200x100","Saree","Female","Instock"));
+			CategoryDto dto=new CategoryDto();
+			dto.setCategoryType("Grocery");
+			dto.setDescription("this category used for kitech");
+			Category category= categoryService.create(dto);
+			productService.save(new Product(1L, "TV Set", 300.00, "http://placehold.it/200x100","Male","KG",category));
+			productService.save(new Product(2L, "Game Console", 200.00, "http://placehold.it/200x100","Female","KG",category));
+			productService.save(new Product(3L, "Sofa", 100.00, "http://placehold.it/200x100","Male","KG",category));
+			productService.save(new Product(4L, "Icecream", 5.00, "http://placehold.it/200x100","Female","KG",category));
+			productService.save(new Product(5L, "Beer", 3.00, "http://placehold.it/200x100","Female","KG",category));
+			productService.save(new Product(6L, "Phone", 500.00, "http://placehold.it/200x100","Kids","KG",category));
+			productService.save(new Product(7L, "Watch", 30.00, "http://placehold.it/200x100","Female","KG",category));
 		};
 	}
 }

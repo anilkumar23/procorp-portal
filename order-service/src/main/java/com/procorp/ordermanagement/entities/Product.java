@@ -16,30 +16,42 @@ public class Product {
     @Basic(optional = false)
     private String name;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
     private Double price;
 
-    private Double quantity;
+   // private Double quantity;
 
     private String pictureUrl;
 
-    private String productType;
+  //  private String productType;
 
     private String sex;
 
-    private String status;
+    private String uom;
 
-    public Product(Long id, String name, Double price, Double quantity, String pictureUrl, String productType, String sex, String status) {
+    public Product(Long id, String name, Double price, String pictureUrl, String sex,String uom, Category category) {
         this.id = id;
         this.name = name;
         this.price = price;
-        this.quantity = quantity;
         this.pictureUrl = pictureUrl;
-        this.productType = productType;
+       // this.productType = productType;
         this.sex = sex;
-        this.status=status;
+        this.uom=uom;
+        this.category=category;
     }
 
     public Product() {
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public Long getId() {
@@ -74,22 +86,6 @@ public class Product {
         this.pictureUrl = pictureUrl;
     }
 
-    public String getProductType() {
-        return productType;
-    }
-
-    public void setProductType(String productType) {
-        this.productType = productType;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public String getSex() {
         return sex;
     }
@@ -98,12 +94,12 @@ public class Product {
         this.sex = sex;
     }
 
-    public Double getQuantity() {
-        return quantity;
+    public String getUom() {
+        return uom;
     }
 
-    public void setQuantity(Double quantity) {
-        this.quantity = quantity;
+    public void setUom(String uom) {
+        this.uom = uom;
     }
 
     @Override
@@ -111,12 +107,11 @@ public class Product {
         return "Product{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", category=" + category +
                 ", price=" + price +
-                ", quantity=" + quantity +
                 ", pictureUrl='" + pictureUrl + '\'' +
-                ", productType='" + productType + '\'' +
                 ", sex='" + sex + '\'' +
-                ", status='" + status + '\'' +
+                ", uom='" + uom + '\'' +
                 '}';
     }
 }
