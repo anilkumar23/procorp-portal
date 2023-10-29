@@ -7,6 +7,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
+import java.util.Map;
+
 @Validated
 public interface ProductService {
 
@@ -21,4 +24,8 @@ public interface ProductService {
     public Product updateProduct(Long id, ProductDto dto);
 
     Product updateProductStatus(Long id);
+
+    Map<String, List<Product>> getAllProductsGroupByCategory();
+
+    List<Product> findAllTheProductDetailsBySearchKey(String searchKey);
 }

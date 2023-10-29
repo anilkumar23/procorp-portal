@@ -7,10 +7,15 @@ import com.procorp.ordermanagement.entities.Product;
 import com.procorp.ordermanagement.exception.ResourceNotFoundException;
 import com.procorp.ordermanagement.repositories.CategoryRepository;
 import com.procorp.ordermanagement.repositories.ProductRepository;
+import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -28,6 +33,22 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Iterable<Product> getAllProducts() {
         return productRepository.findAll();
+    }
+
+    @Override
+    public List<Product> findAllTheProductDetailsBySearchKey(String searchKey) {
+        return productRepository.findByNameContaining(searchKey);
+    }
+
+    @Override
+    public Map<String, List<Product>> getAllProductsGroupByCategory() {
+        Map<String, List<Product>> groupByCategory=new HashMap<>();
+      Iterable<Product> productIterable= productRepository.findAll();
+      if(productIterable!=null){
+          groupByCategory= Streamable.of(productRepository.findAll()).toList().stream()
+                  .collect(Collectors.groupingBy(p->p.getCategory().getCategoryType()));
+      }
+     return groupByCategory;
     }
 
     @Override

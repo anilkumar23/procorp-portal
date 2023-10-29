@@ -47,6 +47,33 @@ public class ProductController {
        // return productService.getAllProducts();
     }
 
+    @GetMapping(value = { "/searchKey" })
+    public @NotNull ResponseEntity<?> getAllTheProductDetailsBySearchKey(
+            @RequestParam("keyword") String keyword) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Got all the Products by search key " + keyword)
+                        .responseObj(productService.findAllTheProductDetailsBySearchKey(keyword))
+                        .build());
+    }
+
+    @GetMapping(value = { "/category" })
+    public @NotNull ResponseEntity<?> getProductsByCategoryWise() {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Got all the Products by category")
+                        .responseObj(productService.getAllProductsGroupByCategory())
+                        .build());
+    }
+
     @GetMapping(value = { "/{productId}" })
     public @NotNull ResponseEntity<?> getProductById(@PathVariable(name = "productId")Long productId) {
         Product product =  productService.getProduct(productId);
