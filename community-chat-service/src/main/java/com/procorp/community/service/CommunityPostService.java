@@ -95,6 +95,18 @@ public class CommunityPostService {
                         .responseObj(response)
                         .build());
     }
+    public ResponseEntity<?> getPosts(int pageNumber, int size) {
+        Page<CommunityPost> posts = dao.findAll(PageRequest.of(pageNumber, size));
+        Map<String, Object> response = convertToResponse(posts);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Posts have been successfully retrieved")
+                        .responseObj(response)
+                        .build());
+    }
     private Map<String, Object> convertToResponse(final Page<CommunityPost> pagePosts) {
         Map<String, Object> response = new HashMap<>();
         response.put("posts", mapEntitiesToDTO(pagePosts.getContent()));
@@ -143,4 +155,6 @@ public class CommunityPostService {
         }
         return convertedFile;
     }
+
+
 }

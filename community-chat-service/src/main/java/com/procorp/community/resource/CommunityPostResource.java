@@ -21,11 +21,15 @@ public class CommunityPostResource {
         return new ResponseEntity<>(service.uploadFile(requestDto), HttpStatus.OK);
     }
 
-
-    @GetMapping(value = "/getPostsByMemberId")
+    @GetMapping(value = "/getCommunityPosts")
+    public  ResponseEntity<?> getPostsByMemberId(@RequestParam(defaultValue = "0") final Integer pageNumber,
+                                                 @RequestParam(defaultValue = "5") final Integer size) {
+        return service.getPosts(pageNumber, size);
+    }
+   /* @GetMapping(value = "/getPostsByMemberId")
     public  ResponseEntity<?> getPostsByMemberId(@RequestParam long communityId,
                                                  @RequestParam(defaultValue = "0") final Integer pageNumber,
                                                  @RequestParam(defaultValue = "5") final Integer size) {
         return service.getPosts(communityId, pageNumber, size);
-    }
+    }*/
 }

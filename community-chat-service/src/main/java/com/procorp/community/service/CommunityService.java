@@ -1,18 +1,37 @@
 package com.procorp.community.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.PutObjectResult;
 import com.procorp.community.dtos.CommunityDTO;
+import com.procorp.community.dtos.CommunityPostRequestDto;
+import com.procorp.community.dtos.GlobalResponseDTO;
 import com.procorp.community.entities.Community;
 import com.procorp.community.entities.CommunityMember;
+import com.procorp.community.entities.CommunityPost;
 import com.procorp.community.repository.CommunityDao;
 import com.procorp.community.repository.CommunityMemberDao;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class CommunityService {
 
     @Autowired
@@ -21,6 +40,13 @@ public class CommunityService {
     @Autowired
     private CommunityMemberDao communityMemberDao;
 
+    @Value("${application.bucket.name}")
+    private String bucketName;
+
+    @Autowired
+    private AmazonS3 s3Client;
+
+    private static final SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public String createCommunity(CommunityDTO communityDto) {
         Optional<Community> communityDetails = communityDao.findByCommName(communityDto.getCommName());
         if(communityDetails.isPresent()) {
@@ -32,7 +58,10 @@ public class CommunityService {
             community.setCommDescription(communityDto.getCommDescription());
             community.setObjective(communityDto.getObjective());
             community.setCommunityStatus("pending-for-approval");
-
+            if (communityDto.getCoverPhoto() != null && StringUtils.hasText(communityDto.getCoverPhoto().toString()))
+                community.setCoverPhoto(uploadFile(communityDto.getCoverPhoto(), communityDto.getCommName(), communityDto.getMemberId()));
+            if (communityDto.getGroupPhoto() != null && StringUtils.hasText(communityDto.getGroupPhoto().toString()))
+                community.setGroupPhoto(uploadFile(communityDto.getGroupPhoto(), communityDto.getCommName(), communityDto.getMemberId()));
             Community record = communityDao.save(community);
 
             // Inserting the member as owner in comm member table
@@ -45,7 +74,35 @@ public class CommunityService {
             return "community created,Admin has to take action";
         }
     }
+    public String uploadFile(MultipartFile file, String communityName, long memberId) {
+        String s3Url = "";
+        try {
+        File fileObj = convertMultiPartFileToFile(file);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String formattedTimestamp = sdf3.format(timestamp);
+        CommunityPost post  = null;
+                String fileName = memberId + "_" + communityName + "_" +  formattedTimestamp + ".png";
+        PutObjectResult s3response = s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
+        if (s3response != null && s3response.getMetadata() !=null) {
+            s3Url = s3Client.getUrl(bucketName, fileName).toString();
+        }
+        fileObj.delete();
 
+        }catch (Exception ex){
+            log.error("Exception occurred while uploading file to s3");
+        }
+        return s3Url;
+    }
+    private File convertMultiPartFileToFile(MultipartFile file) {
+        File convertedFile = new File(file.getOriginalFilename());
+
+        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
+            fos.write(file.getBytes());
+        } catch (IOException e) {
+            log.error("Error converting multipartFile to file", e);
+        }
+        return convertedFile;
+    }
 
     public void updateCommunity(Long commId,CommunityDTO communityDto){
         Community community = new Community();
@@ -53,6 +110,10 @@ public class CommunityService {
         community.setMemberId(communityDto.getMemberId());
         community.setCommName(communityDto.getCommName());
         community.setCommDescription(communityDto.getCommDescription());
+        if (communityDto.getCoverPhoto() != null && StringUtils.hasText(communityDto.getCoverPhoto().toString()))
+            community.setCoverPhoto(uploadFile(communityDto.getCoverPhoto(), communityDto.getCommName(), communityDto.getMemberId()));
+        if (communityDto.getGroupPhoto() != null && StringUtils.hasText(communityDto.getGroupPhoto().toString()))
+            community.setGroupPhoto(uploadFile(communityDto.getGroupPhoto(), communityDto.getCommName(), communityDto.getMemberId()));
         communityDao.save(community);
     }
 

@@ -4,16 +4,19 @@ import com.procorp.community.dtos.CommunityDTO;
 import com.procorp.community.entities.Community;
 import com.procorp.community.entities.CommunityMember;
 import com.procorp.community.service.CommunityService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("community-service")
+@SecurityRequirement(name = "bearerAuth")
 public class CommunityResource {
     private final static Logger LOG = LoggerFactory.getLogger(CommunityResource.class);
 
@@ -21,13 +24,13 @@ public class CommunityResource {
     private CommunityService communityService;
 
 
-    @PostMapping("/community")
-    public String createCommunity(@Valid @RequestBody CommunityDTO community){
+    @PostMapping(value = "/createCommunity", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String createCommunity(@Valid @ModelAttribute CommunityDTO community){
         return communityService.createCommunity(community);
     }
 
-    @PutMapping("/community")
-    public String updateCommunity(@Valid @RequestParam Long commId ,@RequestBody CommunityDTO community) {
+    @PutMapping(value ="/updateCommunity", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String updateCommunity(@Valid @RequestParam Long commId ,@ModelAttribute CommunityDTO community) {
         communityService.updateCommunity(commId,community);
         return "community details updated";
     }

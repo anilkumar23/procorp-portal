@@ -1,6 +1,7 @@
 package com.procorp.community.dtos;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class CommunityDTO {
@@ -11,9 +12,9 @@ public class CommunityDTO {
 
     String commDescription;
 
-    String groupPhoto;
+    MultipartFile groupPhoto;
 
-    String coverPhoto;
+    MultipartFile coverPhoto;
 
     String objective;
 
