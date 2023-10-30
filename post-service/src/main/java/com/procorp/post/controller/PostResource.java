@@ -37,7 +37,7 @@ public class PostResource {
         //return new ResponseEntity<>(service.uploadFile(requestDto), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/reSharePost")
+ /*   @PostMapping(value = "/reSharePost")
     public ResponseEntity<?> uploadFile(@RequestBody PostShareDetailsRequestDto requestDto) {
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -47,8 +47,15 @@ public class PostResource {
                         .msg("Post Re-shared Successfully..")
                         .responseObj(service.reSharePost(requestDto))
                         .build());
-        //return new ResponseEntity<>(service.reSharePost(requestDto), HttpStatus.OK);
-    }
+    }*/
+
+      //  return new ResponseEntity<>(service.uploadFile(requestDto), HttpStatus.OK);
+   // }
+
+  /*  @PostMapping(value = "/reSharePost")
+    public ResponseEntity<String> uploadFile(@RequestBody PostShareDetailsRequestDto requestDto) {
+        return new ResponseEntity<>(service.reSharePost(requestDto), HttpStatus.OK);
+    }*/
 
     @GetMapping(value = "/getPostsByMemberId")
     public ResponseEntity<?> getPostsByMemberId(@RequestParam long memberId,
@@ -71,7 +78,8 @@ public class PostResource {
                                                  @RequestParam(defaultValue = "5") final Integer size) {
         return service.getPosts(memberId, pageNumber, size);*/
 
-    @GetMapping("/download/{fileName}")
+
+  /*  @GetMapping("/download/{fileName}")
     public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName) {
         byte[] data = service.downloadFile(fileName);
         ByteArrayResource resource = new ByteArrayResource(data);
@@ -82,7 +90,7 @@ public class PostResource {
                 .header("Content-disposition", "attachment; filename=\"" + fileName + "\"")
                 .body(resource);
     }
-
+*/
     @DeleteMapping("/delete/{fileName}")
     public ResponseEntity<?> deleteFile(@PathVariable String fileName) {
         return ResponseEntity.status(HttpStatus.OK)

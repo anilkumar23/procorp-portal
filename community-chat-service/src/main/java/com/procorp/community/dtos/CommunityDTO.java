@@ -1,6 +1,7 @@
 package com.procorp.community.dtos;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class CommunityDTO {
@@ -9,9 +10,13 @@ public class CommunityDTO {
 
     String commName;
 
-    String commDescription;;
+    String commDescription;
 
-    String groupPhoto;
+    MultipartFile groupPhoto;
+
+    MultipartFile coverPhoto;
+
+    String objective;
 
     //comm privacy settinsg
 

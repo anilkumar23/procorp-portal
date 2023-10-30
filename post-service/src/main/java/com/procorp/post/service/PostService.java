@@ -54,18 +54,26 @@ public class PostService {
     @Autowired
     PostShareDetailsDao postShareDetailsDao;
     private static final SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    public String uploadFile(PostRequestDto requestDto) {
+    public ResponseEntity<?> uploadFile(PostRequestDto requestDto) {
         File fileObj = convertMultiPartFileToFile(requestDto.getMedia());
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String formattedTimestamp = sdf3.format(timestamp);
-        String fileName = requestDto.getMemberId() + "_" + formattedTimestamp + "." + requestDto.getMediaType().toLowerCase();
+        Post post  = null;
+                String fileName = requestDto.getMemberId() + "_" + formattedTimestamp + "." + requestDto.getMediaType().toLowerCase();
         PutObjectResult s3response = s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
         if (s3response != null && s3response.getMetadata() !=null) {
             String s3Url = s3Client.getUrl(bucketName, fileName).toString();
-            saveMediaData(mapDtoTOEntity(requestDto, s3Url, fileName, formattedTimestamp));
+           post = dao.save(mapDtoTOEntity(requestDto, s3Url, fileName, formattedTimestamp));
         }
         fileObj.delete();
-        return "File uploaded : " + fileName;
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Post "+ fileName +" has been successfully uploaded")
+                        .responseObj(post)
+                        .build());
     }
 
     private Post mapDtoTOEntity(PostRequestDto dto, String s3Url, String fileName, String timestamp){
@@ -78,9 +86,7 @@ public class PostService {
                 .mediaName(fileName)
                 .build();
     }
-    private void saveMediaData(Post post){
-        dao.save(post);
-    }
+
     public String reSharePost(PostShareDetailsRequestDto requestDto) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String formattedTimestamp = sdf3.format(timestamp);

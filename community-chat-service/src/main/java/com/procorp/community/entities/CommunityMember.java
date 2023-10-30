@@ -19,13 +19,13 @@ public class CommunityMember {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    Long commId;
+    private Long commId;
 
-    Long memberId;
+    private Long memberId;
 
-    String status;;
+    private String status;;
 
-    String role;
+    private String role;
 
     //comm privacy settinsg
 

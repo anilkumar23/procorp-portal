@@ -23,9 +23,15 @@ public class Community {
 
     String commName;
 
-    String commDescription;;
+    String commDescription;
 
     String groupPhoto;
+
+    String communityStatus;
+
+    String coverPhoto;
+
+    String objective;
 
     //comm privacy settinsg
 

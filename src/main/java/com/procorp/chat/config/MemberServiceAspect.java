@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -24,18 +25,18 @@ public class MemberServiceAspect {
     @Before("execution(* com.procorp.chat.service..*(..))")
     private boolean anyStudentService() {
         String s = FeignClientInterceptor.getBearerTokenHeader();
-        Mono<Object> flag = authClient.get().uri("/isAuthenticated")
+        if (!StringUtils.hasText(s)) throw new UnauthorizedException("Invalid Bearer token or token has expired, please refresh token and give a try!!");
+        String[] tokenFields = s.split(" ");
+        Mono<Object> flag = authClient.get().uri("/isAuthenticated"+"?token=" + tokenFields[1])
                 .accept(MediaType.APPLICATION_JSON)
                 .header("Authorization",s)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<>() {});
         try {
-                return Objects.requireNonNull(flag.block()).toString().equalsIgnoreCase("true");
+                if (!Objects.requireNonNull(flag.block()).toString().equalsIgnoreCase("true")) throw new UnauthorizedException("Invalid Bearer token or token has expired, please refresh token and give a try!!");
         } catch (Exception authenticationException) {
-            if(authenticationException.toString().contains("401")){
                 throw new UnauthorizedException("Invalid Bearer token or token has expired, please refresh token and give a try!!");
-            }
         }
-        return false;
+        return true;
     }
 }
