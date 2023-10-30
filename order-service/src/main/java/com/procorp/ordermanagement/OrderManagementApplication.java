@@ -22,7 +22,7 @@ public class OrderManagementApplication {
 		SpringApplication.run(OrderManagementApplication.class, args);
 	}
 
-	@Bean
+/*	@Bean
 	CommandLineRunner init(UserRepository userRepository) {
 		return args -> {
 			Stream.of("John", "Julie", "Jennifer", "Helen", "Rachel").forEach(name -> {
@@ -31,7 +31,9 @@ public class OrderManagementApplication {
 			});
 			userRepository.findAll().forEach(System.out::println);
 		};
-	}
+	}*/
+
+	/*
 
 	@Bean
 	CommandLineRunner runner(ProductService productService, CategoryService categoryService) {
@@ -44,9 +46,9 @@ public class OrderManagementApplication {
 			productService.save(new Product(2L, "Game Console", 200.00, "http://placehold.it/200x100","Female","KG",category));
 			productService.save(new Product(3L, "Sofa", 100.00, "http://placehold.it/200x100","Male","KG",category));
 			productService.save(new Product(4L, "Icecream", 5.00, "http://placehold.it/200x100","Female","KG",category));
-			productService.save(new Product(5L, "Beer", 3.00, "http://placehold.it/200x100","Female","KG",category));
+			productService.save(new Product(5L, "Biscuit", 3.00, "http://placehold.it/200x100","Female","KG",category));
 			productService.save(new Product(6L, "Phone", 500.00, "http://placehold.it/200x100","Kids","KG",category));
 			productService.save(new Product(7L, "Watch", 30.00, "http://placehold.it/200x100","Female","KG",category));
 		};
-	}
+	}*/
 }
