@@ -14,7 +14,6 @@ import java.time.LocalDate;
 @Builder
 public class Member {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
 
     private String firstName;
@@ -42,4 +41,8 @@ public class Member {
     @Lob
     @Column(name = "imagedata", length = 1000)
     private byte[] imageData;
+
+    private String userName;
+    private Boolean isEmailVerified;
+    private Boolean isMobileNoVerified;
 }

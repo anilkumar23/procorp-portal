@@ -1,10 +1,14 @@
 package com.procorp.chat.service;
 
+import com.procorp.chat.config.FeignClientInterceptor;
 import com.procorp.chat.dao.FriendRequestDao;
 import com.procorp.chat.dao.MemberDao;
+import com.procorp.chat.dao.UserDao;
 import com.procorp.chat.dtos.*;
+import com.procorp.chat.entities.GoogleUser;
 import com.procorp.chat.entities.Member;
 import com.procorp.chat.exception.StudentCourseIllegalStateException;
+import com.procorp.chat.exception.UnauthorizedException;
 import com.procorp.chat.util.ImageUtil;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -14,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -30,6 +35,9 @@ public class MemberService {
 
     @Autowired
     private FriendRequestDao friendRequestDao;
+
+    @Autowired
+    private UserDao userDao;
 
     @Transactional
     public ResponseEntity<GlobalResponseDTO> addMember(MemberDTO memberDTO) {
@@ -88,16 +96,40 @@ public class MemberService {
     }
 
     @Transactional
-    public Long updateMember(MemberDTO memberDTO) {
-        Member member = Member.builder().firstName(memberDTO.getFirstName())
-                .lastName(memberDTO.getLastName()).mobileNumber(memberDTO.getMobileNumber())
-                .gender(memberDTO.getGender()).email(memberDTO.getEmail()).password(memberDTO.getPassword())
-                .dateOfBirth(memberDTO.getDateOfBirth()).registrationDate(memberDTO.getRegistrationDate())
-                .schoolName(memberDTO.getEducationDetails().getSchool()).collegeName(memberDTO.getEducationDetails().getCollege())
-                .build();
-        memberDao.save(member);
-        LOG.info("Student {} Successfully updated", member.getMemberId());
-        return member.getMemberId();
+    public ResponseEntity<GlobalResponseDTO> updateMember(MemberDTO memberDTO) {
+        Optional<GoogleUser> user = userDao.findByEmail(memberDTO.getEmail());
+        if (user.isPresent()) {
+            String userName = memberDTO.getUserName();
+            if(!StringUtils.hasText(userName)) userName = user.get().getUserName();
+            Member member = memberDao.save(Member.builder().memberId(memberDTO.getMemberId()).firstName(memberDTO.getFirstName())
+                    .lastName(memberDTO.getLastName()).mobileNumber(memberDTO.getMobileNumber())
+                    .gender(memberDTO.getGender()).email(memberDTO.getEmail()).password(memberDTO.getPassword())
+                    .dateOfBirth(memberDTO.getDateOfBirth()).registrationDate(memberDTO.getRegistrationDate())
+                    .schoolName(memberDTO.getEducationDetails().getSchool()).collegeName(memberDTO.getEducationDetails().getCollege())
+                    .isEmailVerified(user.get().getIsEmailVerified()).isMobileNoVerified(user.get().getIsMobileNoVerified())
+                    .userName(userName)
+                    .build());
+            LOG.info("Member {} Successfully updated", member.getMemberId());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Member "+ member.getMemberId()+" Successfully updated")
+                            .responseObj(mapEntityToDTO(member))
+                            .build());
+//            return member.getMemberId() +" updated Successfully";
+        }else {
+            LOG.info("Member update failed, user "+ memberDTO.getEmail() +" does not exist");
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Member update failed, user "+ memberDTO.getEmail() +" does not exist")
+                            .responseObj(null)
+                            .build());
+        }
     }
 
     @Transactional
@@ -165,10 +197,12 @@ public class MemberService {
                         .gender(n.getGender())
                         .mobileNumber(n.getMobileNumber())
                         .email(n.getEmail())
-                        .password(n.getPassword())
                         .registrationDate(n.getRegistrationDate())
                         .collegeName(n.getCollegeName())
                         .companyName(n.getCompanyName())
+                        .isMobileNoVerified(n.getIsMobileNoVerified())
+                        .isEmailVerified(n.getIsEmailVerified())
+                        .userName(n.getUserName())
                         .build();
     }
     @Transactional
@@ -203,6 +237,5 @@ public class MemberService {
 //        return ResponseEntity.status(HttpStatus.NO_CONTENT).body();
         return null;
     }
-
 
 }

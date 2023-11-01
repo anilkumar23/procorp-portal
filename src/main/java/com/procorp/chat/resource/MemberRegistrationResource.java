@@ -29,11 +29,11 @@ public class MemberRegistrationResource {
     @Autowired
     private MemberService memberService;
 
-    @PostMapping("/member")
+  /*  @PostMapping("/member")
     public ResponseEntity<GlobalResponseDTO> addStudent(@Valid @RequestBody MemberDTO member) {
         LOG.info("member :: member Name {} {}", member.getFirstName(), member.getLastName());
         return memberService.addMember(member);
-    }
+    }*/
 
     @DeleteMapping("/member/{memberId}")
     public String removeStudent(Long memberId) {
@@ -53,7 +53,7 @@ public class MemberRegistrationResource {
     }
 
     @PutMapping("/member")
-    public Long updateMember(@javax.validation.Valid @RequestBody MemberDTO member) {
+    public ResponseEntity<GlobalResponseDTO> updateMember(@javax.validation.Valid @RequestBody MemberDTO member) {
         return memberService.updateMember(member);
     }
 

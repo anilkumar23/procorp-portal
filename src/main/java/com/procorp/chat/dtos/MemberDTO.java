@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Data
 public class MemberDTO {
 
+    private long memberId;
     @NotEmpty(message = "The first name is required.")
     @Size(min = 1, max = 20, message = "The length of first name must be at least 1 character")
     private String firstName;
@@ -42,7 +43,8 @@ public class MemberDTO {
 //    private String address;
 //
 //    private String username;
-
+//    private String username;
+    private String userName;
 
 
 }
