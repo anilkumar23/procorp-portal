@@ -27,7 +27,7 @@ public class MemberServiceAspect {
         String s = FeignClientInterceptor.getBearerTokenHeader();
         if (!StringUtils.hasText(s)) throw new UnauthorizedException("Invalid Bearer token or token has expired, please refresh token and give a try!!");
         String[] tokenFields = s.split(" ");
-        Mono<Object> flag = authClient.get().uri("/isAuthenticated"+"?token=" + tokenFields[1])
+        Mono<Object> flag = authClient.get().uri("/auth-service/isAuthenticated"+"?token=" + tokenFields[1])
                 .accept(MediaType.APPLICATION_JSON)
                 .header("Authorization",s)
                 .retrieve()

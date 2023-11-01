@@ -33,4 +33,8 @@ public class MemberResponseDTO {
     private String collegeName;
 
     private String companyName;
+    private String userToken;
+    private boolean isEmailVerified;
+    private boolean isMobileNoVerified;
+    private String userName;
 }

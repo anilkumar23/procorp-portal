@@ -31,11 +31,11 @@ public class MemberRegistrationResource {
     @Autowired
     private MemberService memberService;
 
-    @PostMapping("/member")
+  /*  @PostMapping("/member")
     public ResponseEntity<GlobalResponseDTO> addStudent(@Valid @RequestBody MemberDTO member) {
         LOG.info("member :: member Name {} {}", member.getFirstName(), member.getLastName());
         return memberService.addMember(member);
-    }
+    }*/
 
     @DeleteMapping("/member/{memberId}")
     public ResponseEntity<GlobalResponseDTO> removeStudent(Long memberId) {
