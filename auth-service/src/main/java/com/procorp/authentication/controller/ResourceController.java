@@ -18,33 +18,34 @@ public class ResourceController {
 	@Autowired
 	UserRepository repo;
 	@RequestMapping("/isAuthenticated")
-	public ResponseEntity<?> isAuthenticated(@RequestParam String token){
-		return ResponseEntity.status(HttpStatus.OK)
+	public boolean isAuthenticated(@RequestParam String token){
+		/*return ResponseEntity.status(HttpStatus.OK)
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(GlobalResponseDTO.builder()
 						.statusCode(HttpStatus.OK.value())
 						.status(HttpStatus.OK.name())
 						.msg("User Authenticated successfully")
 						.responseObj(repo.findByToken(token).isPresent())
-						.build());
+						.build());*/
 	 //	return StringUtils.hasText(repo.getTokenByUsername(email));
+		return repo.findByToken(token).isPresent();
 	}
 
 	/*public boolean isAuthenticated(@RequestParam String token) {
 		return repo.findByToken(token).isPresent();
 	}*/
 	@RequestMapping("/getAuthToken")
-	public ResponseEntity<?> getAuthToken(@RequestParam String email){
+	public String getAuthToken(@RequestParam String email){
 
-		return ResponseEntity.status(HttpStatus.OK)
+		/*return ResponseEntity.status(HttpStatus.OK)
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(GlobalResponseDTO.builder()
 						.statusCode(HttpStatus.OK.value())
 						.status(HttpStatus.OK.name())
 						.msg("Generated Token successfully")
 						.responseObj(repo.getTokenByUsername(email))
-						.build());
-		//return repo.getTokenByUsername(email);
+						.build());*/
+		return repo.getTokenByUsername(email);
 	}
 
 }

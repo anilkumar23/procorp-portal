@@ -87,7 +87,7 @@ public class FriendService {
                            .responseObj(mapEntityToDTO(friendRequests))
                            .build());
        }else{
-           return ResponseEntity.status(HttpStatus.NO_CONTENT)
+           return ResponseEntity.status(HttpStatus.OK)
                    .contentType(MediaType.APPLICATION_JSON)
                    .body(GlobalResponseDTO.builder()
                            .statusCode(HttpStatus.NO_CONTENT.value())
@@ -115,7 +115,7 @@ public class FriendService {
                             .responseObj(mapEntityToDTO(approvedList))
                             .build());
         }else{
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())
@@ -145,7 +145,7 @@ public class FriendService {
                             .responseObj(mapEntityToDTO(friendRequests))
                             .build());
         }else{
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())
@@ -295,7 +295,7 @@ public class FriendService {
                             .responseObj("IDs are : " + ids)
                             .build());
         }else {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())

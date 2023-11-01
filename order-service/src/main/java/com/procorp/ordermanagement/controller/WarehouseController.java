@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/warehouse")
+@RequestMapping("/api/warehouse-service")
 public class WarehouseController {
 
     private WareHouseService wareHouseService;
@@ -190,7 +190,7 @@ public class WarehouseController {
                             .responseObj(updatedWareHouse.get())
                             .build());
         }else{
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())
@@ -216,7 +216,7 @@ public class WarehouseController {
                             .responseObj(warehouse.get())
                             .build());
         }else{
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())

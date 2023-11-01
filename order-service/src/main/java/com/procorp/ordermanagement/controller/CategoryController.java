@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/category")
+@RequestMapping("/api/category-service")
 public class CategoryController {
 
     private CategoryService categoryService;
@@ -105,7 +105,7 @@ public class CategoryController {
                             .responseObj(updatedCategory.get())
                             .build());
         }else{
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())
@@ -131,7 +131,7 @@ public class CategoryController {
                             .responseObj(category.get())
                             .build());
         }else{
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())

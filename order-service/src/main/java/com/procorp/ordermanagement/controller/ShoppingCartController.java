@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/cart")
+@RequestMapping("/api/cart-service")
 public class ShoppingCartController {
     ProductService productService;
     ShoppingCartService shoppingCartService;
@@ -63,7 +63,7 @@ public class ShoppingCartController {
                             .build());
            // return new ResponseEntity<>(cart.get(), HttpStatus.OK);
         }else{
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())
@@ -90,7 +90,7 @@ public class ShoppingCartController {
                             .build());
             //return new ResponseEntity<>(cart.get(), HttpStatus.OK);
         }else{
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())
@@ -118,7 +118,7 @@ public class ShoppingCartController {
                             .build());
             //return new ResponseEntity<>(cart, HttpStatus.OK);
         }else{
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())
@@ -243,7 +243,7 @@ public class ShoppingCartController {
             this.shoppingCartService.update(updatedCart.get());
 
         }else{
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())

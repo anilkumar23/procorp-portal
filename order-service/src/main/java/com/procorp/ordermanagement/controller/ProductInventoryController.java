@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/inventory")
+@RequestMapping("/api/inventory-service")
 public class ProductInventoryController {
 
     private ProductInventoryService productInventoryService;
@@ -184,7 +184,7 @@ public class ProductInventoryController {
                             .responseObj(updatedCategory.get())
                             .build());
         }else{
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())
@@ -210,7 +210,7 @@ public class ProductInventoryController {
                             .responseObj(productInventory.get())
                             .build());
         }else{
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())

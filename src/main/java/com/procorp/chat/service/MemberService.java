@@ -75,13 +75,15 @@ public class MemberService {
                     .body(GlobalResponseDTO.builder()
                     .statusCode(HttpStatus.OK.value())
                     .status(HttpStatus.OK.name())
+                     .msg("Got the Member object By ID: "+memberId)
                     .responseObj(mapEntityToDTO(member.get()))
                     .build());
-        return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return  ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(GlobalResponseDTO.builder()
-                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.name())
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .status(HttpStatus.NOT_FOUND.name())
+                .msg("Not found Member object By ID: "+memberId)
                 .responseObj(null)
                 .build());
     }
@@ -135,10 +137,11 @@ public class MemberService {
                                         .statusCode(HttpStatus.OK.value())
                                         .status(HttpStatus.OK.name())
                                         .responseObj(mapEntityToDTO(members))
+                                .msg("got the response ")
                                         .build());
             }
         }
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+        return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(GlobalResponseDTO.builder()
                         .statusCode(HttpStatus.NO_CONTENT.value())
@@ -189,28 +192,41 @@ public class MemberService {
         memberDao.save(member);
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("image/png"))
-                .body(GlobalResponseDTO.builder()
+                /*.body(GlobalResponseDTO.builder()
                         .statusCode(HttpStatus.OK.value())
                         .status(HttpStatus.OK.name())
                         .msg("Image uploaded successfully with Member ID "+memberId)
                         .responseObj("Image uploaded successfully with Member ID "+memberId)
-                        .build());
-               // .body("Image uploaded successfully");
+                        .build());*/
+               .body("Image uploaded successfully");
     }
 
     @Transactional
     public ResponseEntity<?> getImage(long memberId) {
         Member member = memberDao.getReferenceById(memberId);
-        byte[] image = ImageUtil.decompressImage(member.getImageData());
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("image/png"))
-                .body(GlobalResponseDTO.builder()
-                        .statusCode(HttpStatus.OK.value())
-                        .status(HttpStatus.OK.name())
-                        .msg("Got the uploaded Image successfully with Member ID "+memberId)
-                        .responseObj(image)
-                        .build());
-               // .body(image);
+        if(member.getImageData()!=null){
+            byte[] image = ImageUtil.decompressImage(member.getImageData());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("image/png"))
+                    /*.body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Got the uploaded Image successfully with Member ID "+memberId)
+                            .responseObj(image)
+                            .build());*/
+                    .body(image);
+        }else {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                   /* .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.NO_CONTENT.value())
+                            .status(HttpStatus.NO_CONTENT.name())
+                            .msg("No image was found with Member ID "+memberId)
+                            .responseObj(null)
+                            .build());*/
+                    .body("No image was found with Member ID "+memberId);
+        }
+
     }
 
     @Transactional
@@ -230,7 +246,7 @@ public class MemberService {
         }
 //        return ResponseEntity.status(HttpStatus.NO_CONTENT).body();
        // return null;
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+        return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(GlobalResponseDTO.builder()
                         .statusCode(HttpStatus.NO_CONTENT.value())

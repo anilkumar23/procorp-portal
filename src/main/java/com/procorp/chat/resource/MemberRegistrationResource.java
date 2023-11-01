@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -58,14 +59,28 @@ public class MemberRegistrationResource {
 
     @GetMapping("/getAllMembers")
     public ResponseEntity<?> getAllMembers(Long memberId) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(GlobalResponseDTO.builder()
-                        .statusCode(HttpStatus.OK.value())
-                        .status(HttpStatus.OK.name())
-                        .msg("Got all members list with Id:" + memberId)
-                        .responseObj(memberService.getAllMembers(memberId))
-                        .build());
+        LOG.info("called getAllMembers");
+        List<Member> memberList = memberService.getAllMembers(memberId);
+        if(memberList!=null && !memberList.isEmpty()){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Got all members list with Id:" + memberId)
+                            .responseObj(memberService.getAllMembers(memberId))
+                            .build());
+        }else{
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("members list was empty with Id:" + memberId)
+                            .responseObj(new ArrayList<>())
+                            .build());
+        }
+
       //  return memberService.getAllMembers(memberId);
 
     }

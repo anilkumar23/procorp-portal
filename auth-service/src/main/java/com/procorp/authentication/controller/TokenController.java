@@ -17,16 +17,15 @@ public class TokenController {
 	@Autowired
 	UserRepository repo;
 	@GetMapping
-	public ResponseEntity<?> getAuthToken(@RequestParam String email){
-		return ResponseEntity.status(HttpStatus.OK)
+	public String getAuthToken(@RequestParam String email){
+		/*return ResponseEntity.status(HttpStatus.OK)
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(GlobalResponseDTO.builder()
 						.statusCode(HttpStatus.OK.value())
 						.status(HttpStatus.OK.name())
 						.msg("Generated Token successfully")
 						.responseObj(repo.getTokenByUsername(email))
-						.build());
-
-		//return repo.getTokenByUsername(email);
+						.build());*/
+		return repo.getTokenByUsername(email);
 	}
 }

@@ -49,15 +49,15 @@ public class AuthenticationController {
 		
 		UserDetails userdetails = userDetailsService.loadUserByUsername(email);
 		String token = jwtUtil.generateToken(userdetails);
-		return ResponseEntity.status(HttpStatus.OK)
+		/*return ResponseEntity.status(HttpStatus.OK)
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(GlobalResponseDTO.builder()
 						.statusCode(HttpStatus.OK.value())
 						.status(HttpStatus.OK.name())
 						.msg("Generated Auth Token Successfully")
 						.responseObj(new AuthenticationResponse(token))
-						.build());
-		//return ResponseEntity.ok(new AuthenticationResponse(token));
+						.build());*/
+		return ResponseEntity.ok(new AuthenticationResponse(token));
 	}
 	@RequestMapping(value = "/refreshtoken", method = RequestMethod.GET)
 	public ResponseEntity<?> refreshtoken(HttpServletRequest request) throws Exception {
@@ -66,15 +66,15 @@ public class AuthenticationController {
 
 		Map<String, Object> expectedMap = getMapFromIoJsonwebtokenClaims(claims);
 		String token = jwtUtil.doGenerateRefreshToken(expectedMap, expectedMap.get("sub").toString());
-		return ResponseEntity.status(HttpStatus.OK)
+		/*return ResponseEntity.status(HttpStatus.OK)
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(GlobalResponseDTO.builder()
 						.statusCode(HttpStatus.OK.value())
 						.status(HttpStatus.OK.name())
 						.msg("Refreshed Token Successfully")
 						.responseObj(new AuthenticationResponse(token))
-						.build());
-		//return ResponseEntity.ok(new AuthenticationResponse(token));
+						.build());*/
+		return ResponseEntity.ok(new AuthenticationResponse(token));
 	}
 
 	public Map<String, Object> getMapFromIoJsonwebtokenClaims(DefaultClaims claims) {

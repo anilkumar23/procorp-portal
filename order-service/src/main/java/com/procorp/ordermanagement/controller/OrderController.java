@@ -29,7 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/orders-service")
 public class OrderController {
     ProductService productService;
     OrderService orderService;
@@ -71,7 +71,7 @@ public class OrderController {
                             .build());
             //return new ResponseEntity<>(order.get(), HttpStatus.OK);
         }else{
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())
@@ -99,7 +99,7 @@ public class OrderController {
                             .build());
             //return new ResponseEntity<>(cart, HttpStatus.OK);
         }else{
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())
@@ -128,7 +128,7 @@ public class OrderController {
                                     .build());
                       //  return new ResponseEntity<>(updatedOrder.get(), HttpStatus.OK);
                     }else{
-                    return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    return ResponseEntity.status(HttpStatus.OK)
                             .contentType(MediaType.APPLICATION_JSON)
                             .body(GlobalResponseDTO.builder()
                                     .statusCode(HttpStatus.NO_CONTENT.value())
