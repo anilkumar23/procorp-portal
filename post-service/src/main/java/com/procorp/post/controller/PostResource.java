@@ -4,6 +4,7 @@ package com.procorp.post.controller;
 import com.procorp.post.dto.PostRequestDto;
 import com.procorp.post.dto.PostResponseDTO;
 import com.procorp.post.dto.PostShareDetailsRequestDto;
+import com.procorp.post.exception.GlobalResponseDTO;
 import com.procorp.post.service.PostService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,19 +26,58 @@ public class PostResource {
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadFile(@ModelAttribute PostRequestDto requestDto) {
-        return new ResponseEntity<>(service.uploadFile(requestDto), HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("File uploaded Successfully")
+                        .responseObj(service.uploadFile(requestDto))
+                        .build());
+        //return new ResponseEntity<>(service.uploadFile(requestDto), HttpStatus.OK);
     }
+
+ /*   @PostMapping(value = "/reSharePost")
+    public ResponseEntity<?> uploadFile(@RequestBody PostShareDetailsRequestDto requestDto) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Post Re-shared Successfully..")
+                        .responseObj(service.reSharePost(requestDto))
+                        .build());
+    }*/
+
+      //  return new ResponseEntity<>(service.uploadFile(requestDto), HttpStatus.OK);
+   // }
 
   /*  @PostMapping(value = "/reSharePost")
     public ResponseEntity<String> uploadFile(@RequestBody PostShareDetailsRequestDto requestDto) {
         return new ResponseEntity<>(service.reSharePost(requestDto), HttpStatus.OK);
     }*/
+
     @GetMapping(value = "/getPostsByMemberId")
-    public  ResponseEntity<?> getPostsByMemberId(@RequestParam long memberId,
-     @RequestParam(defaultValue = "0") final Integer pageNumber,
-    @RequestParam(defaultValue = "5") final Integer size) {
-        return service.getPosts(memberId, pageNumber, size);
+    public ResponseEntity<?> getPostsByMemberId(@RequestParam long memberId,
+                                                @RequestParam(defaultValue = "0") final Integer pageNumber,
+                                                @RequestParam(defaultValue = "5") final Integer size) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Got the posts Successfully by memberID")
+                        .responseObj(service.getPosts(memberId, pageNumber, size))
+                        .build());
+       // return new ResponseEntity<>(service.getPosts(memberId), HttpStatus.OK);
     }
+
+/*    @GetMapping(value = "/getPostsByMemberId")
+    public  ResponseEntity<?> getPostsByMemberId(@RequestParam long memberId,
+                                                 @RequestParam(defaultValue = "0") final Integer pageNumber,
+                                                 @RequestParam(defaultValue = "5") final Integer size) {
+        return service.getPosts(memberId, pageNumber, size);*/
+
 
   /*  @GetMapping("/download/{fileName}")
     public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName) {
@@ -52,7 +92,15 @@ public class PostResource {
     }
 */
     @DeleteMapping("/delete/{fileName}")
-    public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
-        return new ResponseEntity<>(service.deleteFile(fileName), HttpStatus.OK);
+    public ResponseEntity<?> deleteFile(@PathVariable String fileName) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("removed file Successfully")
+                        .responseObj(service.deleteFile(fileName))
+                        .build());
+        //return new ResponseEntity<>(service.deleteFile(fileName), HttpStatus.OK);
     }
 }

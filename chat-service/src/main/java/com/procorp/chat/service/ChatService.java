@@ -8,11 +8,13 @@ import com.procorp.chat.dtos.ChatHistoryDTO;
 import com.procorp.chat.dtos.FriendRequestDTO;
 import com.procorp.chat.entities.Chat;
 import com.procorp.chat.exception.ChatIllegalStateException;
+import com.procorp.chat.exception.GlobalResponseDTO;
 import com.procorp.chat.exception.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -55,11 +57,26 @@ public class ChatService {
                     insertTimeStampToEachMsg(chatDTO.getChatHistory())));
             LOG.info("Chat has been successfully created between " + chatDTO.getStudentId() + " and " +
                     chatDTO.getChatPersonId() + " with chatId => " + chatId);
-            return ResponseEntity.ok("Chat has been created between " + chatDTO.getStudentId() + " and " +
-                    chatDTO.getChatPersonId() + " with chatId => " + chatId);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Chat inserted Successfully")
+                            .responseObj("Chat has been created between " + chatDTO.getStudentId() + " and " +chatDTO.getChatPersonId() + " with chatId => " + chatId)
+                            .build());
+        //    return ResponseEntity.ok("Chat has been created between " + chatDTO.getStudentId() + " and " +
+             //       chatDTO.getChatPersonId() + " with chatId => " + chatId);
         }
-        return ResponseEntity.ok("Chat has not created between " + chatDTO.getStudentId() + " and " +
-                chatDTO.getChatPersonId() + " as friend request is not approved");
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Chat has not inserted Successfully")
+                        .responseObj("Chat has not created between " + chatDTO.getStudentId() + " and " +chatDTO.getChatPersonId() + " as friend request is not approved")
+                        .build());
+       // return ResponseEntity.ok("Chat has not created between " + chatDTO.getStudentId() + " and " +chatDTO.getChatPersonId() + " as friend request is not approved");
     }
     private static final SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private CopyOnWriteArrayList<Multimap<String, ChatHistoryDTO>> insertTimeStampToEachMsg(CopyOnWriteArrayList<Multimap<String, ChatHistoryDTO>> chatHistory){

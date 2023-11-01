@@ -32,7 +32,7 @@ public class CommunityChatResource {
     }
 
     @DeleteMapping(value = "/deleteChatMessages")
-    private String deleteChatMessages(@Valid @RequestBody CommunityChatDeleteDto chatDTO){
+    private ResponseEntity<?> deleteChatMessages(@Valid @RequestBody CommunityChatDeleteDto chatDTO){
         return service.deleteChatMessages(chatDTO);
     }
     @GetMapping(value = "/findChatByDate/{communityId}/{date}", produces = MediaType.APPLICATION_JSON_VALUE)

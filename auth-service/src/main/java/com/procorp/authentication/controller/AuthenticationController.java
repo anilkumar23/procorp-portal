@@ -3,9 +3,12 @@ package com.procorp.authentication.controller;
 
 import com.procorp.authentication.config.CustomUserDetailsService;
 import com.procorp.authentication.config.JwtUtil;
+import com.procorp.authentication.exception.GlobalResponseDTO;
 import com.procorp.authentication.model.AuthenticationResponse;
 import io.jsonwebtoken.impl.DefaultClaims;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -35,8 +38,8 @@ public class AuthenticationController {
 	public ResponseEntity<?> createAuthenticationToken(@RequestParam String email)
 			throws Exception {
 		try {
-			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-					email, "123"));
+
+			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, "123"));
 		} catch (DisabledException e) {
 			throw new Exception("USER_DISABLED", e);
 		}
@@ -46,6 +49,14 @@ public class AuthenticationController {
 		
 		UserDetails userdetails = userDetailsService.loadUserByUsername(email);
 		String token = jwtUtil.generateToken(userdetails);
+		/*return ResponseEntity.status(HttpStatus.OK)
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(GlobalResponseDTO.builder()
+						.statusCode(HttpStatus.OK.value())
+						.status(HttpStatus.OK.name())
+						.msg("Generated Auth Token Successfully")
+						.responseObj(new AuthenticationResponse(token))
+						.build());*/
 		return ResponseEntity.ok(new AuthenticationResponse(token));
 	}
 	@RequestMapping(value = "/refreshtoken", method = RequestMethod.GET)
@@ -55,6 +66,14 @@ public class AuthenticationController {
 
 		Map<String, Object> expectedMap = getMapFromIoJsonwebtokenClaims(claims);
 		String token = jwtUtil.doGenerateRefreshToken(expectedMap, expectedMap.get("sub").toString());
+		/*return ResponseEntity.status(HttpStatus.OK)
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(GlobalResponseDTO.builder()
+						.statusCode(HttpStatus.OK.value())
+						.status(HttpStatus.OK.name())
+						.msg("Refreshed Token Successfully")
+						.responseObj(new AuthenticationResponse(token))
+						.build());*/
 		return ResponseEntity.ok(new AuthenticationResponse(token));
 	}
 

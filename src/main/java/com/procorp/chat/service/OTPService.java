@@ -1,6 +1,7 @@
 package com.procorp.chat.service;
 
 import com.procorp.chat.dao.OTPDao;
+import com.procorp.chat.dtos.GlobalResponseDTO;
 import com.procorp.chat.dtos.OTPStatus;
 import com.procorp.chat.dtos.OTPValidationDTO;
 import com.procorp.chat.entities.OTPDetails;
@@ -89,17 +90,57 @@ public class OTPService {
     }
 
     @Transactional
-    public ResponseEntity<OTPStatus> verifyMobileOTP(OTPValidationDTO dto){
+    public ResponseEntity<?> verifyMobileOTP(OTPValidationDTO dto){
         OTPDetails details = dao.getByMobileNoAndMobileOTP(dto.getSource(), dto.getOtp());
-        return getOtpStatusResponseEntity(details);
+        return getOtpStatusGenericsResponseEntity(details);
     }
 
     @Transactional
-    public ResponseEntity<OTPStatus> verifyEmailOTP(OTPValidationDTO dto){
+    public ResponseEntity<?> verifyEmailOTP(OTPValidationDTO dto){
         OTPDetails details = dao.getByEmailAndEmailOTP(dto.getSource(), dto.getOtp());
-        return getOtpStatusResponseEntity(details);
+        return getOtpStatusGenericsResponseEntity(details);
     }
 
+    private ResponseEntity<?> getOtpStatusGenericsResponseEntity(OTPDetails details) {
+        if(Objects.nonNull(details)){
+            if(System.currentTimeMillis() - details.getMobileOtpExpiry() > otpThreshold){
+                return ResponseEntity.status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(GlobalResponseDTO.builder()
+                                .statusCode(HttpStatus.OK.value())
+                                .status(HttpStatus.OK.name())
+                                .msg("OTP Got Expired, please generate new one.")
+                                .responseObj(new OTPStatus(OTPStatus.isExpired.YES, "OTP Got Expired, please generate new one."))
+                                .build());
+           /*     return ResponseEntity.status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(new OTPStatus(OTPStatus.isExpired.YES, "OTP Got Expired, please generate new one."));
+           */ }
+            dao.deleteById(details.getId());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Success")
+                            .responseObj(new OTPStatus(OTPStatus.isExpired.NO, "Success"))
+                            .build());
+           /* return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(new OTPStatus(OTPStatus.isExpired.NO, "Success"));*/
+        }
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Not a valid OTP")
+                        .responseObj(new OTPStatus(OTPStatus.isExpired.INVALID, "Not a valid OTP"))
+                        .build());
+      /*  return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new OTPStatus(OTPStatus.isExpired.INVALID, "Not a valid OTP"));*/
+    }
     private ResponseEntity<OTPStatus> getOtpStatusResponseEntity(OTPDetails details) {
         if(Objects.nonNull(details)){
             if(System.currentTimeMillis() - details.getMobileOtpExpiry() > otpThreshold){

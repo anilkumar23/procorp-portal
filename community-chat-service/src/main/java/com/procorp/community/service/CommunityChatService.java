@@ -121,7 +121,7 @@ public class CommunityChatService {
                         .statusCode(HttpStatus.OK.value())
                         .status(HttpStatus.OK.name())
                         .msg("Chat has updated Successfully")
-                        .responseObj( CommunityChatResponseDto.builder()
+                        .responseObj(CommunityChatResponseDto.builder()
                                 .memberId(chatDTO.getMemberId())
                                 .communityId(chatDTO.getCommunityId())
                                 .date(chatDTO.getDate())
@@ -146,7 +146,7 @@ public class CommunityChatService {
     }
 
     @Transactional
-    public String deleteChatMessages(CommunityChatDeleteDto chatDTO) {
+    public ResponseEntity<?> deleteChatMessages(CommunityChatDeleteDto chatDTO) {
         String chatId = prepareChatId(chatDTO.getCommunityId(), chatDTO.getDate());
         Optional<CommunityChat> optionalChat = communityChatDao.findById(chatId);
         CommunityChatHistoryResponseDto communityChatHistoryResponseDto = chatDTO.getCommunityChatHistory();
@@ -161,9 +161,27 @@ public class CommunityChatService {
                     });
             communityChatDao.save(chat);
 
-            return "Messages have been successfully deleted";
+
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Messages have been successfully deleted")
+                            .responseObj("Messages have been successfully deleted")
+                            .build());
+           // return "Messages have been successfully deleted";
         } else {
-            return "Member has no sufficient permissions to delete the chat";
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Member has no sufficient permissions to delete the chat")
+                            .responseObj("Member has no sufficient permissions to delete the chat")
+                            .build());
+            //return "Member has no sufficient permissions to delete the chat";
         }
     }
 }

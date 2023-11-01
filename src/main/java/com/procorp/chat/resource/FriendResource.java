@@ -1,6 +1,7 @@
 package com.procorp.chat.resource;
 
 import com.procorp.chat.dtos.FriendRequestDTO;
+import com.procorp.chat.dtos.GlobalResponseDTO;
 import com.procorp.chat.service.FriendService;
 import com.procorp.chat.service.MemberService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -8,6 +9,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +26,7 @@ public class FriendResource {
     private MemberService memberService;
 
     @PostMapping("/sendFriendRequest")
-    public String sendFriendRequest(@Valid @RequestParam Long requestFrom,@RequestParam Long requestTo) {
+    public ResponseEntity<?> sendFriendRequest(@Valid @RequestParam Long requestFrom, @RequestParam Long requestTo) {
 //        LOG.info("Student :: Student Name {}", student.getFullName());
 //        if(Optional.ofNullable(studentService.getStudentById(requestFrom))
 //                Optional.ofNullable(studentService.getStudentById(requestFrom)) ) {
@@ -34,51 +36,51 @@ public class FriendResource {
     }
 
     @GetMapping("/getFriendRequestsSent")
-    public List<FriendRequestDTO> getFriendRequestsSent(@Valid @RequestParam Long requestFrom) {
+    public ResponseEntity<?> getFriendRequestsSent(@Valid @RequestParam Long requestFrom) {
 //        LOG.info("Student :: Student Name {}", student.getFullName());
         return friendsService.getFriendRequestsSent(requestFrom);
     }
 
     @GetMapping("/getFriendRequests")
-    public List<FriendRequestDTO> getFriendRequests(@Valid @RequestParam Long requestFrom) {
+    public ResponseEntity<?> getFriendRequests(@Valid @RequestParam Long requestFrom) {
         return friendsService.getFriendRequests(requestFrom);
     }
 
     @GetMapping("/getFriendRequestsReceived")
-    public List<FriendRequestDTO> getFriendRequestsReceived(@Valid @RequestParam Long requestFrom) {
+    public ResponseEntity<?> getFriendRequestsReceived(@Valid @RequestParam Long requestFrom) {
 //        LOG.info("Student :: Student Name {}", student.getFullName());
         return friendsService.getFriendRequestsReceived(requestFrom);
     }
 
 //    This API can be used for both cancel and reject friends request
     @DeleteMapping("/cancelFriendRequest")
-    public String cancelFriendRequest(@Valid @RequestParam Long requestFrom,@RequestParam Long requestTo) {
+    public ResponseEntity<?> cancelFriendRequest(@Valid @RequestParam Long requestFrom,@RequestParam Long requestTo) {
 //        LOG.info("Student :: Student Name {}", student.getFullName());
-        String response = friendsService.cancelFriendRequest(requestFrom,requestTo);
+        ResponseEntity<?> response = friendsService.cancelFriendRequest(requestFrom,requestTo);
         LOG.info("Friend's Request from:" + requestFrom + " has been cancelled.");
-        return response ;
+        return response;
     }
 
     @PutMapping("/acceptFriendRequest")
-    public String acceptFriendRequest(@Valid @RequestParam Long requestFrom,@RequestParam Long requestTo) {
+    public ResponseEntity<?> acceptFriendRequest(@Valid @RequestParam Long requestFrom,@RequestParam Long requestTo) {
 //        LOG.info("Student :: Student Name {}", student.getFullName());
-        String response =friendsService.acceptFriendRequest(requestFrom,requestTo);
+        ResponseEntity<?> response =friendsService.acceptFriendRequest(requestFrom,requestTo);
         LOG.info( "Friend's Request from:" + requestFrom + " has been accepted.");
         return response;
     }
 
     @PutMapping("/blockFriend")
-    public String blockFriend(@Valid @RequestParam Long requestFrom,@RequestParam Long requestTo) {
+    public ResponseEntity<?> blockFriend(@Valid @RequestParam Long requestFrom,@RequestParam Long requestTo) {
 //        LOG.info("Student :: Student Name {}", student.getFullName());
-        String response =friendsService.blockFriend(requestFrom,requestTo);
+        ResponseEntity<?> response =friendsService.blockFriend(requestFrom,requestTo);
         LOG.info( "Member :" + requestTo + " has been Blocked.");
         return response;
     }
 
     @GetMapping("/blockList")
-    public String blockList(@Valid @RequestParam Long requestFrom) {
+    public ResponseEntity<?>  blockList(@Valid @RequestParam Long requestFrom) {
 //        LOG.info("Student :: Student Name {}", student.getFullName());
-        String response =friendsService.getBlockList(requestFrom);
+        ResponseEntity<?>  response =friendsService.getBlockList(requestFrom);
         LOG.info( "Member :" + requestFrom + " block list.");
         return response;
     }

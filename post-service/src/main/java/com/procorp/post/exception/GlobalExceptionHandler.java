@@ -8,11 +8,26 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ExceptionResponse> unauthorizedException(UnauthorizedException ex) {
-        ExceptionResponse response=new ExceptionResponse();
-        response.setErrorCode(String.valueOf(HttpStatus.UNAUTHORIZED));
-        response.setErrorMessage(ex.getMessage());
+    public ResponseEntity<GlobalResponseDTO> unauthorizedException(UnauthorizedException ex) {
 
-        return new ResponseEntity<ExceptionResponse>(response, HttpStatus.UNAUTHORIZED);
+        GlobalResponseDTO response= GlobalResponseDTO
+                .builder()
+                .msg(ex.getMessage())
+                .status(HttpStatus.UNAUTHORIZED.name())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .build();
+                return new ResponseEntity<GlobalResponseDTO>(response, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<GlobalResponseDTO> unauthorizedException(Exception ex) {
+
+        GlobalResponseDTO response= GlobalResponseDTO
+                .builder()
+                .msg(ex.getMessage())
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.name())
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .build();
+        return new ResponseEntity<GlobalResponseDTO>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
