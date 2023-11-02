@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface UserDao extends JpaRepository<GoogleUser, Long> {
     Optional<GoogleUser> findByMemberIdAndEmail(long memberId, String email);
     Optional<GoogleUser> findByEmail(String email);
+    Optional<GoogleUser> findByEmailAndUuid(String email, String uuid);
 }

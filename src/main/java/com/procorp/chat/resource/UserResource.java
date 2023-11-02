@@ -43,12 +43,22 @@ public class UserResource {
         String token = Objects.requireNonNull(flag.block()).toString().replace("{","")
                 .replace("}","").replace("token=","");
 
-
         GoogleUser googleUser = GoogleUser.builder().userName(googleUserDTO.getUserName()).mobileNumber(googleUserDTO.getMobileNumber())
                 .email(googleUserDTO.getEmail()).tokenId(token).isEmailVerified(googleUserDTO.isEmailVerified())
                 .isMobileNoVerified(googleUserDTO.isMobileVerified()).uuid(googleUserDTO.getUuid())
                 .imageURL(googleUserDTO.getImageURL()).build();
         try {
+            Optional<GoogleUser> user = userDao.findByEmailAndUuid(googleUser.getEmail(), googleUser.getUuid());
+            if (user.isPresent())
+                return ResponseEntity.status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(GlobalResponseDTO.builder()
+                                .statusCode(HttpStatus.OK.value())
+                                .status(HttpStatus.OK.name())
+                                .msg("Member "+googleUser.getMemberId()+" Successfully created")
+                                .responseObj(user.get())
+                                .build());
+
             userDao.save(googleUser);
 
             LOG.info("Member {} Successfully created", googleUser.getMemberId());
@@ -58,7 +68,7 @@ public class UserResource {
                             .statusCode(HttpStatus.OK.value())
                             .status(HttpStatus.OK.name())
                             .msg("Member "+googleUser.getMemberId()+" Successfully created")
-                            .responseObj(googleUser)
+                            .responseObj(mapEntityToDTO(googleUser))
                             .build());
         }catch (Exception ex){
             LOG.info("Member {} creation was unSuccessFull", googleUser.getMemberId());
