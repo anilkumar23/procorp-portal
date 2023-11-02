@@ -87,15 +87,15 @@ public class MemberRegistrationResource {
 
     @PutMapping("/member")
     public  ResponseEntity<?> updateMember(@javax.validation.Valid @RequestBody MemberDTO member) {
-        return ResponseEntity.status(HttpStatus.OK)
+        /*return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(GlobalResponseDTO.builder()
                         .statusCode(HttpStatus.OK.value())
                         .status(HttpStatus.OK.name())
                         .msg("Successfully updated the member object")
                         .responseObj(memberService.updateMember(member))
-                        .build());
-      //  return memberService.updateMember(member);
+                        .build());*/
+        return memberService.updateMember(member);
     }
 
     @PostMapping(value = "/getAllMembersByPartialSearch", produces = MediaType.APPLICATION_JSON_VALUE)
