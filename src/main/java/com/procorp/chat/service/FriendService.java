@@ -184,7 +184,7 @@ public class FriendService {
 //                        .imageData(Base64.getEncoder().encodeToString(ImageUtil.decompressImage(n.getImageData())))//handle null case when no image
                         .collegeName(n.getCollegeName())
                         .companyName(n.getCompanyName())
-                        .imageData(n.getImageData())
+                        .imageURL(n.getImageUrl())
                         .build()));
         return membersDTO;
 

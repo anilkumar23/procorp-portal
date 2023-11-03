@@ -104,7 +104,12 @@ public class MemberRegistrationResource {
         return memberService.findMembersWithPartialSearch(filterDTO);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/uploadImage",
+    /**
+     * Commented because added this logic as part of initial registration at
+     * @param memberId
+     * @return
+     */
+   /* @RequestMapping(method = RequestMethod.POST, value = "/uploadImage",
             consumes= MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file, @RequestParam("memberId") long memberId) throws IOException {
         return memberService.uploadImage(file, memberId);
@@ -112,7 +117,7 @@ public class MemberRegistrationResource {
     @GetMapping("/getProfileImage")
     public ResponseEntity<?> getProfileImageById(@RequestParam("memberId") long memberId) {
         return memberService.getImage(memberId);
-    }
+    }*/
 
     @GetMapping("/getSuggestions")
     public ResponseEntity<?> getSuggestions(@RequestParam("memberId") long memberId) {

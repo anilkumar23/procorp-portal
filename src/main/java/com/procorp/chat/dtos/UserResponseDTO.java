@@ -11,31 +11,13 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberResponseDTO {
-
+public class UserResponseDTO {
     private long memberId;
-
-    private String firstName;
-    private String lastName;
-
-    private LocalDate dateOfBirth;
-
-    private String gender;
-
     private String mobileNumber;
-
     private String email;
-
-    private String password;
-
-    private LocalDate registrationDate;
-
-    private String collegeName;
-
-    private String companyName;
     private String userToken;
-    private Boolean isEmailVerified;
-    private Boolean isMobileNoVerified;
+    private boolean isEmailVerified;
+    private boolean isMobileNoVerified;
     private String userName;
     private String imageURL;
 }

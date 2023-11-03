@@ -39,7 +39,10 @@ public class MemberService {
     @Autowired
     private UserDao userDao;
 
-    @Transactional
+    @Autowired
+    private ImageUtil util;
+
+    /*@Transactional
     public ResponseEntity<GlobalResponseDTO> addMember(MemberDTO memberDTO) {
         Member member = Member.builder().firstName(memberDTO.getFirstName())
                 .lastName(memberDTO.getLastName()).mobileNumber(memberDTO.getMobileNumber())
@@ -72,13 +75,13 @@ public class MemberService {
                             .build());
         }
 
-    }
+    }*/
 
     @Transactional
     public ResponseEntity<GlobalResponseDTO> getMemberById(Long memberId) {
         Optional<Member> member = memberDao.findById(memberId);
         if (member.isPresent())
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                     .statusCode(HttpStatus.OK.value())
@@ -103,17 +106,24 @@ public class MemberService {
 
     @Transactional
     public ResponseEntity<GlobalResponseDTO> updateMember(MemberDTO memberDTO) {
-        Optional<GoogleUser> user = userDao.findByEmail(memberDTO.getEmail());
+        Optional<GoogleUser> user = userDao.findByMemberIdAndEmail(memberDTO.getMemberId(), memberDTO.getEmail());
         if (user.isPresent()) {
             String userName = memberDTO.getUserName();
             if(!StringUtils.hasText(userName)) userName = user.get().getUserName();
+            String imageUrl = "";
+            if (StringUtils.hasText(user.get().getImageURL())){
+               imageUrl = user.get().getImageURL();
+            }else {
+                if (StringUtils.hasText(memberDTO.getImageUrl()))
+                    imageUrl = util.uploadProfileImageToS3(memberDTO.getImageUrl(),memberDTO.getEmail());
+            }
             Member member = memberDao.save(Member.builder().memberId(memberDTO.getMemberId()).firstName(memberDTO.getFirstName())
                     .lastName(memberDTO.getLastName()).mobileNumber(memberDTO.getMobileNumber())
                     .gender(memberDTO.getGender()).email(memberDTO.getEmail()).password(memberDTO.getPassword())
                     .dateOfBirth(memberDTO.getDateOfBirth()).registrationDate(memberDTO.getRegistrationDate())
                     .schoolName(memberDTO.getEducationDetails().getSchool()).collegeName(memberDTO.getEducationDetails().getCollege())
                     .isEmailVerified(user.get().getIsEmailVerified()).isMobileNoVerified(user.get().getIsMobileNoVerified())
-                    .userName(userName)
+                    .userName(userName).imageUrl(imageUrl)
                     .build());
             LOG.info("Member {} Successfully updated", member.getMemberId());
             return ResponseEntity.status(HttpStatus.OK)
@@ -124,7 +134,6 @@ public class MemberService {
                             .msg("Member "+ member.getMemberId()+" Successfully updated")
                             .responseObj(mapEntityToDTO(member))
                             .build());
-//            return member.getMemberId() +" updated Successfully";
         }else {
             LOG.info("Member update failed, user "+ memberDTO.getEmail() +" does not exist");
             return ResponseEntity.status(HttpStatus.OK)
@@ -196,7 +205,7 @@ public class MemberService {
                         .email(n.getEmail())
                         .password(n.getPassword())
                         .registrationDate(n.getRegistrationDate())
-//                        .imageData(Base64.getEncoder().encodeToString(ImageUtil.decompressImage(n.getImageData())))//handle null case when no image
+                        .imageURL(n.getImageUrl())
                         .collegeName(n.getCollegeName())
                         .companyName(n.getCompanyName())
                         .build()));
@@ -217,21 +226,22 @@ public class MemberService {
                         .isMobileNoVerified(n.getIsMobileNoVerified())
                         .isEmailVerified(n.getIsEmailVerified())
                         .userName(n.getUserName())
+                        .imageURL(n.getImageUrl())
                         .build();
     }
-    @Transactional
+   /* @Transactional
     public ResponseEntity<?> uploadImage(MultipartFile file, long memberId) throws IOException {
         Member member = memberDao.getReferenceById(memberId);
         member.setImageData(ImageUtil.compressImage(file.getBytes()));
         memberDao.save(member);
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("image/png"))
-                /*.body(GlobalResponseDTO.builder()
+                *//*.body(GlobalResponseDTO.builder()
                         .statusCode(HttpStatus.OK.value())
                         .status(HttpStatus.OK.name())
                         .msg("Image uploaded successfully with Member ID "+memberId)
                         .responseObj("Image uploaded successfully with Member ID "+memberId)
-                        .build());*/
+                        .build());*//*
                .body("Image uploaded successfully");
     }
 
@@ -242,26 +252,26 @@ public class MemberService {
             byte[] image = ImageUtil.decompressImage(member.getImageData());
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.valueOf("image/png"))
-                    /*.body(GlobalResponseDTO.builder()
+                    *//*.body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.OK.value())
                             .status(HttpStatus.OK.name())
                             .msg("Got the uploaded Image successfully with Member ID "+memberId)
                             .responseObj(image)
-                            .build());*/
+                            .build());*//*
                     .body(image);
         }else {
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
-                   /* .body(GlobalResponseDTO.builder()
+                   *//* .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())
                             .status(HttpStatus.NO_CONTENT.name())
                             .msg("No image was found with Member ID "+memberId)
                             .responseObj(null)
-                            .build());*/
+                            .build());*//*
                     .body("No image was found with Member ID "+memberId);
         }
 
-    }
+    }*/
 
     @Transactional
     public ResponseEntity<?> getSuggestions(long memberId) {

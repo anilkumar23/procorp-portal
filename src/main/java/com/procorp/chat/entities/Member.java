@@ -38,17 +38,9 @@ public class Member {
 
     private String schoolName;
 
-    @Lob
-    @Column(name = "imagedata", length = 1000)
-    private byte[] imageData;
+    private String imageUrl;
 
     private String userName;
     private Boolean isEmailVerified;
     private Boolean isMobileNoVerified;
-
-    public Member(Long memberId, String firstName, byte[] imageData) {
-        this.memberId = memberId;
-        this.firstName = firstName;
-        this.imageData = imageData;
-    }
 }

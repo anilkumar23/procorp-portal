@@ -1,0 +1,22 @@
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAQPA3X4KWI6TK5DUA
+      secret-key: 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
+    region:
+      static: us-east-1
+    stack:
+      auto: false
+
+application:
+  bucket:
+    name: procorp-assets
+
+
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 10MB
+      max-file-size: 10MB
+      max-request-size: 10MB

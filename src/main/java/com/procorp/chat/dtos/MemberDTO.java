@@ -45,6 +45,7 @@ public class MemberDTO {
 //    private String username;
 //    private String username;
     private String userName;
+    private String imageUrl;
 
 
 }
