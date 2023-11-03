@@ -5,6 +5,7 @@ import com.procorp.chat.dao.MemberDao;
 import com.procorp.chat.dtos.FriendRequestDTO;
 import com.procorp.chat.dtos.GlobalResponseDTO;
 import com.procorp.chat.entities.FriendRequest;
+import com.procorp.chat.entities.Member;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +25,13 @@ public class FriendService {
     private FriendRequestDao friendRequestDao;
 
     @Autowired
-    private MemberDao studentDao;
+    private MemberDao memberDao;
 
     public ResponseEntity<?> sendFriendRequest(Long requestFrom, Long requestTo) {
         Set<Long> ids = new HashSet<>();
         ids.add(requestFrom);
         ids.add(requestTo);
-        if(!studentDao.existsMembersAllByMemberId(ids)) {
+        if(!memberDao.existsMembersAllByMemberId(ids)) {
 
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -100,19 +101,24 @@ public class FriendService {
        // return mapEntityToDTO(friendRequests);
     }
 
-    public ResponseEntity<?> getFriendRequests(Long requestFrom) {
+    public ResponseEntity<?> getFriendRequests(Long requestTo) {
         List<FriendRequest> friendRequestList =
-                friendRequestDao.findAllByRequestFromOrRequestTo(requestFrom, requestFrom);
+                friendRequestDao.findByRequestTo(requestTo);
         if(friendRequestList!=null && !friendRequestList.isEmpty()){
-            ArrayList<FriendRequest> approvedList = new ArrayList<>(friendRequestList.stream()
-                    .filter(n -> n.getFriendRequestStatus().equalsIgnoreCase("Accepted")).toList());
+            List<Long> waitingListIds = friendRequestList.stream()
+                    .filter(r -> r.getFriendRequestStatus().equalsIgnoreCase("waiting"))
+                    .map(FriendRequest::getRequestFrom).toList();
+//            System.out.println("waitingListIds"+waitingListIds);
+            List<Member> requestList = memberDao.findAllById(waitingListIds);
+//            System.out.println("requestList"+requestList);
+
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.OK.value())
                             .status(HttpStatus.OK.name())
-                            .msg("Got the list of friend requests of member ID "+requestFrom)
-                            .responseObj(mapEntityToDTO(approvedList))
+                            .msg("Got the list of friend requests of member ID "+requestTo)
+                            .responseObj(mapEntityToMemberDTO(requestList))
                             .build());
         }else{
             return ResponseEntity.status(HttpStatus.OK)
@@ -120,12 +126,53 @@ public class FriendService {
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.NO_CONTENT.value())
                             .status(HttpStatus.NO_CONTENT.name())
-                            .msg("friend requests are empty with member ID "+requestFrom)
+                            .msg("friend requests are empty with member ID "+requestTo)
                             .responseObj(new ArrayList<>())
                             .build());
         }
 
         //return mapEntityToDTO(approvedList);
+    }
+
+
+    public ResponseEntity<?> getFriendsList(Long requestTo) {
+        List<FriendRequest> friendRequestList =
+                friendRequestDao.findByRequestTo(requestTo);
+        if(friendRequestList!=null && !friendRequestList.isEmpty()){
+            List<Long> waitingListIds = friendRequestList.stream()
+                    .filter(r -> r.getFriendRequestStatus().equalsIgnoreCase("accepted"))
+                    .map(FriendRequest::getRequestFrom).toList();
+//            System.out.println("waitingListIds"+waitingListIds);
+            List<Member> requestList = memberDao.findAllById(waitingListIds);
+//            System.out.println("requestList"+requestList);
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Got the list of friends of member ID "+requestTo)
+                            .responseObj(mapEntityToMemberDTO(requestList))
+                            .build());
+        }else{
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.NO_CONTENT.value())
+                            .status(HttpStatus.NO_CONTENT.name())
+                            .msg("friend List are empty with member ID "+requestTo)
+                            .responseObj(new ArrayList<>())
+                            .build());
+        }
+
+        //return mapEntityToDTO(approvedList);
+    }
+
+    private List<Member> mapEntityToMemberDTO(List<Member> memberList){
+        List<Member> memberDTOList = new ArrayList<>();
+        memberList.forEach(n-> memberDTOList.add(new Member(n.getMemberId(), n.getEmail(),
+                n.getImageData())));
+        return memberDTOList;
     }
     private List<FriendRequestDTO> mapEntityToDTO(List<FriendRequest> friendRequests){
         List<FriendRequestDTO> friendRequestDTOList = new ArrayList<>();
@@ -230,7 +277,7 @@ public class FriendService {
         Set<Long> memberIds = new HashSet<>();
         memberIds.add(requestFrom);
         memberIds.add(requestTo);
-        if(!studentDao.existsMembersAllByMemberId(memberIds)) {
+        if(!memberDao.existsMembersAllByMemberId(memberIds)) {
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()

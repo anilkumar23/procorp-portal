@@ -45,4 +45,10 @@ public class Member {
     private String userName;
     private Boolean isEmailVerified;
     private Boolean isMobileNoVerified;
+
+    public Member(Long memberId, String firstName, byte[] imageData) {
+        this.memberId = memberId;
+        this.firstName = firstName;
+        this.imageData = imageData;
+    }
 }

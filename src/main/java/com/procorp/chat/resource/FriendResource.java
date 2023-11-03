@@ -35,22 +35,27 @@ public class FriendResource {
         return friendsService.sendFriendRequest(requestFrom,requestTo);
     }
 
-    @GetMapping("/getFriendRequestsSent")
-    public ResponseEntity<?> getFriendRequestsSent(@Valid @RequestParam Long requestFrom) {
-//        LOG.info("Student :: Student Name {}", student.getFullName());
-        return friendsService.getFriendRequestsSent(requestFrom);
-    }
+//    @GetMapping("/getFriendRequestsSent")
+//    public ResponseEntity<?> getFriendRequestsSent(@Valid @RequestParam Long requestFrom) {
+////        LOG.info("Student :: Student Name {}", student.getFullName());
+//        return friendsService.getFriendRequestsSent(requestFrom);
+//    }
 
     @GetMapping("/getFriendRequests")
-    public ResponseEntity<?> getFriendRequests(@Valid @RequestParam Long requestFrom) {
-        return friendsService.getFriendRequests(requestFrom);
+    public ResponseEntity<?> getFriendRequests(@Valid @RequestParam Long requestTo) {
+        return friendsService.getFriendRequests(requestTo);
     }
 
-    @GetMapping("/getFriendRequestsReceived")
-    public ResponseEntity<?> getFriendRequestsReceived(@Valid @RequestParam Long requestFrom) {
-//        LOG.info("Student :: Student Name {}", student.getFullName());
-        return friendsService.getFriendRequestsReceived(requestFrom);
+    @GetMapping("/getFriendsList")
+    public ResponseEntity<?> getFriendsList(@Valid @RequestParam Long memberId) {
+        return friendsService.getFriendsList(memberId);
     }
+
+//    @GetMapping("/getFriendRequestsReceived")
+//    public ResponseEntity<?> getFriendRequestsReceived(@Valid @RequestParam Long requestFrom) {
+////        LOG.info("Student :: Student Name {}", student.getFullName());
+//        return friendsService.getFriendRequestsReceived(requestFrom);
+//    }
 
 //    This API can be used for both cancel and reject friends request
     @DeleteMapping("/cancelFriendRequest")
