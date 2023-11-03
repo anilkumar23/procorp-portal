@@ -4,6 +4,7 @@ import com.procorp.chat.dao.FriendRequestDao;
 import com.procorp.chat.dao.MemberDao;
 import com.procorp.chat.dtos.FriendRequestDTO;
 import com.procorp.chat.dtos.GlobalResponseDTO;
+import com.procorp.chat.dtos.MemberResponseDTO;
 import com.procorp.chat.entities.FriendRequest;
 import com.procorp.chat.entities.Member;
 import org.slf4j.Logger;
@@ -134,7 +135,6 @@ public class FriendService {
         //return mapEntityToDTO(approvedList);
     }
 
-
     public ResponseEntity<?> getFriendsList(Long requestTo) {
         List<FriendRequest> friendRequestList =
                 friendRequestDao.findByRequestTo(requestTo);
@@ -168,12 +168,28 @@ public class FriendService {
         //return mapEntityToDTO(approvedList);
     }
 
-    private List<Member> mapEntityToMemberDTO(List<Member> memberList){
-        List<Member> memberDTOList = new ArrayList<>();
-        memberList.forEach(n-> memberDTOList.add(new Member(n.getMemberId(), n.getEmail(),
-                n.getImageData())));
-        return memberDTOList;
+    private List<MemberResponseDTO> mapEntityToMemberDTO(List<Member> members) {
+        List<MemberResponseDTO> membersDTO = new ArrayList<>();
+        members.forEach(n ->
+                membersDTO.add(MemberResponseDTO.builder()
+                        .memberId(n.getMemberId())
+                        .firstName(n.getFirstName())
+                        .lastName(n.getLastName())
+                        .dateOfBirth(n.getDateOfBirth())
+                        .gender(n.getGender())
+                        .mobileNumber(n.getMobileNumber())
+                        .email(n.getEmail())
+                        .password(n.getPassword())
+                        .registrationDate(n.getRegistrationDate())
+//                        .imageData(Base64.getEncoder().encodeToString(ImageUtil.decompressImage(n.getImageData())))//handle null case when no image
+                        .collegeName(n.getCollegeName())
+                        .companyName(n.getCompanyName())
+                        .imageData(n.getImageData())
+                        .build()));
+        return membersDTO;
+
     }
+
     private List<FriendRequestDTO> mapEntityToDTO(List<FriendRequest> friendRequests){
         List<FriendRequestDTO> friendRequestDTOList = new ArrayList<>();
         friendRequests.forEach(n-> friendRequestDTOList.add(new FriendRequestDTO(n.getId(), n.getRequestFrom(),

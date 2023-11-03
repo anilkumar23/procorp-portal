@@ -58,17 +58,17 @@ public class MemberRegistrationResource {
     }
 
     @GetMapping("/getAllMembers")
-    public ResponseEntity<?> getAllMembers(Long memberId) {
+    public ResponseEntity<?> getAllMembers() {
         LOG.info("called getAllMembers");
-        List<Member> memberList = memberService.getAllMembers(memberId);
+        List<Member> memberList = memberService.getAllMembers();
         if(memberList!=null && !memberList.isEmpty()){
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.OK.value())
                             .status(HttpStatus.OK.name())
-                            .msg("Got all members list with Id:" + memberId)
-                            .responseObj(memberService.getAllMembers(memberId))
+                            .msg("Got all members list :" )
+                            .responseObj(memberList)
                             .build());
         }else{
             return ResponseEntity.status(HttpStatus.OK)
@@ -76,7 +76,7 @@ public class MemberRegistrationResource {
                     .body(GlobalResponseDTO.builder()
                             .statusCode(HttpStatus.OK.value())
                             .status(HttpStatus.OK.name())
-                            .msg("members list was empty with Id:" + memberId)
+                            .msg("members list :")
                             .responseObj(new ArrayList<>())
                             .build());
         }

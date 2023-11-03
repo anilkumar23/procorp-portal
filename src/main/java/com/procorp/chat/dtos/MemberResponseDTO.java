@@ -37,4 +37,6 @@ public class MemberResponseDTO {
     private boolean isEmailVerified;
     private boolean isMobileNoVerified;
     private String userName;
+    private byte[] imageData;
+
 }

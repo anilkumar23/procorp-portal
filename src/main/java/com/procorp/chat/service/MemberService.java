@@ -97,7 +97,7 @@ public class MemberService {
     }
 
     @Transactional
-    public List<Member> getAllMembers(Long memberId) {
+    public List<Member> getAllMembers() {
         return memberDao.findAll();
     }
 
