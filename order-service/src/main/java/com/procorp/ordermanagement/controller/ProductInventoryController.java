@@ -1,9 +1,6 @@
 package com.procorp.ordermanagement.controller;
 
-import com.procorp.ordermanagement.dto.CategoryDto;
-import com.procorp.ordermanagement.dto.GlobalResponseDTO;
-import com.procorp.ordermanagement.dto.ProductDto;
-import com.procorp.ordermanagement.dto.Product_InventoryDto;
+import com.procorp.ordermanagement.dto.*;
 import com.procorp.ordermanagement.entities.Category;
 import com.procorp.ordermanagement.entities.Product;
 import com.procorp.ordermanagement.entities.Product_Inventory;
@@ -19,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -247,5 +245,43 @@ public class ProductInventoryController {
                         .msg("product Inventory Deleted Successfully")
                         .responseObj("product Inventory Deleted Successfully")
                         .build());
+    }
+
+
+
+    @PostMapping(path = "/getProductInventoryDetails")
+    @ResponseStatus(HttpStatus.OK)
+    public @NotNull ResponseEntity<?> getProductInventoryDetails(@RequestParam String pincode, @RequestBody ProductIDDto productdto) {
+
+        if(productdto==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.BAD_REQUEST.value())
+                            .status(HttpStatus.BAD_REQUEST.name())
+                            .msg("Product ID's cannot be null")
+                            .responseObj("Product ID's cannot be null")
+                            .build());
+        }
+        if(productdto!=null&& (productdto.getProductIds()==null || productdto.getProductIds().isEmpty())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.BAD_REQUEST.value())
+                            .status(HttpStatus.BAD_REQUEST.name())
+                            .msg("Product ID's cannot be null")
+                            .responseObj("Product ID's cannot be null")
+                            .build());
+        }
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Got the Product Inventory details with pincode and productID's")
+                            .responseObj(this.productInventoryService.getProductInventoryDetails(pincode,productdto.getProductIds()))
+                            .build());
+
+
     }
 }
