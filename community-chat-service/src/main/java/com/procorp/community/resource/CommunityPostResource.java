@@ -26,6 +26,16 @@ public class CommunityPostResource {
                                                  @RequestParam(defaultValue = "5") final Integer size) {
         return service.getPosts(pageNumber, size);
     }
+
+    @GetMapping(value = "/getAllCommunityPosts")
+    public  ResponseEntity<?> getAllPosts() {
+        return service.getAllPosts();
+    }
+
+    @GetMapping(value = "/getAllPostsByCommId")
+    public  ResponseEntity<?> getAllPostsByCommId(@RequestParam long communityId) {
+        return service.getAllPostsByCommId(communityId);
+    }
    /* @GetMapping(value = "/getPostsByMemberId")
     public  ResponseEntity<?> getPostsByMemberId(@RequestParam long communityId,
                                                  @RequestParam(defaultValue = "0") final Integer pageNumber,

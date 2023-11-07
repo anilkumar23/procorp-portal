@@ -13,4 +13,8 @@ public class CommunityPostResponseDTO {
     private String mediaType;
     private String mediaPath;
     private long communityId;
+    private int likeCount;
+    private int commentCount;
+    private String communityName;
+    private String communityPhoto;
 }

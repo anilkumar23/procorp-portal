@@ -9,13 +9,16 @@ import com.amazonaws.util.IOUtils;
 import com.procorp.community.dtos.CommunityPostRequestDto;
 import com.procorp.community.dtos.CommunityPostResponseDTO;
 import com.procorp.community.dtos.GlobalResponseDTO;
+import com.procorp.community.entities.Community;
 import com.procorp.community.entities.CommunityPost;
+import com.procorp.community.repository.CommunityDao;
 import com.procorp.community.repository.CommunityPostDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +50,9 @@ public class CommunityPostService {
     @Autowired
     CommunityPostDao dao;
 
+    @Autowired
+    CommunityDao communityDao;
+
     private static final SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public ResponseEntity<?> uploadFile(CommunityPostRequestDto requestDto) {
         File fileObj = convertMultiPartFileToFile(requestDto.getMedia());
@@ -69,8 +75,12 @@ public class CommunityPostService {
                         .responseObj(post)
                         .build());
     }
-
+    private Community getCommunity(long communityId){
+        Optional<Community> community = communityDao.findById(communityId);
+        return community.get();
+    }
     private CommunityPost mapDtoTOEntity(CommunityPostRequestDto dto, String s3Url, String fileName, String timestamp){
+        Community community = getCommunity(dto.getCommunityId());
         return CommunityPost.builder()
                 .communityId(dto.getCommunityId())
                 .postDescription(dto.getPostDescription())
@@ -79,6 +89,8 @@ public class CommunityPostService {
                 .postOwner(dto.getMemberId())
                 .mediaType(dto.getMediaType())
                 .mediaName(fileName)
+                .communityName(community.getCommName())
+                .communityPhoto(community.getGroupPhoto())
                 .build();
     }
     public ResponseEntity<?> getPosts(long communityId, int pageNo, int pageSize){
@@ -107,6 +119,28 @@ public class CommunityPostService {
                         .responseObj(response)
                         .build());
     }
+    public ResponseEntity<?> getAllPosts() {
+        List<CommunityPost> posts = dao.findAll(Sort.by(Sort.Direction.DESC, "postId"));
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Posts have been successfully retrieved")
+                        .responseObj(mapEntitiesToDTO(posts))
+                        .build());
+    }
+    public ResponseEntity<?> getAllPostsByCommId(long communityId){
+        List<CommunityPost> posts = dao.findByCommunityId(communityId, Sort.by(Sort.Direction.DESC, "postId"));
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Posts have been successfully retrieved for communityId " + communityId)
+                        .responseObj(mapEntitiesToDTO(posts))
+                        .build());
+    }
     private Map<String, Object> convertToResponse(final Page<CommunityPost> pagePosts) {
         Map<String, Object> response = new HashMap<>();
         response.put("posts", mapEntitiesToDTO(pagePosts.getContent()));
@@ -124,6 +158,10 @@ public class CommunityPostService {
                 .postDescription(n.getPostDescription())
                 .mediaType(n.getMediaType())
                 .mediaPath(n.getMediaPath())
+                .communityName(n.getCommunityName())
+                .communityPhoto(n.getCommunityPhoto())
+                .likeCount(3)
+                .commentCount(5)
                 .build()).collect(Collectors.toList());
     }
     public byte[] downloadFile(String fileName) {

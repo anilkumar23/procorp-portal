@@ -114,7 +114,7 @@ public class MemberService {
             if (StringUtils.hasText(user.get().getImageURL())){
                imageUrl = user.get().getImageURL();
             }else {
-                if (StringUtils.hasText(memberDTO.getImageUrl()))
+                if (StringUtils.hasText(memberDTO.getImageUrl()) && memberDTO.getImageUrl().contains("http"))
                     imageUrl = util.uploadProfileImageToS3(memberDTO.getImageUrl(),memberDTO.getEmail());
             }
             Member member = memberDao.save(Member.builder().memberId(memberDTO.getMemberId()).firstName(memberDTO.getFirstName())

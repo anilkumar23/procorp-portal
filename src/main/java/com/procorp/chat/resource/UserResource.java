@@ -79,11 +79,19 @@ public class UserResource {
                                         .build()))
                                 .build());
             }
-            GoogleUser googleUser = GoogleUser.builder().userName(googleUserDTO.getUserName()).mobileNumber(googleUserDTO.getMobileNumber())
-                    .email(googleUserDTO.getEmail()).tokenId(token).isEmailVerified(googleUserDTO.isEmailVerified())
-                    .isMobileNoVerified(googleUserDTO.isMobileVerified()).uuid(googleUserDTO.getUuid())
-                    .imageURL(util.uploadProfileImageToS3(googleUserDTO.getImageURL(), googleUserDTO.getUserName()) ).build();
+            GoogleUser googleUser = null;
+            if(googleUserDTO.getImageURL() != null && googleUserDTO.getImageURL().contains("http")){
+                googleUser = GoogleUser.builder().userName(googleUserDTO.getUserName()).mobileNumber(googleUserDTO.getMobileNumber())
+                        .email(googleUserDTO.getEmail()).tokenId(token).isEmailVerified(googleUserDTO.isEmailVerified())
+                        .isMobileNoVerified(googleUserDTO.isMobileVerified()).uuid(googleUserDTO.getUuid())
+                        .imageURL(util.uploadProfileImageToS3(googleUserDTO.getImageURL(), googleUserDTO.getUserName()) ).build();
 
+            }else {
+                 googleUser = GoogleUser.builder().userName(googleUserDTO.getUserName()).mobileNumber(googleUserDTO.getMobileNumber())
+                        .email(googleUserDTO.getEmail()).tokenId(token).isEmailVerified(googleUserDTO.isEmailVerified())
+                        .isMobileNoVerified(googleUserDTO.isMobileVerified()).uuid(googleUserDTO.getUuid())
+                        .imageURL(googleUserDTO.getImageURL()).build();
+            }
             userDao.save(googleUser);
 
             LOG.info("Member {} Successfully created", googleUser.getEmail());

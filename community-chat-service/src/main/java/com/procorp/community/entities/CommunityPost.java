@@ -25,6 +25,7 @@ public class CommunityPost {
     private String mediaName;
     private String mediaType;
     private String mediaPath;
-
     private long communityId;
+    private String communityName;
+    private String communityPhoto;
 }
