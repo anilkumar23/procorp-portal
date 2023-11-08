@@ -6,6 +6,8 @@ public class CategoryDto {
 
     private String description;
 
+    private String productCategoryTag;
+
     public String getCategoryType() {
         return categoryType;
     }
@@ -20,5 +22,13 @@ public class CategoryDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getProductCategoryTag() {
+        return productCategoryTag;
+    }
+
+    public void setProductCategoryTag(String productCategoryTag) {
+        this.productCategoryTag = productCategoryTag;
     }
 }

@@ -8,6 +8,8 @@ public class WarehouseDto {
     private String location;
     private String status;
 
+    private String secondAddress;
+
     private String description;
 
     public String getName() {
@@ -58,6 +60,14 @@ public class WarehouseDto {
         this.description = description;
     }
 
+    public String getSecondAddress() {
+        return secondAddress;
+    }
+
+    public void setSecondAddress(String secondAddress) {
+        this.secondAddress = secondAddress;
+    }
+
     @Override
     public String toString() {
         return "WarehouseDto{" +
@@ -66,6 +76,7 @@ public class WarehouseDto {
                 ", pincode='" + pincode + '\'' +
                 ", location='" + location + '\'' +
                 ", status='" + status + '\'' +
+                ", secondAddress='" + secondAddress + '\'' +
                 ", description='" + description + '\'' +
                 '}';
     }

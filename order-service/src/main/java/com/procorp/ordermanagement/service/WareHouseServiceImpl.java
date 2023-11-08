@@ -34,6 +34,7 @@ public class WareHouseServiceImpl implements WareHouseService{
         warehouse.setAddress(warehouseDto.getAddress());
         warehouse.setPincode(warehouseDto.getPincode());
         warehouse.setLocation(warehouseDto.getLocation());
+        warehouse.setSecondAddress(warehouseDto.getSecondAddress());
         return this.warehouseRepository.save(warehouse);
     }
 
@@ -48,6 +49,7 @@ public class WareHouseServiceImpl implements WareHouseService{
             warehouse.setAddress(warehouseDto.getAddress());
             warehouse.setPincode(warehouseDto.getPincode());
             warehouse.setLocation(warehouseDto.getLocation());
+            warehouse.setSecondAddress(warehouseDto.getSecondAddress());
             return Optional.of(this.warehouseRepository.save(warehouse));
         }else{
             throw new ResourceNotFoundException("WareHouse was not found with given ID: "+id);

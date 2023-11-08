@@ -23,7 +23,6 @@ public class Product {
 
     private Double price;
 
-   // private Double quantity;
 
     private String pictureUrl;
 
@@ -33,15 +32,22 @@ public class Product {
 
     private String uom;
 
-    public Product(Long id, String name, Double price, String pictureUrl, String sex,String uom, Category category) {
+    private Double discount;
+
+    private Double lowStockAlert;
+    private String status;
+
+    public Product(Long id, String name, Category category, Double price, String pictureUrl, String sex, String uom, Double discount, Double lowStockAlert, String status) {
         this.id = id;
         this.name = name;
+        this.category = category;
         this.price = price;
         this.pictureUrl = pictureUrl;
-       // this.productType = productType;
         this.sex = sex;
-        this.uom=uom;
-        this.category=category;
+        this.uom = uom;
+        this.discount = discount;
+        this.lowStockAlert = lowStockAlert;
+        this.status = status;
     }
 
     public Product() {
@@ -103,6 +109,30 @@ public class Product {
         this.uom = uom;
     }
 
+    public Double getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Double discount) {
+        this.discount = discount;
+    }
+
+    public Double getLowStockAlert() {
+        return lowStockAlert;
+    }
+
+    public void setLowStockAlert(Double lowStockAlert) {
+        this.lowStockAlert = lowStockAlert;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "Product{" +
@@ -113,6 +143,9 @@ public class Product {
                 ", pictureUrl='" + pictureUrl + '\'' +
                 ", sex='" + sex + '\'' +
                 ", uom='" + uom + '\'' +
+                ", discount=" + discount +
+                ", lowStockAlert=" + lowStockAlert +
+                ", status='" + status + '\'' +
                 '}';
     }
 }

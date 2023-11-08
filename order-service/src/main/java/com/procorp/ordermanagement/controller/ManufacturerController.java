@@ -46,6 +46,17 @@ public class ManufacturerController {
                             .responseObj("Manufacturer Name cannot be null")
                             .build());
         }
+
+        if(dto!=null && (dto.getAddress()==null || dto.getAddress().isBlank())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.BAD_REQUEST.value())
+                            .status(HttpStatus.BAD_REQUEST.name())
+                            .msg("Manufacturer Address cannot be null")
+                            .responseObj("Manufacturer Address cannot be null")
+                            .build());
+        }
         if(dto!=null && (dto.getCategoryIds()==null || dto.getCategoryIds().isEmpty())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -100,6 +111,17 @@ public class ManufacturerController {
                             .status(HttpStatus.BAD_REQUEST.name())
                             .msg("Manufacturer Name cannot be null")
                             .responseObj("Manufacturer Name cannot be null")
+                            .build());
+        }
+
+        if(dto!=null && (dto.getAddress()==null || dto.getAddress().isBlank())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.BAD_REQUEST.value())
+                            .status(HttpStatus.BAD_REQUEST.name())
+                            .msg("Manufacturer Address cannot be null")
+                            .responseObj("Manufacturer Address cannot be null")
                             .build());
         }
         if(dto!=null && (dto.getCategoryIds()==null || dto.getCategoryIds().isEmpty())){

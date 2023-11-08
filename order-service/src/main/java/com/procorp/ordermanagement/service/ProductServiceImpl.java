@@ -79,6 +79,9 @@ public class ProductServiceImpl implements ProductService {
          product.setPrice(dto.getPrice());
          product.setPictureUrl(dto.getPictureUrl());
          product.setUom(dto.getUom());
+         product.setStatus(dto.getStatus());
+         product.setDiscount(dto.getDiscount());
+         product.setLowStockAlert(dto.getLowStockAlert());
          Optional<Category> category= this.categoryRepository.findById(dto.getCategoryTypeId());
          if(category.isPresent()){
              product.setCategory(category.get());
@@ -98,7 +101,7 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> existingProduct= productRepository.findById(id);
         if(existingProduct.isPresent()){
             Product product=existingProduct.get();
-           // product.setStatus("OutOfStock");
+            product.setStatus("OutOfStock");
             return productRepository.save(product);
         }else {
             new ResourceNotFoundException("Product not found");

@@ -165,6 +165,9 @@ public class ProductController {
         p.setSex(dto.getSex());
         p.setUom(dto.getUom());
         p.setCategory(category);
+        p.setStatus(dto.getStatus());
+        p.setDiscount(dto.getDiscount());
+        p.setLowStockAlert(dto.getLowStockAlert());
        /* Optional<Category> category= this.categoryService.getCategoryById(dto.getCategoryTypeId());
         if(category.isPresent()){
             p.setCategory(category.get());

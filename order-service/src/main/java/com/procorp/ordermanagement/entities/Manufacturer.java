@@ -28,6 +28,22 @@ public class Manufacturer {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "secondAddress")
+    private String secondAddress;
+
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "state")
+    private String state;
+
+    @Column(name = "pincode")
+    private String pincode;
+
+
     @OneToMany(mappedBy = "pk.manufacturer")
     @Valid
     private List<ManufacturerCategory> manufacturerCategories = new ArrayList<>();
@@ -71,5 +87,45 @@ public class Manufacturer {
 
     public void setManufacturerCategories(List<ManufacturerCategory> manufacturerCategories) {
         this.manufacturerCategories = manufacturerCategories;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getSecondAddress() {
+        return secondAddress;
+    }
+
+    public void setSecondAddress(String secondAddress) {
+        this.secondAddress = secondAddress;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getPincode() {
+        return pincode;
+    }
+
+    public void setPincode(String pincode) {
+        this.pincode = pincode;
     }
 }

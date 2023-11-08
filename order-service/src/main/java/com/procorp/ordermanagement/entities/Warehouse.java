@@ -19,6 +19,9 @@ public class Warehouse {
     @Column(name = "address")
     private String address;
 
+    @Column(name = "secondAddress")
+    private String secondAddress;
+
     @Column(name = "pincode")
     private String pincode;
 
@@ -82,5 +85,13 @@ public class Warehouse {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getSecondAddress() {
+        return secondAddress;
+    }
+
+    public void setSecondAddress(String secondAddress) {
+        this.secondAddress = secondAddress;
     }
 }

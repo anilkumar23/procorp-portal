@@ -1,9 +1,7 @@
 package com.procorp.ordermanagement.service;
 
 import com.procorp.ordermanagement.dto.ManufacturerDto;
-import com.procorp.ordermanagement.entities.Category;
-import com.procorp.ordermanagement.entities.Manufacturer;
-import com.procorp.ordermanagement.entities.ManufacturerCategory;
+import com.procorp.ordermanagement.entities.*;
 import com.procorp.ordermanagement.exception.ResourceNotFoundException;
 import com.procorp.ordermanagement.repositories.CategoryRepository;
 import com.procorp.ordermanagement.repositories.ManufacturerCategoryRepository;
@@ -12,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -37,6 +36,11 @@ public class ManufacturerServiceImpl implements ManufacturerService {
         manufacturer.setName(dto.getName());
         manufacturer.setLocation(dto.getLocation());
         manufacturer.setDescription(dto.getDescription());
+        manufacturer.setSecondAddress(dto.getSecondAddress());
+        manufacturer.setPincode(dto.getPincode());
+        manufacturer.setAddress(dto.getAddress());
+        manufacturer.setCity(dto.getCity());
+        manufacturer.setState(dto.getState());
 
         manufacturer = this.manufacturerRepository.save(manufacturer);
 
@@ -71,16 +75,54 @@ public class ManufacturerServiceImpl implements ManufacturerService {
             existing.setName(dto.getName());
             existing.setDescription(dto.getDescription());
             existing.setLocation(dto.getLocation());
+            existing.setSecondAddress(dto.getSecondAddress());
+            existing.setPincode(dto.getPincode());
+            existing.setAddress(dto.getAddress());
+            existing.setCity(dto.getCity());
+            existing.setState(dto.getState());
+
+
+            List<Long> deleteIds=new ArrayList<>();
+            List<Long> newIds=new ArrayList<>();
+            List<ManufacturerCategory> existingManufacturerCategories = existing.getManufacturerCategories();
+
+            existingManufacturerCategories.forEach(manufacturer-> {
+                if(!dto.getCategoryIds().contains(manufacturer.getCategory().getId())){
+                    deleteIds.add(manufacturer.getCategory().getId());
+                }
+            });
+            dto.getCategoryIds().forEach(categoryID->{
+              Optional<ManufacturerCategory> manufacturer=  existingManufacturerCategories
+                        .stream()
+                        .filter(manufacture->manufacture.getCategory().getId().equals(categoryID)).findAny();
+              if(!manufacturer.isPresent()){
+                  newIds.add(categoryID);
+              }
+            });
+
             List<ManufacturerCategory> manufacturerCategories=new ArrayList<>();
-            if(dto.getCategoryIds()!=null && !dto.getCategoryIds().isEmpty()){
-                for (Long categoryID: dto.getCategoryIds() ){
-                    Optional<Category> category = this.categoryRepository.findById(categoryID);
-                    if(category.isPresent()){
-                        manufacturerCategories.add(this.manufacturerCategoryService
-                                .create(new ManufacturerCategory(existingManufacturer.get(),category.get())));
-                    }else {
-                        throw new ResourceNotFoundException("category was not found for give ID: "+categoryID);
-                    }
+
+            //deleting existing categories
+            for (Long categoryID: deleteIds ){
+                Optional<Category> category = this.categoryRepository.findById(categoryID);
+                if(category.isPresent()){
+                    ManufacturerCategoryPK manufacturerCategorypk=new ManufacturerCategoryPK();
+                    manufacturerCategorypk.setManufacturer(existing);
+                    manufacturerCategorypk.setCategory(category.get());
+                    this.manufacturerCategoryService.delete(manufacturerCategorypk);
+                }else {
+                    throw new ResourceNotFoundException("category was not found for give ID: "+categoryID);
+                }
+            }
+
+            // Adding new category ID's
+            for (Long categoryID: newIds){
+                Optional<Category> category = this.categoryRepository.findById(categoryID);
+                if(category.isPresent()){
+                    manufacturerCategories.add(this.manufacturerCategoryService
+                            .create(new ManufacturerCategory(existingManufacturer.get(),category.get())));
+                }else {
+                    throw new ResourceNotFoundException("category was not found for give ID: "+categoryID);
                 }
             }
             existing.setManufacturerCategories(manufacturerCategories);

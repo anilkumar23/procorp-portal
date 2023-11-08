@@ -2,6 +2,9 @@ package com.procorp.ordermanagement.entities;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "category")
 public class Category {
@@ -13,6 +16,8 @@ public class Category {
     @Column(name = "categoryType")
     private String categoryType;
 
+    @Column(name = "productCategoryTag")
+    private String productCategoryTag;
     @Column(name = "description")
     private String description;
 
@@ -38,5 +43,13 @@ public class Category {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getProductCategoryTag() {
+        return productCategoryTag;
+    }
+
+    public void setProductCategoryTag(String productCategoryTag) {
+        this.productCategoryTag = productCategoryTag;
     }
 }

@@ -11,6 +11,11 @@ public class ProductDto {
 
     private String uom;
 
+    private Double discount;
+
+    private Double lowStockAlert;
+    private String status;
+
 
     public String getName() {
         return name;
@@ -60,5 +65,29 @@ public class ProductDto {
 
     public void setUom(String uom) {
         this.uom = uom;
+    }
+
+    public Double getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Double discount) {
+        this.discount = discount;
+    }
+
+    public Double getLowStockAlert() {
+        return lowStockAlert;
+    }
+
+    public void setLowStockAlert(Double lowStockAlert) {
+        this.lowStockAlert = lowStockAlert;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

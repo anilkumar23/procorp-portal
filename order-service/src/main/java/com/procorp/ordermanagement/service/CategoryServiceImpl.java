@@ -27,6 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category=new Category();
         category.setCategoryType(categorydto.getCategoryType());
         category.setDescription(categorydto.getDescription());
+        category.setProductCategoryTag(categorydto.getProductCategoryTag());
         return this.categoryRepository.save(category);
     }
 
@@ -37,6 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
             Category exisitng = existingCategory.get();
             exisitng.setCategoryType(categorydto.getCategoryType());
             exisitng.setDescription(categorydto.getDescription());
+            exisitng.setProductCategoryTag(categorydto.getProductCategoryTag());
             return Optional.of(this.categoryRepository.save(exisitng));
         }else{
             throw new ResourceNotFoundException("Category was not found with given ID: "+id);
