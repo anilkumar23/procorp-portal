@@ -16,4 +16,6 @@ public interface CommunityPostDao extends JpaRepository<CommunityPost, Long> {
     ArrayList<CommunityPost> getByPostOwner(long id);
     Page<CommunityPost> findByCommunityId(long communityId, Pageable pageable);
     List<CommunityPost> findByCommunityId(long communityId, Sort sort);
+
+    CommunityPost findByPostId(Long postId);
 }

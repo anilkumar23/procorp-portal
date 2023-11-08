@@ -36,6 +36,11 @@ public class CommunityPostResource {
     public  ResponseEntity<?> getAllPostsByCommId(@RequestParam long communityId) {
         return service.getAllPostsByCommId(communityId);
     }
+
+    @PostMapping(value = "/likePost")
+    public ResponseEntity<?> likePost(@RequestParam Long postId,@RequestParam Long memberId,@RequestParam String memberName) {
+        return new ResponseEntity<>(service.likePost(postId,memberId,memberName), HttpStatus.OK);
+    }
    /* @GetMapping(value = "/getPostsByMemberId")
     public  ResponseEntity<?> getPostsByMemberId(@RequestParam long communityId,
                                                  @RequestParam(defaultValue = "0") final Integer pageNumber,

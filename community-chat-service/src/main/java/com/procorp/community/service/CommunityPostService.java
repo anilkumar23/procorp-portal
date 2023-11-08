@@ -11,8 +11,10 @@ import com.procorp.community.dtos.CommunityPostResponseDTO;
 import com.procorp.community.dtos.GlobalResponseDTO;
 import com.procorp.community.entities.Community;
 import com.procorp.community.entities.CommunityPost;
+import com.procorp.community.entities.PostLike;
 import com.procorp.community.repository.CommunityDao;
 import com.procorp.community.repository.CommunityPostDao;
+import com.procorp.community.repository.PostLikeDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,6 +54,9 @@ public class CommunityPostService {
 
     @Autowired
     CommunityDao communityDao;
+
+    @Autowired
+    PostLikeDao postLikesDao;
 
     private static final SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public ResponseEntity<?> uploadFile(CommunityPostRequestDto requestDto) {
@@ -195,4 +200,22 @@ public class CommunityPostService {
     }
 
 
+    public Object likePost(Long postId, Long memberId, String memberName) {
+        CommunityPost post = dao.findByPostId(postId);
+        if(post!= null) {
+            PostLike memberLike = postLikesDao.findByPostIdAndMemberId(postId,memberId);
+            if(memberLike == null) {
+                PostLike saveLike = new PostLike();
+                saveLike.setMemberName(memberName);
+                saveLike.setMemberId(memberId);
+                saveLike.setPostId(postId);
+                postLikesDao.save(saveLike);
+                return "like submitted ";
+            } else {
+                return "member already liked the post ";
+            }
+        } else {
+            return "postId doesn't exist";
+        }
+    }
 }
