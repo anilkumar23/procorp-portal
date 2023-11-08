@@ -21,7 +21,14 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    //"dd-MM-yyyy hh:mm"
     @JsonFormat(pattern = "dd/MM/yyyy") private LocalDate dateCreated;
+
+    @Column(name = "createdDate")
+    private Long createdDate;
+
+    @Column(name = "modifiedDate")
+    private Long modifiedDate;
 
     @Column(name = "status")
     private String status;
@@ -34,6 +41,9 @@ public class Order {
 
     @Column(name = "paymentMode")
     private String paymentMode;
+
+    @Column(name = "refund")
+    private Double refund;
 
     @OneToMany(mappedBy = "pk.order")
     @Valid
@@ -50,6 +60,9 @@ public class Order {
 
         return sum;
     }
+
+    @Transient
+    private Buyer_Address buyerAddress;
 
     public Long getId() {
         return id;
@@ -111,5 +124,37 @@ public class Order {
 
     public void setPaymentMode(String paymentMode) {
         this.paymentMode = paymentMode;
+    }
+
+    public Long getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Long createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Long getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Long modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
+
+    public Double getRefund() {
+        return refund;
+    }
+
+    public void setRefund(Double refund) {
+        this.refund = refund;
+    }
+
+    public Buyer_Address getBuyerAddress() {
+        return buyerAddress;
+    }
+
+    public void setBuyerAddress(Buyer_Address buyerAddress) {
+        this.buyerAddress = buyerAddress;
     }
 }

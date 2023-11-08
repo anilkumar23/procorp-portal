@@ -5,11 +5,9 @@ package com.procorp.ordermanagement.controller;
 import com.procorp.ordermanagement.dto.GlobalResponseDTO;
 import com.procorp.ordermanagement.dto.OrderProductDto;
 import com.procorp.ordermanagement.dto.UpdateOrderForm;
-import com.procorp.ordermanagement.entities.Order;
-import com.procorp.ordermanagement.entities.OrderProduct;
-import com.procorp.ordermanagement.entities.OrderStatus;
-import com.procorp.ordermanagement.entities.ShoppingCart;
+import com.procorp.ordermanagement.entities.*;
 import com.procorp.ordermanagement.exception.ResourceNotFoundException;
+import com.procorp.ordermanagement.service.BuyerAddressService;
 import com.procorp.ordermanagement.service.OrderProductService;
 import com.procorp.ordermanagement.service.OrderService;
 import com.procorp.ordermanagement.service.ProductService;
@@ -22,10 +20,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -35,15 +30,21 @@ public class OrderController {
     OrderService orderService;
     OrderProductService orderProductService;
 
-    public OrderController(ProductService productService, OrderService orderService, OrderProductService orderProductService) {
+    BuyerAddressService buyerAddressService;
+
+    public OrderController(ProductService productService, OrderService orderService,
+                           OrderProductService orderProductService,
+                           BuyerAddressService buyerAddressService) {
         this.productService = productService;
         this.orderService = orderService;
         this.orderProductService = orderProductService;
+        this.buyerAddressService = buyerAddressService;
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public @NotNull ResponseEntity<?> getOrderList() {
+
 
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -144,12 +145,14 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody OrderForm form) {
         List<OrderProductDto> formDtos = form.getProductOrders();
+        validateBuyerAddress(form);
         validateProductsExistence(formDtos);
         Order order = new Order();
+        order.setCreatedDate(new Date().getTime());
         order.setStatus(OrderStatus.CHECKOUT.name());
         order.setUserId(String.valueOf(form.getUserId()));
         order.setPaymentMode("Not-Yet-Selected");
-        order.setAddressId(null);
+        order.setAddressId(String.valueOf(form.getAddressId()));
         order = this.orderService.create(order);
 
         List<OrderProduct> orderProducts = new ArrayList<>();
@@ -162,6 +165,12 @@ public class OrderController {
         order.setOrderProducts(orderProducts);
 
         this.orderService.update(order);
+
+        if(order.getAddressId()!=null&&!order.getAddressId().isBlank()){
+
+         Optional<Buyer_Address> buyer_address = buyerAddressService.getBuyerAddressById(Long.valueOf(order.getAddressId()));
+         order.setBuyerAddress(buyer_address.get());
+        }
 
         String uri = ServletUriComponentsBuilder
                 .fromCurrentServletMapping()
@@ -182,6 +191,11 @@ public class OrderController {
       //  return new ResponseEntity<>(order, headers, HttpStatus.CREATED);
     }
 
+    private void validateBuyerAddress(OrderForm form) {
+
+        buyerAddressService.getBuyerAddressById(form.getAddressId());
+    }
+
     private void validateProductsExistence(List<OrderProductDto> orderProducts) {
         List<OrderProductDto> list = orderProducts
                 .stream()
@@ -199,6 +213,8 @@ public class OrderController {
 
         private Long userId;
 
+        private Long addressId;
+
         public Long getUserId() {
             return userId;
         }
@@ -215,6 +231,14 @@ public class OrderController {
 
         public void setProductOrders(List<OrderProductDto> productOrders) {
             this.productOrders = productOrders;
+        }
+
+        public Long getAddressId() {
+            return addressId;
+        }
+
+        public void setAddressId(Long addressId) {
+            this.addressId = addressId;
         }
     }
 }
