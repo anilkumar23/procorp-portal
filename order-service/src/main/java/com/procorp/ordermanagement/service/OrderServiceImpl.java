@@ -1,6 +1,7 @@
 package com.procorp.ordermanagement.service;
 
 import com.procorp.ordermanagement.dto.UpdateOrderForm;
+import com.procorp.ordermanagement.entities.Buyer_Address;
 import com.procorp.ordermanagement.entities.Order;
 import com.procorp.ordermanagement.entities.ShoppingCart;
 import com.procorp.ordermanagement.exception.ResourceNotFoundException;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,13 +20,25 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderRepository orderRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository) {
+    private BuyerAddressService buyerAddressService;
+
+    public OrderServiceImpl(OrderRepository orderRepository,
+                            BuyerAddressService buyerAddressService) {
         this.orderRepository = orderRepository;
+        this.buyerAddressService=buyerAddressService;
     }
 
     @Override
     public Iterable<Order> getAllOrders() {
-        return this.orderRepository.findAll();
+        Iterable<Order> orders = this.orderRepository.findAll();
+        orders.iterator().forEachRemaining(existingOrder -> {
+            if(existingOrder.getAddressId()!=null&&!existingOrder.getAddressId().isBlank()){
+                Optional<Buyer_Address> address=  buyerAddressService.getBuyerAddressById(Long.valueOf(existingOrder.getAddressId()));
+                existingOrder.setBuyerAddress(address.get());
+            }
+        });
+        return orders;
+       // return this.orderRepository.findAll();
     }
 
     @Override
@@ -41,13 +55,24 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Optional<Order> getOrderById(Long id){
-        return Optional.of(this.orderRepository.findById(id).get());
+      Optional<Order> existingOrder =  this.orderRepository.findById(id);
+      if(existingOrder.isPresent()){
+          if(existingOrder.get().getAddressId()!=null&&!existingOrder.get().getAddressId().isBlank()){
+              Optional<Buyer_Address> address=  buyerAddressService.getBuyerAddressById(Long.valueOf(existingOrder.get().getAddressId()));
+              existingOrder.get().setBuyerAddress(address.get());
+          }
+          return existingOrder;
+      }else{
+          throw new ResourceNotFoundException("Order ID was not found");
+      }
+       // return Optional.of(this.orderRepository.findById(id).get());
     }
 
 
     @Override
     public  Optional<Order> updateOrderById(Long id,UpdateOrderForm updatedForm){
                 Order existingOrder = this.orderRepository.findById(id).get();
+                existingOrder.setModifiedDate(new Date().getTime());
                 if(existingOrder!=null){
                      if(updatedForm!=null && updatedForm.getAddressId()!=null){
                                existingOrder.setAddressId(updatedForm.getAddressId());
