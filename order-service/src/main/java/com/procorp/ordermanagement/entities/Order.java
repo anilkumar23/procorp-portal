@@ -45,6 +45,15 @@ public class Order {
     @Column(name = "refund")
     private Double refund;
 
+    @Column(name = "deliveryAgentName")
+    private String deliveryAgentName;
+
+    @Column(name = "deliveryPartner")
+    private String deliveryPartner;
+
+    @Column(name = "deliveryOn")
+    private String deliveryOn;
+
     @OneToMany(mappedBy = "pk.order")
     @Valid
     private List<OrderProduct> orderProducts = new ArrayList<>();
@@ -156,5 +165,29 @@ public class Order {
 
     public void setBuyerAddress(Buyer_Address buyerAddress) {
         this.buyerAddress = buyerAddress;
+    }
+
+    public String getDeliveryAgentName() {
+        return deliveryAgentName;
+    }
+
+    public void setDeliveryAgentName(String deliveryAgentName) {
+        this.deliveryAgentName = deliveryAgentName;
+    }
+
+    public String getDeliveryPartner() {
+        return deliveryPartner;
+    }
+
+    public void setDeliveryPartner(String deliveryPartner) {
+        this.deliveryPartner = deliveryPartner;
+    }
+
+    public String getDeliveryOn() {
+        return deliveryOn;
+    }
+
+    public void setDeliveryOn(String deliveryOn) {
+        this.deliveryOn = deliveryOn;
     }
 }

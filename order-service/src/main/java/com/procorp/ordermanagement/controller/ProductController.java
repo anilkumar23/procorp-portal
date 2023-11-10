@@ -61,6 +61,20 @@ public class ProductController {
                         .build());
     }
 
+    @GetMapping(value = { "/productsByCategoryID" })
+    public @NotNull ResponseEntity<?> findProductsByCategoryID(
+            @RequestParam("categoryId") Long categoryId) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Got all the Products by categoryId " + categoryId)
+                        .responseObj(productService.findProductsByCategoryID(categoryId))
+                        .build());
+    }
+
     @GetMapping(value = { "/category" })
     public @NotNull ResponseEntity<?> getProductsByCategoryWise() {
 

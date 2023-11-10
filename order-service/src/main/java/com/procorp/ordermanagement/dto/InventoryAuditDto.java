@@ -1,14 +1,6 @@
-package com.procorp.ordermanagement.entities;
+package com.procorp.ordermanagement.dto;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "inventory_audit")
-public class Inventory_Audit {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class InventoryAuditDto {
 
     private Long orderID;
 
@@ -23,14 +15,6 @@ public class Inventory_Audit {
     private Long ManufacturerID;
 
     private String deliveryPartner;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Long getOrderID() {
         return orderID;

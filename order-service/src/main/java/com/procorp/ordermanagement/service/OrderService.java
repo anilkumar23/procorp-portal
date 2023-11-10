@@ -1,5 +1,6 @@
 package com.procorp.ordermanagement.service;
 
+import com.procorp.ordermanagement.dto.OrderDeliveryPartnerDto;
 import com.procorp.ordermanagement.dto.UpdateOrderForm;
 import com.procorp.ordermanagement.entities.Order;
 import jakarta.validation.Valid;
@@ -24,4 +25,9 @@ public interface OrderService {
                                     UpdateOrderForm updatedForm);
 
     List<Order> getAllOrderDetailsByUSerId(String userID);
+
+    Optional<Order> updateOrderDeliveryPartnerDetailsById(Long id, OrderDeliveryPartnerDto dto);
+
+    Optional<Order> updateOrderStatus(@NotNull(message = "Order id cannot be null.") @Valid Long id,
+                                      @NotNull(message = "Order status cannot be null.") @Valid String status);
 }

@@ -40,6 +40,10 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findByNameContaining(searchKey);
     }
 
+    public List<Product> findProductsByCategoryID(Long categoryId) {
+        return productRepository.findProductsByCategoryID(categoryId);
+    }
+
     @Override
     public Map<String, List<Product>> getAllProductsGroupByCategory() {
         Map<String, List<Product>> groupByCategory=new HashMap<>();

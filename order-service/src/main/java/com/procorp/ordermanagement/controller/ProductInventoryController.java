@@ -284,4 +284,71 @@ public class ProductInventoryController {
 
 
     }
+
+    @GetMapping(path = "/isDeliveryPartnerNameValid")
+    @ResponseStatus(HttpStatus.OK)
+    public @NotNull ResponseEntity<?> isDeliveryPartnerNameValid(@RequestParam(name = "partnerName") String partnerName) {
+        Boolean isValid= this.productInventoryService.isDeliveryPartnerNameValid(partnerName);
+        if(isValid){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Delivery Partner Name was Valid")
+                            .responseObj(isValid)
+                            .build());
+        }else{
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Delivery Partner Name was not Valid")
+                            .responseObj(isValid)
+                            .build());
+        }
+
+
+
+    }
+
+    @GetMapping(path = "/saveInventoryAuditDetails")
+    @ResponseStatus(HttpStatus.OK)
+    public @NotNull ResponseEntity<?> saveInventoryAuditDetails(
+            @RequestBody InventoryAuditWrapperDto dto) {
+        if(dto==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.BAD_REQUEST.value())
+                            .status(HttpStatus.BAD_REQUEST.name())
+                            .msg("InventoryAuditDetail's cannot be null")
+                            .responseObj("InventoryAuditDetail's cannot be null")
+                            .build());
+        }
+        if(dto!=null&& (dto.getInventoryAuditDetails()==null || dto.getInventoryAuditDetails().isEmpty())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.BAD_REQUEST.value())
+                            .status(HttpStatus.BAD_REQUEST.name())
+                            .msg("InventoryAuditDetails cannot be null")
+                            .responseObj("InventoryAuditDetails cannot be null")
+                            .build());
+        }
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.CREATED.value())
+                        .status(HttpStatus.CREATED.name())
+                        .msg("Saved Inventory Audit Details successfully")
+                        .responseObj(this.productInventoryService.saveInventoryAuditDetails(dto.getInventoryAuditDetails()))
+                        .build());
+
+
+    }
+
+
 }

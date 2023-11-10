@@ -4,5 +4,5 @@ public enum OrderStatus {
 
     PAID,
     CHECKOUT,
-    CONFIRM
+    CONFIRMED
 }

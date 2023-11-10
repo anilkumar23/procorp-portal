@@ -14,4 +14,7 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
 
     @Query(value = "SELECT * FROM product  where LOWER(name) like %:searchKey%", nativeQuery = true)
     List<Product> findByNameContaining(@Param("searchKey") String searchKey);
+
+    @Query(value = "SELECT * FROM product  where category_id=:categoryId", nativeQuery = true)
+    List<Product> findProductsByCategoryID(@Param("categoryId") Long categoryId);
 }

@@ -3,6 +3,7 @@ package com.procorp.ordermanagement.controller;
 
 
 import com.procorp.ordermanagement.dto.GlobalResponseDTO;
+import com.procorp.ordermanagement.dto.OrderDeliveryPartnerDto;
 import com.procorp.ordermanagement.dto.OrderProductDto;
 import com.procorp.ordermanagement.dto.UpdateOrderForm;
 import com.procorp.ordermanagement.entities.*;
@@ -142,6 +143,62 @@ public class OrderController {
 
     }
 
+    @PutMapping(path = "/deliveryPartnerDetails/{orderID}")
+    @ResponseStatus(HttpStatus.OK)
+    public @NotNull ResponseEntity<?> updateOrderById(@PathVariable(name = "orderID") Long orderID,
+                                                      @RequestBody OrderDeliveryPartnerDto dto) {
+        Optional<Order> updatedOrder= this.orderService.updateOrderDeliveryPartnerDetailsById(orderID, dto);
+        if(updatedOrder.isPresent()){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Updated order delivery partner successfully")
+                            .responseObj(updatedOrder.get())
+                            .build());
+            //  return new ResponseEntity<>(updatedOrder.get(), HttpStatus.OK);
+        }else{
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.NO_CONTENT.value())
+                            .status(HttpStatus.NO_CONTENT.name())
+                            .msg("order was not found")
+                            .responseObj("order was not found")
+                            .build());
+            // return new ResponseEntity<>("order not found ", HttpStatus.NO_CONTENT);
+        }
+
+    }
+
+    @PutMapping(path = "/status/{orderID}")
+    @ResponseStatus(HttpStatus.OK)
+    public @NotNull ResponseEntity<?> updateOrderStatus(@PathVariable(name = "orderID") Long orderID,
+                                                      @RequestParam(name = "status")String status) {
+        Optional<Order> updatedOrder= this.orderService.updateOrderStatus(orderID, status);
+        if(updatedOrder.isPresent()){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.OK.value())
+                            .status(HttpStatus.OK.name())
+                            .msg("Updated order status successfully")
+                            .responseObj(updatedOrder.get())
+                            .build());
+        }else{
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(GlobalResponseDTO.builder()
+                            .statusCode(HttpStatus.NO_CONTENT.value())
+                            .status(HttpStatus.NO_CONTENT.name())
+                            .msg("order was not found")
+                            .responseObj("order was not found")
+                            .build());
+        }
+
+    }
+
     @PostMapping
     public ResponseEntity<?> create(@RequestBody OrderForm form) {
         List<OrderProductDto> formDtos = form.getProductOrders();
@@ -149,9 +206,9 @@ public class OrderController {
         validateProductsExistence(formDtos);
         Order order = new Order();
         order.setCreatedDate(new Date().getTime());
-        order.setStatus(OrderStatus.CHECKOUT.name());
+        order.setStatus(OrderStatus.CONFIRMED.name());
         order.setUserId(String.valueOf(form.getUserId()));
-        order.setPaymentMode("Not-Yet-Selected");
+        order.setPaymentMode("COD");
         order.setAddressId(String.valueOf(form.getAddressId()));
         order = this.orderService.create(order);
 

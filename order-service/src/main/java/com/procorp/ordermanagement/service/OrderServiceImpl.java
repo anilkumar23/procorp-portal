@@ -1,5 +1,6 @@
 package com.procorp.ordermanagement.service;
 
+import com.procorp.ordermanagement.dto.OrderDeliveryPartnerDto;
 import com.procorp.ordermanagement.dto.UpdateOrderForm;
 import com.procorp.ordermanagement.entities.Buyer_Address;
 import com.procorp.ordermanagement.entities.Order;
@@ -91,7 +92,38 @@ public class OrderServiceImpl implements OrderService {
             }
 
     @Override
+    public  Optional<Order> updateOrderDeliveryPartnerDetailsById(Long id, OrderDeliveryPartnerDto dto){
+        Order existingOrder = this.orderRepository.findById(id).get();
+        existingOrder.setModifiedDate(new Date().getTime());
+        if(existingOrder!=null){
+            existingOrder.setDeliveryPartner(dto.getDeliveryPartner());
+            existingOrder.setDeliveryAgentName(dto.getDeliveryAgentName());
+            existingOrder.setDeliveryOn(dto.getDeliveryOn());
+            Optional<Order>  updateOrder= Optional.of(orderRepository.save(existingOrder));
+            return updateOrder;
+        }else{
+            throw  new ResourceNotFoundException("Order not found");
+        }
+    }
+
+    @Override
+    public  Optional<Order> updateOrderStatus(Long id,String status){
+        Order existingOrder = this.orderRepository.findById(id).get();
+        existingOrder.setModifiedDate(new Date().getTime());
+        if(existingOrder!=null){
+            existingOrder.setStatus(status);
+            Optional<Order>  updateOrder= Optional.of(orderRepository.save(existingOrder));
+            // Here based on type of status we need to save/update the Inventory Sheer
+            return updateOrder;
+        }else{
+            throw  new ResourceNotFoundException("Order not found");
+        }
+    }
+
+    @Override
     public List<Order> getAllOrderDetailsByUSerId(String userID){
         return  this.orderRepository.findAllTheOrderDetailsByUserId(userID);
     }
+
+
 }

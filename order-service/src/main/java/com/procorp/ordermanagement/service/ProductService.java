@@ -28,4 +28,6 @@ public interface ProductService {
     Map<String, List<Product>> getAllProductsGroupByCategory();
 
     List<Product> findAllTheProductDetailsBySearchKey(String searchKey);
+
+    List<Product> findProductsByCategoryID(Long categoryId);
 }

@@ -23,6 +23,9 @@ public class Product_Inventory {
     @Column(name = "intialStock")
     private Long intialStock;
 
+    @Column(name = "availableStock")
+    private Long availableStock;
+
     public Long getId() {
         return id;
     }
@@ -61,5 +64,13 @@ public class Product_Inventory {
 
     public void setIntialStock(Long intialStock) {
         this.intialStock = intialStock;
+    }
+
+    public Long getAvailableStock() {
+        return availableStock;
+    }
+
+    public void setAvailableStock(Long availableStock) {
+        this.availableStock = availableStock;
     }
 }

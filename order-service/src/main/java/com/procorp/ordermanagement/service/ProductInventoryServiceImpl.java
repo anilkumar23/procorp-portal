@@ -1,12 +1,15 @@
 package com.procorp.ordermanagement.service;
 
 import com.procorp.ordermanagement.dto.CategoryDto;
+import com.procorp.ordermanagement.dto.InventoryAuditDto;
 import com.procorp.ordermanagement.dto.Product_InventoryDto;
 import com.procorp.ordermanagement.dto.Product_warehouse_inventory;
 import com.procorp.ordermanagement.entities.Category;
+import com.procorp.ordermanagement.entities.Inventory_Audit;
 import com.procorp.ordermanagement.entities.Product_Inventory;
 import com.procorp.ordermanagement.exception.ResourceNotFoundException;
 import com.procorp.ordermanagement.repositories.CategoryRepository;
+import com.procorp.ordermanagement.repositories.Inventory_AuditRepository;
 import com.procorp.ordermanagement.repositories.Product_InventoryRepository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,9 +30,14 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 
     private JdbcTemplate jdbcTemplate;
 
-    public ProductInventoryServiceImpl(Product_InventoryRepository product_inventoryRepository,JdbcTemplate jdbcTemplate){
+    private Inventory_AuditRepository inventory_auditRepository;
+
+    public ProductInventoryServiceImpl(Product_InventoryRepository product_inventoryRepository,
+                                       JdbcTemplate jdbcTemplate,
+    Inventory_AuditRepository inventory_auditRepository){
         this.product_inventoryRepository=product_inventoryRepository;
         this.jdbcTemplate=jdbcTemplate;
+        this.inventory_auditRepository=inventory_auditRepository;
     }
 
     @Override
@@ -123,6 +131,53 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 
         }
         return inventory;
+    }
+
+    public boolean isDeliveryPartnerNameValid(String name){
+        boolean isValid=false;
+        try {
+        String sql = "select count(*) from deliverypartner where name='"+name+"'";
+        int count =  jdbcTemplate.queryForObject(sql,Integer.class);
+        if(count>0){
+            return true;
+        }
+        }catch (DataAccessException e){
+
+        }
+        return isValid;
+
+    }
+
+    @Override
+    public String saveInventoryAuditDetails(List<InventoryAuditDto> inventoryAuditDetails){
+
+        if(inventoryAuditDetails!=null&&!inventoryAuditDetails.isEmpty()){
+            inventoryAuditDetails.stream().forEach(inventoryAuditDto -> {
+                Inventory_Audit inventoryAudit = new Inventory_Audit();
+                inventoryAudit.setOrderID(inventoryAuditDto.getOrderID());
+                inventoryAudit.setProductID(inventoryAuditDto.getProductID());
+                inventoryAudit.setWareHouseID(inventoryAuditDto.getWareHouseID());
+                inventoryAudit.setWareHouseLocation(inventoryAuditDto.getWareHouseLocation());
+                inventoryAudit.setDeliveryPartner(inventoryAuditDto.getDeliveryPartner());
+                inventoryAudit.setManufacturerID(inventoryAuditDto.getManufacturerID());
+                inventoryAudit.setQuantity(inventoryAuditDto.getQuantity());
+                inventoryAudit= this.inventory_auditRepository.save(inventoryAudit);
+                if(inventoryAudit.getId()!=0L){
+                 Product_Inventory productInventory = this.product_inventoryRepository.getProductInventoryByProductIdAndWareHouseId(inventoryAudit.getProductID(),inventoryAudit.getWareHouseID());
+                  if(productInventory.getAvailableStock()==null || productInventory.getAvailableStock()==0L){
+                      productInventory.setAvailableStock(productInventory.getIntialStock()-inventoryAudit.getQuantity());
+
+                  }else{
+                      Long newAvailableStock= productInventory.getAvailableStock()-inventoryAudit.getQuantity();
+                      productInventory.setAvailableStock(newAvailableStock);
+                  }
+                  this.product_inventoryRepository.save(productInventory);
+                }
+            });
+        }
+
+
+        return "Saved Data To Inventory Audit and Updated latest available stock in Product Inventory";
     }
 
 
