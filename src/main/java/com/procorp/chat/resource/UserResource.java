@@ -1,9 +1,11 @@
 package com.procorp.chat.resource;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.procorp.chat.dao.MemberDao;
 import com.procorp.chat.dao.UserDao;
 import com.procorp.chat.dtos.*;
 import com.procorp.chat.entities.GoogleUser;
+import com.procorp.chat.entities.Member;
 import com.procorp.chat.service.MemberService;
 import com.procorp.chat.util.ImageUtil;
 import org.slf4j.Logger;
@@ -38,6 +40,9 @@ public class UserResource {
     @Autowired
     private ImageUtil util;
 
+    @Autowired
+    private MemberDao memberDao;
+
     @PostMapping("/addUser")
     public ResponseEntity<GlobalResponseDTO> addUser(@RequestBody GoogleUserDTO googleUserDTO) {
 
@@ -49,7 +54,7 @@ public class UserResource {
                 .replace("}","").replace("token=","");
 
         try {
-            Optional<GoogleUser> user = userDao.findByEmailAndUuidAndUserName(googleUserDTO.getEmail(), googleUserDTO.getUuid(), googleUserDTO.getUserName());
+            Optional<GoogleUser> user = userDao.findByEmailAndUuid(googleUserDTO.getEmail(), googleUserDTO.getUuid());
             if (user.isPresent()) {
                 String imageUrl = "";
                 if (StringUtils.hasText(user.get().getImageURL())){
@@ -58,7 +63,26 @@ public class UserResource {
                     if (StringUtils.hasText(googleUserDTO.getImageURL()))
                         imageUrl = util.uploadProfileImageToS3(googleUserDTO.getImageURL(),googleUserDTO.getEmail());
                 }
-
+                GoogleUser user1 = userDao.save(GoogleUser.builder()
+                        .memberId(user.get().getMemberId())
+                        .userName(googleUserDTO.getUserName())
+                        .uuid(googleUserDTO.getUuid())
+                        .tokenId(token)
+                        .email(googleUserDTO.getEmail())
+                        .isEmailVerified(googleUserDTO.isEmailVerified())
+                        .isMobileNoVerified(googleUserDTO.isMobileVerified())
+                        .imageURL(imageUrl)
+                        .mobileNumber(googleUserDTO.getMobileNumber())
+                        .build());
+                Member member = Member.builder()
+                        .memberId(user1.getMemberId())
+                        .userName(user1.getUserName())
+                        .email(user1.getEmail())
+                        .isMobileNoVerified(user1.getIsMobileNoVerified())
+                        .isEmailVerified(user1.getIsEmailVerified())
+                        .imageUrl(user1.getImageURL())
+                        .build();
+                memberDao.save(member);
                 return ResponseEntity.status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(GlobalResponseDTO.builder()
@@ -66,17 +90,7 @@ public class UserResource {
                                 .status(HttpStatus.OK.name())
                                 .msg("Member " + user.get().getEmail() + " is already present in the system " +
                                         "and have retrieved Successfully")
-                                .responseObj(userDao.save(GoogleUser.builder()
-                                        .memberId(user.get().getMemberId())
-                                        .userName(googleUserDTO.getUserName())
-                                        .uuid(googleUserDTO.getUuid())
-                                        .tokenId(token)
-                                        .email(googleUserDTO.getEmail())
-                                        .isEmailVerified(googleUserDTO.isEmailVerified())
-                                        .isMobileNoVerified(googleUserDTO.isMobileVerified())
-                                        .imageURL(imageUrl)
-                                        .mobileNumber(googleUserDTO.getMobileNumber())
-                                        .build()))
+                                .responseObj(user1)
                                 .build());
             }
             GoogleUser googleUser = null;
@@ -92,8 +106,16 @@ public class UserResource {
                         .isMobileNoVerified(googleUserDTO.isMobileVerified()).uuid(googleUserDTO.getUuid())
                         .imageURL(googleUserDTO.getImageURL()).build();
             }
-            userDao.save(googleUser);
-
+            GoogleUser googleUser1 = userDao.save(googleUser);
+            Member member = Member.builder()
+                    .memberId(googleUser1.getMemberId())
+                    .userName(googleUser1.getUserName())
+                    .email(googleUser1.getEmail())
+                    .isMobileNoVerified(googleUser1.getIsMobileNoVerified())
+                    .isEmailVerified(googleUser1.getIsEmailVerified())
+                    .imageUrl(googleUser1.getImageURL())
+                    .build();
+            memberDao.save(member);
             LOG.info("Member {} Successfully created", googleUser.getEmail());
             return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)

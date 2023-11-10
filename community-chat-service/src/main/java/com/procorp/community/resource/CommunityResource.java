@@ -124,17 +124,16 @@ public class CommunityResource {
     //  return communityService.getCommunityById(commId);
 
 
-    @GetMapping("/communitiesByOwner")
-    public ResponseEntity<?> getCommunityByOwner(@Valid @RequestParam Long memberId) {
+    @GetMapping("/communitiesByRole")
+    public ResponseEntity<?> getCommunityByRole(@Valid @RequestParam Long memberId, @RequestParam String role) {
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(GlobalResponseDTO.builder()
                         .statusCode(HttpStatus.OK.value())
                         .status(HttpStatus.OK.name())
-                        .msg("Got the community details By Owner ID: " + memberId)
-                        .responseObj(communityService.getCommunitiesByOwner(memberId))
+                        .msg("Got the community details By Role "+role+" for memberId ID: " + memberId)
+                        .responseObj(communityService.getCommunitiesByRole(memberId, role))
                         .build());
-        // return communityService.getCommunitiesByOwner(memberId);
     }
 
 

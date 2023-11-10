@@ -224,12 +224,11 @@ public class CommunityService {
                 .collect(Collectors.toList());
     }
 
-    public List<Community> getCommunitiesByOwner(Long memberId) {
+    public List<Community> getCommunitiesByRole(Long memberId, String role) {
+        List<Long> communityIds = communityMemberDao.findByMemberIdAndRole(memberId, role.toLowerCase())
+                .stream().map(CommunityMember::getCommId).toList();
 
-        List<Community> commList = communityDao.findAll();
-        return commList.stream()
-                .filter(r -> r.getMemberId().equals(memberId))
-                .collect(Collectors.toList());
+        List<Community> commList = communityDao.findAllById(communityIds);
+        return commList;
     }
-
 }

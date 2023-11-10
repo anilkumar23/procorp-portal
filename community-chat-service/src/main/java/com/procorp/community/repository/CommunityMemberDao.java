@@ -15,5 +15,6 @@ public interface CommunityMemberDao extends JpaRepository<CommunityMember, Long>
    public CommunityMember findByCommIdAndMemberId(Long commId,Long memberID);
 
    List<CommunityMember> findByCommId(Long commId);
+   List<CommunityMember> findByMemberIdAndRole(long memberId, String role);
 
 }

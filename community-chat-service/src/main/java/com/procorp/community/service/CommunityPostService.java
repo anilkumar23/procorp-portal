@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -60,23 +61,27 @@ public class CommunityPostService {
 
     private static final SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public ResponseEntity<?> uploadFile(CommunityPostRequestDto requestDto) {
-        File fileObj = convertMultiPartFileToFile(requestDto.getMedia());
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         String formattedTimestamp = sdf3.format(timestamp);
         CommunityPost post  = null;
-                String fileName = requestDto.getMemberId() + "_" + formattedTimestamp + "." + requestDto.getMediaType().toLowerCase();
-        PutObjectResult s3response = s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
-        if (s3response != null && s3response.getMetadata() !=null) {
-            String s3Url = s3Client.getUrl(bucketName, fileName).toString();
-           post = dao.save(mapDtoTOEntity(requestDto, s3Url, fileName, formattedTimestamp));
+        if(requestDto.getMedia() == null || !StringUtils.hasText(requestDto.getMedia().toString())){
+            post = dao.save(mapDtoTOEntity(requestDto, "", "", formattedTimestamp));
+        }else {
+            File fileObj = convertMultiPartFileToFile(requestDto.getMedia());
+            String fileName = requestDto.getMemberId() + "_" + formattedTimestamp + "." + requestDto.getMediaType().toLowerCase();
+            PutObjectResult s3response = s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
+            if (s3response != null && s3response.getMetadata() != null) {
+                String s3Url = s3Client.getUrl(bucketName, fileName).toString();
+                post = dao.save(mapDtoTOEntity(requestDto, s3Url, fileName, formattedTimestamp));
+            }
+            fileObj.delete();
         }
-        fileObj.delete();
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(GlobalResponseDTO.builder()
                         .statusCode(HttpStatus.OK.value())
                         .status(HttpStatus.OK.name())
-                        .msg("Post "+ fileName +" has been successfully uploaded")
+                        .msg("Posted successfully")
                         .responseObj(post)
                         .build());
     }

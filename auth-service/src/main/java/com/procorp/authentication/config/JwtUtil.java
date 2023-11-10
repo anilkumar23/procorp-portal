@@ -8,14 +8,15 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.*;
 
 @Service
 public class JwtUtil {
 
     private String secret;
-    private long jwtExpirationInMs;
-    private long refreshExpirationDateInMs;
+    private BigInteger jwtExpirationInMs;
+    private BigInteger refreshExpirationDateInMs;
 
     @Value("${jwt.secret}")
     public void setSecret(String secret) {
@@ -23,12 +24,12 @@ public class JwtUtil {
     }
 
     @Value("${jwt.expirationDateInMs}")
-    public void setJwtExpirationInMs(long jwtExpirationInMs) {
+    public void setJwtExpirationInMs(BigInteger jwtExpirationInMs) {
         this.jwtExpirationInMs = jwtExpirationInMs;
     }
 
     @Value("${jwt.refreshExpirationDateInMs}")
-    public void setRefreshExpirationDateInMs(long refreshExpirationDateInMs) {
+    public void setRefreshExpirationDateInMs(BigInteger refreshExpirationDateInMs) {
         this.refreshExpirationDateInMs = refreshExpirationDateInMs;
     }
 
