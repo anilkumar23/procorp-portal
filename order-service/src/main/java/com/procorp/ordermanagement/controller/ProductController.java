@@ -182,6 +182,7 @@ public class ProductController {
         p.setStatus(dto.getStatus());
         p.setDiscount(dto.getDiscount());
         p.setLowStockAlert(dto.getLowStockAlert());
+        p.setDescription(dto.getDescription());
        /* Optional<Category> category= this.categoryService.getCategoryById(dto.getCategoryTypeId());
         if(category.isPresent()){
             p.setCategory(category.get());

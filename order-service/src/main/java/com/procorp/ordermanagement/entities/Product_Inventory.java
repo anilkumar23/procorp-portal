@@ -4,7 +4,9 @@ package com.procorp.ordermanagement.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "product_inventory")
+@Table(name = "product_inventory", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"productId","warehouseId"})
+})
 public class Product_Inventory {
 
     @Id

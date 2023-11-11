@@ -86,6 +86,7 @@ public class ProductServiceImpl implements ProductService {
          product.setStatus(dto.getStatus());
          product.setDiscount(dto.getDiscount());
          product.setLowStockAlert(dto.getLowStockAlert());
+         product.setDescription(dto.getDescription());
          Optional<Category> category= this.categoryRepository.findById(dto.getCategoryTypeId());
          if(category.isPresent()){
              product.setCategory(category.get());

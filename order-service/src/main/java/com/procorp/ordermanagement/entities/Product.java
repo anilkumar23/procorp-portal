@@ -17,6 +17,10 @@ public class Product {
     @Basic(optional = false)
     private String name;
 
+
+    @Column(name = "description")
+    private String description;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id")
     private Category category;
@@ -37,7 +41,8 @@ public class Product {
     private Double lowStockAlert;
     private String status;
 
-    public Product(Long id, String name, Category category, Double price, String pictureUrl, String sex, String uom, Double discount, Double lowStockAlert, String status) {
+    public Product(Long id, String name, Category category, Double price, String pictureUrl,
+                   String sex, String uom, Double discount, Double lowStockAlert, String status,String description) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -48,6 +53,7 @@ public class Product {
         this.discount = discount;
         this.lowStockAlert = lowStockAlert;
         this.status = status;
+        this.description=description;
     }
 
     public Product() {
@@ -133,19 +139,11 @@ public class Product {
         this.status = status;
     }
 
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", category=" + category +
-                ", price=" + price +
-                ", pictureUrl='" + pictureUrl + '\'' +
-                ", sex='" + sex + '\'' +
-                ", uom='" + uom + '\'' +
-                ", discount=" + discount +
-                ", lowStockAlert=" + lowStockAlert +
-                ", status='" + status + '\'' +
-                '}';
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
