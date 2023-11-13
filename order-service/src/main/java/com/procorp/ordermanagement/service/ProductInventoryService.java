@@ -5,6 +5,7 @@ import com.procorp.ordermanagement.dto.InventoryAuditDto;
 import com.procorp.ordermanagement.dto.Product_InventoryDto;
 import com.procorp.ordermanagement.dto.Product_warehouse_inventory;
 import com.procorp.ordermanagement.entities.Category;
+import com.procorp.ordermanagement.entities.Inventory_Audit;
 import com.procorp.ordermanagement.entities.Product_Inventory;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -30,4 +31,6 @@ public interface ProductInventoryService {
     boolean isDeliveryPartnerNameValid(String name);
 
     String saveInventoryAuditDetails(List<InventoryAuditDto> inventoryAuditDetails);
+
+    List<Inventory_Audit> getInventoryAuditByOrderID(Long orderID);
 }

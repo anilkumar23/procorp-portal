@@ -350,5 +350,18 @@ public class ProductInventoryController {
 
     }
 
+    @GetMapping(path = "/getInventoryAuditDetailsByOrderID")
+    @ResponseStatus(HttpStatus.OK)
+    public @NotNull ResponseEntity<?> getInventoryAuditDetailsByOrderID(@RequestParam(name = "orderID") Long orderID) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(GlobalResponseDTO.builder()
+                        .statusCode(HttpStatus.OK.value())
+                        .status(HttpStatus.OK.name())
+                        .msg("Got the inventory audit details by orderID: "+orderID)
+                        .responseObj(this.productInventoryService.getInventoryAuditByOrderID(orderID))
+                        .build());
+    }
+
 
 }

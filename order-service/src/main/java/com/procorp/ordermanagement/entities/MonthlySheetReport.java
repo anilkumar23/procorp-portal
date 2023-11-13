@@ -18,7 +18,7 @@ public class MonthlySheetReport {
     @JsonFormat(pattern = "dd/MM/yyyy") private LocalDate dateCreated;
 
     @Column(name = "monthYear")
-    @JsonFormat(pattern = "MM/yyyy") private LocalDate monthYear;
+    private String monthYear;
 
     @Column(name = "createdDate")
     private Long createdDate;
@@ -60,11 +60,11 @@ public class MonthlySheetReport {
         this.dateCreated = dateCreated;
     }
 
-    public LocalDate getMonthYear() {
+    public String getMonthYear() {
         return monthYear;
     }
 
-    public void setMonthYear(LocalDate monthYear) {
+    public void setMonthYear(String monthYear) {
         this.monthYear = monthYear;
     }
 

@@ -180,6 +180,11 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
         return "Saved Data To Inventory Audit and Updated latest available stock in Product Inventory";
     }
 
+    @Override
+    public List<Inventory_Audit> getInventoryAuditByOrderID(Long orderID){
+        return this.inventory_auditRepository.getInventoryAuditByOrderID(orderID);
+    }
+
 
        /* select * from warehouse
 
