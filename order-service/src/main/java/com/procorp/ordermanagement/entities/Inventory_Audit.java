@@ -24,6 +24,9 @@ public class Inventory_Audit {
 
     private String deliveryPartner;
 
+    @Transient
+    private String wareHouseName;
+
     public Long getId() {
         return id;
     }
@@ -86,5 +89,13 @@ public class Inventory_Audit {
 
     public void setDeliveryPartner(String deliveryPartner) {
         this.deliveryPartner = deliveryPartner;
+    }
+
+    public String getWareHouseName() {
+        return wareHouseName;
+    }
+
+    public void setWareHouseName(String wareHouseName) {
+        this.wareHouseName = wareHouseName;
     }
 }

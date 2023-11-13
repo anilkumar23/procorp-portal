@@ -7,10 +7,12 @@ import com.procorp.ordermanagement.dto.Product_warehouse_inventory;
 import com.procorp.ordermanagement.entities.Category;
 import com.procorp.ordermanagement.entities.Inventory_Audit;
 import com.procorp.ordermanagement.entities.Product_Inventory;
+import com.procorp.ordermanagement.entities.Warehouse;
 import com.procorp.ordermanagement.exception.ResourceNotFoundException;
 import com.procorp.ordermanagement.repositories.CategoryRepository;
 import com.procorp.ordermanagement.repositories.Inventory_AuditRepository;
 import com.procorp.ordermanagement.repositories.Product_InventoryRepository;
+import com.procorp.ordermanagement.repositories.WarehouseRepository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -32,12 +34,15 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 
     private Inventory_AuditRepository inventory_auditRepository;
 
+    private WarehouseRepository warehouseRepository;
+
     public ProductInventoryServiceImpl(Product_InventoryRepository product_inventoryRepository,
                                        JdbcTemplate jdbcTemplate,
-    Inventory_AuditRepository inventory_auditRepository){
+    Inventory_AuditRepository inventory_auditRepository,WarehouseRepository warehouseRepository){
         this.product_inventoryRepository=product_inventoryRepository;
         this.jdbcTemplate=jdbcTemplate;
         this.inventory_auditRepository=inventory_auditRepository;
+        this.warehouseRepository=warehouseRepository;
     }
 
     @Override
@@ -182,7 +187,18 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 
     @Override
     public List<Inventory_Audit> getInventoryAuditByOrderID(Long orderID){
-        return this.inventory_auditRepository.getInventoryAuditByOrderID(orderID);
+        List<Inventory_Audit> list= this.inventory_auditRepository.getInventoryAuditByOrderID(orderID);
+        if(list!=null&&!list.isEmpty()){
+            list = list.stream().map(iaudit->{
+              Optional<Warehouse> warehouse=  this.warehouseRepository.findById(iaudit.getWareHouseID());
+              if(warehouse.isPresent())
+              {
+                  iaudit.setWareHouseName(warehouse.get().getName());
+              }
+              return iaudit;
+            }).collect(Collectors.toList());
+        }
+        return list;
     }
 
 
