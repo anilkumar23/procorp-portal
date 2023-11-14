@@ -3,23 +3,24 @@ package com.procorp.community.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
+import com.procorp.community.config.FeignClientInterceptor;
 import com.procorp.community.dtos.CommunityDTO;
 import com.procorp.community.dtos.CommunityPostRequestDto;
 import com.procorp.community.dtos.GlobalResponseDTO;
-import com.procorp.community.entities.Community;
-import com.procorp.community.entities.CommunityMember;
-import com.procorp.community.entities.CommunityPost;
+import com.procorp.community.entities.*;
 import com.procorp.community.repository.CommunityDao;
 import com.procorp.community.repository.CommunityMemberDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -40,11 +41,17 @@ public class CommunityService {
     @Autowired
     private CommunityMemberDao communityMemberDao;
 
+//    @Autowired
+//    private RestTemplate restTemplate;
+
     @Value("${application.bucket.name}")
     private String bucketName;
 
     @Autowired
     private AmazonS3 s3Client;
+
+    @Autowired
+    private WebClient webClient;
 
     private static final SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public String createCommunity(CommunityDTO communityDto) {
@@ -148,12 +155,67 @@ public class CommunityService {
         return "community request accepted";
     }
 
-    public List<CommunityMember> getCommunityMembersList(Long commId) {
-//        List<CommunityMember> list = communityMemberDao.findByCommId(commId);
-        //        return list.stream()
-//                .filter(r -> r.getStatus().equalsIgnoreCase("accepted"))
+    public ResponseEntity<Member> getCommunityMembersList(Long commId) {
+        List<CommunityMember> list = communityMemberDao.findByCommId(commId);
+        List<Long> commMemberIds = list.stream()
+                .filter(r -> r.getStatus().equalsIgnoreCase("accepted"))
+                .map(CommunityMember::getMemberId).toList();
+        System.out.println("waitingListIds"+commMemberIds);
+//
+//        Mono<List<Member>> getAllMembers = webClient.get().uri("/member-service/getAllMembers")
+//                .accept(MediaType.APPLICATION_JSON)
+//                .header("Authorization", FeignClientInterceptor.getBearerTokenHeader())
+//                .retrieve()
+//                .bodyToMono(new ParameterizedTypeReference<>() {});
+//        System.out.println("getAllMembers :"+getAllMembers.block());
+//        List<Member> members = getAllMembers.block();
+//        System.out.println("members :"+members);
+        String url ="http://lb-1786377629.us-east-1.elb.amazonaws.com:8090/member-service/getAllMembers";
+
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", FeignClientInterceptor.getBearerTokenHeader().indexOf(1)+"");
+
+        //Create a new HttpEntity
+        final HttpEntity<String> entity = new HttpEntity<String>(headers);
+        ResponseEntity<MemberList> response = new RestTemplate().exchange(
+                url, HttpMethod.GET, new HttpEntity<Object>(headers),
+                MemberList.class);
+        System.out.println("response :"+response);
+
+
+//        String fooResourceUrl
+//                = "http://localhost:8080/spring-rest/foos";
+//        String url ="http://lb-1786377629.us-east-1.elb.amazonaws.com:8090/member-service/getAllMembers";
+////        ResponseEntity<List<Member>> response = restTemplate.getForEntity(url,new ParameterizedTypeReference<List<Member>>(){});
+//        RestTemplate restTemplate = new RestTemplate();
+//        RequestEntity request = new RequestEntity();
+//        ResponseEntity<List<Member>> response1 = restTemplate.exchange(
+//                url, HttpMethod.GET,null,
+//                new ParameterizedTypeReference<List<Member>>(){});
+//
+//        System.out.println("response :"+response1);
+
+//        List<T> list = response.getBody();
+//
+//        ResponseEntity<User[]> responseEntity =
+//                restTemplate.getForEntity(BASE_URL, User[].class);
+//        User[] userArray = responseEntity.getBody();
+//        return Arrays.stream(userArray)
+//                .map(User::getName)
 //                .collect(Collectors.toList());
-        return communityMemberDao.findByCommId(commId);
+//
+//        ResponseEntity<List<Member>> responseEntity1 =   restTemplate.exchange(url,HttpMethod.GET,null,new ParameterizedTypeReference<List<Member>>(){});
+//        List<Member> users = responseEntity.getBody();
+//        return users.stream()   .map(User::getName)   .collect(Collectors.toList());
+//
+//
+//        System.out.println("allmembers"+response);
+//        ResponseEntity<List<Member>> res = restTemplate.postForEntity(url, null, new ParameterizedTypeReference<List<Member>>() {});
+//        members.getBody().stream()
+//                .filter(r -> r.getStatus().equalsIgnoreCase("accepted"))
+//                .map(CommunityMember::getMemberId).toList();
+        return null;
     }
 
     public List<CommunityMember> getCommunityMembersRequests(Long commId) {
