@@ -3,11 +3,16 @@ package com.procorp.community.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.procorp.community.config.FeignClientInterceptor;
 import com.procorp.community.dtos.CommunityDTO;
-import com.procorp.community.dtos.CommunityPostRequestDto;
-import com.procorp.community.dtos.GlobalResponseDTO;
+import com.procorp.community.dtos.MemberResponseDTO;
 import com.procorp.community.entities.*;
+import com.procorp.community.exception.UnauthorizedException;
 import com.procorp.community.repository.CommunityDao;
 import com.procorp.community.repository.CommunityMemberDao;
 import lombok.extern.slf4j.Slf4j;
@@ -20,16 +25,14 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Service
 @Slf4j
@@ -154,67 +157,72 @@ public class CommunityService {
         }
         return "community request accepted";
     }
+    public static <T, F> List<T> convertList(List<F> list, Class<T> clazz) {
+        Objects.requireNonNull(clazz);
+        ObjectMapper mapper = new ObjectMapper();
 
-    public ResponseEntity<Member> getCommunityMembersList(Long commId) {
+        // Important: this must be declared so mapper doesn't throw
+        // an exception for all properties which it can't map.
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        return Optional.ofNullable(list)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(obj -> mapper.convertValue(obj, clazz))
+                .collect(Collectors.toList());
+    }
+    private List<MemberResponseDTO> mapEntityToDTO(List<Member> members) {
+        List<MemberResponseDTO> membersDTO = new ArrayList<>();
+        members.forEach(n ->
+                membersDTO.add(MemberResponseDTO.builder()
+                        .memberId(n.getMemberId())
+                        .firstName(n.getFirstName())
+                        .lastName(n.getLastName())
+                        .dateOfBirth(n.getDateOfBirth().toString())
+                        .gender(n.getGender())
+                        .mobileNumber(n.getMobileNumber())
+                        .email(n.getEmail())
+                        .password(n.getPassword())
+                        .registrationDate(n.getRegistrationDate().toString())
+                        .imageURL(n.getImageUrl())
+                        .collegeName(n.getCollegeName())
+                        .companyName(n.getCompanyName())
+                        .build()));
+        return membersDTO;
+    }
+    @Autowired
+    RestTemplate restTemplate;
+    public List<MemberResponseDTO> getCommunityMembersList(Long commId) {
         List<CommunityMember> list = communityMemberDao.findByCommId(commId);
         List<Long> commMemberIds = list.stream()
                 .filter(r -> r.getStatus().equalsIgnoreCase("accepted"))
                 .map(CommunityMember::getMemberId).toList();
         System.out.println("waitingListIds"+commMemberIds);
-//
-//        Mono<List<Member>> getAllMembers = webClient.get().uri("/member-service/getAllMembers")
-//                .accept(MediaType.APPLICATION_JSON)
-//                .header("Authorization", FeignClientInterceptor.getBearerTokenHeader())
-//                .retrieve()
-//                .bodyToMono(new ParameterizedTypeReference<>() {});
-//        System.out.println("getAllMembers :"+getAllMembers.block());
-//        List<Member> members = getAllMembers.block();
-//        System.out.println("members :"+members);
+
         String url ="http://lb-1786377629.us-east-1.elb.amazonaws.com:8090/member-service/getAllMembers";
+        String token = FeignClientInterceptor.getBearerTokenHeader();
+        if (!StringUtils.hasText(token)) throw new UnauthorizedException("Invalid Bearer token or token has expired, please refresh token and give a try!!");
+        String[] tokenFields = token.split(" ");
 
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", token);
+            HttpEntity<String> entity = new HttpEntity<String>(headers);
+            ResponseEntity<?> response = restTemplate.exchange(
+                    url, HttpMethod.GET,entity,
+                    new ParameterizedTypeReference<>() {
+                    });
+            LinkedHashMap<String, Object> resp = (LinkedHashMap<String, Object>) response.getBody();
+            ArrayList list1 = new ArrayList<>(Collections.singleton(resp.get("responseObj")));
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            List<Member> members = mapper.convertValue(list1.get(0), new TypeReference<List<Member>>(){});
 
-        final HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", FeignClientInterceptor.getBearerTokenHeader().indexOf(1)+"");
-
-        //Create a new HttpEntity
-        final HttpEntity<String> entity = new HttpEntity<String>(headers);
-        ResponseEntity<MemberList> response = new RestTemplate().exchange(
-                url, HttpMethod.GET, new HttpEntity<Object>(headers),
-                MemberList.class);
-        System.out.println("response :"+response);
-
-
-//        String fooResourceUrl
-//                = "http://localhost:8080/spring-rest/foos";
-//        String url ="http://lb-1786377629.us-east-1.elb.amazonaws.com:8090/member-service/getAllMembers";
-////        ResponseEntity<List<Member>> response = restTemplate.getForEntity(url,new ParameterizedTypeReference<List<Member>>(){});
-//        RestTemplate restTemplate = new RestTemplate();
-//        RequestEntity request = new RequestEntity();
-//        ResponseEntity<List<Member>> response1 = restTemplate.exchange(
-//                url, HttpMethod.GET,null,
-//                new ParameterizedTypeReference<List<Member>>(){});
-//
-//        System.out.println("response :"+response1);
-
-//        List<T> list = response.getBody();
-//
-//        ResponseEntity<User[]> responseEntity =
-//                restTemplate.getForEntity(BASE_URL, User[].class);
-//        User[] userArray = responseEntity.getBody();
-//        return Arrays.stream(userArray)
-//                .map(User::getName)
-//                .collect(Collectors.toList());
-//
-//        ResponseEntity<List<Member>> responseEntity1 =   restTemplate.exchange(url,HttpMethod.GET,null,new ParameterizedTypeReference<List<Member>>(){});
-//        List<Member> users = responseEntity.getBody();
-//        return users.stream()   .map(User::getName)   .collect(Collectors.toList());
-//
-//
-//        System.out.println("allmembers"+response);
-//        ResponseEntity<List<Member>> res = restTemplate.postForEntity(url, null, new ParameterizedTypeReference<List<Member>>() {});
-//        members.getBody().stream()
-//                .filter(r -> r.getStatus().equalsIgnoreCase("accepted"))
-//                .map(CommunityMember::getMemberId).toList();
+            return mapEntityToDTO(members.stream().filter(n->commMemberIds.contains(n.getMemberId())).collect(Collectors.toList()));
+        }catch (Exception ex){
+            System.out.println(ex);
+        }
         return null;
     }
 

@@ -7,9 +7,11 @@ import com.procorp.community.dtos.CommunityChatHistoryDeserializer;
 import com.procorp.community.dtos.CommunityChatHistoryDto;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableAspectJAutoProxy(proxyTargetClass = true)
@@ -24,7 +26,10 @@ public class CommunityChatApplication {
         om.registerModule(new GuavaModule());
         return om;
     }
-
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.build();
+    }
     @Bean
     public SimpleModule communityChatHistoryDeserializer() {
         SimpleModule module = new SimpleModule();
