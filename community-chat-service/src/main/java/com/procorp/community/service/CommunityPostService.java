@@ -11,9 +11,11 @@ import com.procorp.community.dtos.CommunityPostResponseDTO;
 import com.procorp.community.dtos.GlobalResponseDTO;
 import com.procorp.community.entities.Community;
 import com.procorp.community.entities.CommunityPost;
+import com.procorp.community.entities.PostComment;
 import com.procorp.community.entities.PostLike;
 import com.procorp.community.repository.CommunityDao;
 import com.procorp.community.repository.CommunityPostDao;
+import com.procorp.community.repository.PostCommentDao;
 import com.procorp.community.repository.PostLikeDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +60,9 @@ public class CommunityPostService {
 
     @Autowired
     PostLikeDao postLikesDao;
+
+    @Autowired
+    PostCommentDao postCommentDao;
 
     private static final SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public ResponseEntity<?> uploadFile(CommunityPostRequestDto requestDto) {
@@ -222,5 +227,32 @@ public class CommunityPostService {
         } else {
             return "postId doesn't exist";
         }
+    }
+
+    public Object CommentPost(Long postId, Long memberId, String memberName, String comment) {
+        CommunityPost post = dao.findByPostId(postId);
+        if(post!= null) {
+                PostComment postComment = new PostComment();
+                postComment.setMemberName(memberName);
+                postComment.setMemberId(memberId);
+                postComment.setPostId(postId);
+                if(!comment.isEmpty()) {
+                    postComment.setComment(comment);
+                } else {
+                    return "Comment should not be empty";
+                }
+                postCommentDao.save(postComment);
+                return "Comment submitted ";
+        } else {
+            return "postId doesn't exist";
+        }
+    }
+
+    public Object getPostLikes(Long postId) {
+        return postLikesDao.findByPostId(postId);
+    }
+
+    public Object getPostComments(Long postId) {
+        return postCommentDao.findByPostId(postId);
     }
 }

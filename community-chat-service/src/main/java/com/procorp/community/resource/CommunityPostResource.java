@@ -41,6 +41,21 @@ public class CommunityPostResource {
     public ResponseEntity<?> likePost(@RequestParam Long postId,@RequestParam Long memberId,@RequestParam String memberName) {
         return new ResponseEntity<>(service.likePost(postId,memberId,memberName), HttpStatus.OK);
     }
+
+    @GetMapping(value = "/likePost")
+    public ResponseEntity<?> getPostLikes(@RequestParam Long postId) {
+        return new ResponseEntity<>(service.getPostLikes(postId), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/CommentPost")
+    public ResponseEntity<?> commentPost(@RequestParam Long postId,@RequestParam Long memberId,@RequestParam String memberName,@RequestParam String  comment) {
+        return new ResponseEntity<>(service.CommentPost(postId,memberId,memberName,comment), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/CommentPost")
+    public ResponseEntity<?> getPostComments(@RequestParam Long postId) {
+        return new ResponseEntity<>(service.getPostComments(postId), HttpStatus.OK);
+    }
    /* @GetMapping(value = "/getPostsByMemberId")
     public  ResponseEntity<?> getPostsByMemberId(@RequestParam long communityId,
                                                  @RequestParam(defaultValue = "0") final Integer pageNumber,
