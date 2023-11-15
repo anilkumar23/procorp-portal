@@ -313,7 +313,7 @@ public class ProductInventoryController {
 
     }
 
-    @GetMapping(path = "/saveInventoryAuditDetails")
+    @PostMapping(path = "/saveInventoryAuditDetails")
     @ResponseStatus(HttpStatus.OK)
     public @NotNull ResponseEntity<?> saveInventoryAuditDetails(
             @RequestBody InventoryAuditWrapperDto dto) {

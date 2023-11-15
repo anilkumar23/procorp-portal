@@ -105,7 +105,7 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
 
         String citiesCommaSeparated = productIds.stream().map(p->String.valueOf(p))
                 .collect(Collectors.joining(","));
-        String sql="select w.name as warehouse_name,w.pincode as warehouse_pincode,\n" +
+        String sql="select w.id as  warehouse_id,w.location as warehouse_location, w.name as warehouse_name,w.pincode as warehouse_pincode,\n" +
                 "        w.status as warehouse_status,p.id as product_id,p.name as product_name,\n" +
                 "        pi.quantity as available_quantity from warehouse w\n" +
                 "        left join product_inventory pi on pi.warehouse_id=w.id\n" +
@@ -119,6 +119,8 @@ public class ProductInventoryServiceImpl implements ProductInventoryService{
                 @Override
                 public Product_warehouse_inventory mapRow(ResultSet rs, int rowNum) throws SQLException {
                     Product_warehouse_inventory inventoryDto=new Product_warehouse_inventory();
+                    inventoryDto.setWarehouseId(rs.getLong("warehouse_id"));
+                    inventoryDto.setWarehouseLocation(rs.getString("warehouse_location"));
                     inventoryDto.setProductId(rs.getLong("product_id"));
                     inventoryDto.setProductName(rs.getString("product_name"));
                     inventoryDto.setWarehouseName(rs.getString("warehouse_name"));

@@ -11,7 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Product_warehouse_inventory {
 
+    private Long warehouseId;
     private String warehouseName;
+
+    private String warehouseLocation;
     private String warehousePincode;
     private String warehouseStatus;
     private String productName;
@@ -65,5 +68,21 @@ public class Product_warehouse_inventory {
 
     public void setAvailableQuantity(Long availableQuantity) {
         this.availableQuantity = availableQuantity;
+    }
+
+    public Long getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(Long warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    public String getWarehouseLocation() {
+        return warehouseLocation;
+    }
+
+    public void setWarehouseLocation(String warehouseLocation) {
+        this.warehouseLocation = warehouseLocation;
     }
 }
